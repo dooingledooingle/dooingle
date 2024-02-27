@@ -7,11 +7,11 @@ import jakarta.persistence.*
 @Table(name = "follow")
 class Follow(
     @ManyToOne
-    @Column
+    @JoinColumn
     val toUser: User,
 
     @ManyToOne
-    @Column
+    @JoinColumn
     val fromUser: User,
 ) {
 
