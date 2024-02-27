@@ -1,14 +1,12 @@
-import {useState} from 'react'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomePage from "./pages/Home.jsx";
+import AdminHomePage from "./pages/AdminHome.jsx";
+
+const router = createBrowserRouter([
+  { path: '/', element: <HomePage /> },
+  { path: '/admin', element: <AdminHomePage /> },
+])
 
 export default function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="card">
-      <div>abc</div>
-      <button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </button>
-    </div>
-  )
+  return <RouterProvider router={router} />
 }
