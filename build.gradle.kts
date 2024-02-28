@@ -16,16 +16,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
-noArg {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-}
-
-allOpen {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-}
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
