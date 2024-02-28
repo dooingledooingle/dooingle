@@ -3,8 +3,8 @@ package com.dooingle.domain.dooingle.service
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.user.model.DooingleCount
-import com.dooingle.domain.user.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.model.DooingleCount
+import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

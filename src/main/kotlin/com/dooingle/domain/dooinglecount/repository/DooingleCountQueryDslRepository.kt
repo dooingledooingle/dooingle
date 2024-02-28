@@ -1,4 +1,4 @@
-package com.dooingle.domain.user.repository
+package com.dooingle.domain.dooinglecount.repository
 
 import com.dooingle.domain.user.dto.DooinglerResponse
 

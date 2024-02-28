@@ -1,4 +1,4 @@
-package com.dooingle.domain.user.model
+package com.dooingle.domain.dooinglecount.model
 
 import com.dooingle.domain.user.model.User
 import jakarta.persistence.Column
