@@ -26,8 +26,6 @@ repositories {
     mavenCentral()
 }
 
-val queryDslVersion = "5.0.0"
-
 dependencies {
     // Kotlin 리플렉션 사용: kotlin-reflect
     implementation("org.jetbrains.kotlin:kotlin-reflect")
