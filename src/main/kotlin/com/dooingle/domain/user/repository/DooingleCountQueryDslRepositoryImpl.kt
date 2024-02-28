@@ -12,6 +12,7 @@ class DooingleCountQueryDslRepositoryImpl(
 
     private val user = QUser.user
     private val dooingleCount = QDooingleCount.dooingleCount
+
     override fun getHighCountDooinglers(): List<DooinglerResponse> {
 
         return queryFactory.select(

@@ -18,9 +18,13 @@ class DooingleCount(
     val owner: User,
 
     @Column
-    var count: Int
+    var count: Int = 0
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun plus() {
+        count += 1
+    }
 }
