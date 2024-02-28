@@ -30,7 +30,8 @@ class DooingleController(
             .body(response)
     }
 
-    // 단일 뒹글 조회
+    // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
+    // 추후 사용된다면 ownerId로 해당 유저가 존재하는지 확인하는 로직을 추가
     @GetMapping("/{dooingleId}")
     fun getDooingle(
         @PathVariable userId: Long,

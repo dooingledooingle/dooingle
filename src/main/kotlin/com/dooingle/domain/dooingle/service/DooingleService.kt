@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
+
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
     private val userRepository: UserRepository
@@ -26,7 +26,7 @@ class DooingleService (
         return DooingleResponse.from(dooingle)
     }
 
-    // 단일 뒹글 조회
+    // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
     fun getDooingle(ownerId: Long, dooingleId: Long): DooingleResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")
 
