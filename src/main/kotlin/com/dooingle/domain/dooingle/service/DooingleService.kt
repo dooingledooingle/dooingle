@@ -16,6 +16,7 @@ class DooingleService (
 ) {
 
     // 뒹글 생성
+    @Transactional
     fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
         val guest = userRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
         val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
