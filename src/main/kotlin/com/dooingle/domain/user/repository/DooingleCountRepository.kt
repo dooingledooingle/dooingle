@@ -1,4 +1,4 @@
-package com.dooingle.domain.dooingle.repository
+package com.dooingle.domain.user.repository
 
 import com.dooingle.domain.dooingle.model.Dooingle
 import org.springframework.data.jpa.repository.JpaRepository

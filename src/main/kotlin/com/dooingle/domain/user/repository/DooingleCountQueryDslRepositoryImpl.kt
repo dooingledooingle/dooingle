@@ -1,7 +1,7 @@
-package com.dooingle.domain.dooingle.repository
+package com.dooingle.domain.user.repository
 
-import com.dooingle.domain.dooingle.dto.DooinglerResponse
-import com.dooingle.domain.dooingle.model.QDooingleCount
+import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.model.QDooingleCount
 import com.dooingle.domain.user.model.QUser
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory

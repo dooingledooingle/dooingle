@@ -1,4 +1,4 @@
-package com.dooingle.domain.dooingle.dto
+package com.dooingle.domain.user.dto
 
 data class DooinglerResponse(
     val userId: Long,
