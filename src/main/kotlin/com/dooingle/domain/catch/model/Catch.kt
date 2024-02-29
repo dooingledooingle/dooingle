@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 @Table(name = "catch")
 class Catch(
     @Column
-    val content: String,
+    var content: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
     val dooingle: Dooingle,
@@ -20,4 +20,8 @@ class Catch(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun updateForDelete() {
+        this.deletedAt = ZonedDateTime.now()
+    }
 }
