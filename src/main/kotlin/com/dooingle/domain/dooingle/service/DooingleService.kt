@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
     private val userRepository: UserRepository,
@@ -45,8 +44,9 @@ class DooingleService (
     }
 
     fun getDooingleFeeds(cursor: Long, pageRequest: PageRequest): Slice<DooingleResponse> {
-        dooingleRepository.getDooinglePageable(cursor, pageRequest)
-        return TODO()
+        return dooingleRepository
+            .getDooinglePageable(cursor, pageRequest)
+            .map { DooingleResponse.from(it) }
     }
 
     // TODO 팔로우 기능 구현 후 구현 필요

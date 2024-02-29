@@ -18,6 +18,7 @@ class DooingleQueryDslRepositoryImpl(
             .selectFrom(dooingle)
             .where(dooingle.id.lt(cursor))
             .limit(10) // TODO 10을 변수에 저장할 방법 생각하기
+            .orderBy(dooingle.id.desc())
             .fetch()
             .let { SliceImpl(it) }
     }
