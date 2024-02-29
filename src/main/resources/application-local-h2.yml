@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:~\dooingle-test
+    url: jdbc:h2:~\dooingle-test;MODE=MySQL
     username: sa
     password:
   jpa:
@@ -12,6 +12,7 @@ spring:
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
+#        dialect: org.hibernate.dialect.MySQLDialect # dialect 설정 hibernate에 명시적으로 주면 에러 발생함
   h2:
     console:
       enabled: true
