@@ -14,7 +14,7 @@ class UserController(
     private val userService: UserService
 ) {
     @GetMapping
-    fun GetDooinglerList(@RequestParam(required = false) condition: String?): ResponseEntity<List<DooinglerResponse>> {
+    fun GetDooinglerList(@RequestParam condition: String?): ResponseEntity<List<DooinglerResponse>> {
         return ResponseEntity.ok().body(userService.getDooinglerList(condition))
     }
 }
