@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RequestMapping("/dooingles")
+@RequestMapping("/api/dooingles")
 @RestController
 class DooingleFeedController(
     private val dooingleService: DooingleService,
 ) {
 
     @GetMapping
-    fun getDooingleFeeds(cursor: Long): ResponseEntity<Slice<DooingleResponse>> {
+    fun getDooingleFeeds(cursor: Long?): ResponseEntity<Slice<DooingleResponse>> {
         val pageRequest = PageRequest.ofSize(PAGE_SIZE)
         return ResponseEntity.ok(dooingleService.getDooingleFeeds(cursor, pageRequest))
     }

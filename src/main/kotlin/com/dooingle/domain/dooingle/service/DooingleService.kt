@@ -43,7 +43,7 @@ class DooingleService (
         return DooingleResponse.from(dooingle)
     }
 
-    fun getDooingleFeeds(cursor: Long, pageRequest: PageRequest): Slice<DooingleResponse> {
+    fun getDooingleFeeds(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
         return dooingleRepository
             .getDooinglePageable(cursor, pageRequest)
             .map { DooingleResponse.from(it) }
