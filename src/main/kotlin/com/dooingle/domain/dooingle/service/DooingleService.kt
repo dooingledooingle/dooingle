@@ -3,6 +3,8 @@ package com.dooingle.domain.dooingle.service
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.repository.DooingleRepository
+import com.dooingle.domain.dooinglecount.model.DooingleCount
+import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -12,16 +14,23 @@ import org.springframework.transaction.annotation.Transactional
 
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val dooingleCountRepository: DooingleCountRepository
 ) {
 
     // 뒹글 생성
+    @Transactional
     fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
         val guest = userRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
         val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
 
         dooingleRepository.save(dooingle)
+
+        val dooingleCount = dooingleCountRepository.findByOwnerId(ownerId)
+            ?: dooingleCountRepository.save(DooingleCount(owner = owner))
+
+        dooingleCount.plus()
 
         return DooingleResponse.from(dooingle)
     }
