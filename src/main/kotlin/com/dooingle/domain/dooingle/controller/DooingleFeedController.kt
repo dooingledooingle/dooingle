@@ -2,6 +2,7 @@ package com.dooingle.domain.dooingle.controller
 
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.service.DooingleService
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,12 +16,19 @@ class DooingleFeedController(
 ) {
 
     @GetMapping
-    fun getDooingleFeeds(): ResponseEntity<Slice<DooingleResponse>> {
-        return ResponseEntity.ok(dooingleService.getDooingleFeeds())
+    fun getDooingleFeeds(cursor: Long): ResponseEntity<Slice<DooingleResponse>> {
+        val pageRequest = PageRequest.ofSize(PAGE_SIZE)
+        return ResponseEntity.ok(dooingleService.getDooingleFeeds(cursor, pageRequest))
     }
 
-    @GetMapping("/follow")
-    fun getDooingleFeedsOfFollows(): ResponseEntity<Slice<DooingleResponse>> {
-        return ResponseEntity.ok(dooingleService.getDooingleFeedsOfFollows())
+    // TODO 팔로우 기능 구현 후 구현 필요
+//    @GetMapping("/follow")
+//    fun getDooingleFeedsOfFollows(cursor: Long): ResponseEntity<Slice<DooingleResponse>> {
+//        val pageRequest = PageRequest.ofSize(PAGE_SIZE)
+//        return ResponseEntity.ok(dooingleService.getDooingleFeedsOfFollows(cursor, pageRequest))
+//    }
+
+    companion object {
+        const val PAGE_SIZE = 10
     }
 }

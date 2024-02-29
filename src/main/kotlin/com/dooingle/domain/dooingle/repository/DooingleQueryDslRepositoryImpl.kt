@@ -1,17 +1,17 @@
 package com.dooingle.domain.dooingle.repository
 
 import com.dooingle.domain.dooingle.model.Dooingle
+import com.dooingle.domain.dooingle.model.QDooingle
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
 
 class DooingleQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
 ) : DooingleQueryDslRepository {
 
-    override fun getDooingleFeeds(): Dooingle {
-        TODO("Not yet implemented")
-    }
+    private val dooingle = QDooingle.dooingle
 
-    override fun getDooingleFeedsOfFollows(): Dooingle {
+    override fun getDooinglePageable(cursor: Long, pageable: Pageable): Dooingle {
         TODO("Not yet implemented")
     }
 }
