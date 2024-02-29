@@ -1,13 +1,15 @@
 package com.dooingle.domain.dooinglecount.repository
 
+import com.dooingle.domain.dooinglecount.model.QDooingleCount
 import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.model.QDooingleCount
 import com.dooingle.domain.user.model.QUser
+import com.dooingle.global.property.DooinglersProperties
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
 class DooingleCountQueryDslRepositoryImpl(
-    private val queryFactory: JPAQueryFactory
+    private val queryFactory: JPAQueryFactory,
+    private val dooinglerListProperties: DooinglersProperties
 ) : DooingleCountQueryDslRepository {
 
     private val user = QUser.user
@@ -25,7 +27,7 @@ class DooingleCountQueryDslRepositoryImpl(
             .from(dooingleCount)
             .leftJoin(dooingleCount.owner, user)
             .orderBy(dooingleCount.count.desc())
-            .limit(5)
+            .limit(dooinglerListProperties.hot.toLong())
             .fetch()
     }
 
