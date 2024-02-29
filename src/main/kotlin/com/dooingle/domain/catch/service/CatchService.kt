@@ -15,7 +15,6 @@ class CatchService (
     private val catchRepository: CatchRepository
 ){
     // 캐치 생성
-    @Transactional
     fun addCatch(dooingleId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("") // TODO
 
@@ -23,7 +22,7 @@ class CatchService (
         if (dooingle.owner.id != addCatchRequest.ownerId) throw Exception("") // TODO
 
         // 해당 dooingle 의 주인은 하나의 catch 만 작성 가능하다
-        else if (catchRepository.existsByDooingle(dooingle)) throw Exception("") // TODO
+        if (catchRepository.existsByDooingle(dooingle)) throw Exception("") // TODO
 
         val catch = addCatchRequest.to(dooingle)
         catchRepository.save(catch)
