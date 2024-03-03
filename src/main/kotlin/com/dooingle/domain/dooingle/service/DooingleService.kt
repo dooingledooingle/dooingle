@@ -35,6 +35,13 @@ class DooingleService (
         return DooingleResponse.from(dooingle)
     }
 
+    // 내 뒹글 페이지 조회(뒹글,캐치)
+    fun getPage(ownerId: Long, loginUserId: Long): List<DooingleResponse> {
+        val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+
+        return dooingleRepository.findAllByOwner(owner).map { DooingleResponse.from(it) }
+    }
+
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
     fun getDooingle(ownerId: Long, dooingleId: Long): DooingleResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")

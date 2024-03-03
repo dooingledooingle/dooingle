@@ -11,8 +11,10 @@ class Catch(
     @Column
     var content: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    val dooingle: Dooingle,
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @OneToOne
+//    @JoinColumn(name = "dooingle_id")
+//    val dooingle: Dooingle,
 
     @Column
     var deletedAt: ZonedDateTime? = null,

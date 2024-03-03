@@ -4,6 +4,4 @@ import com.dooingle.domain.catch.model.Catch
 import com.dooingle.domain.dooingle.model.Dooingle
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface CatchRepository : JpaRepository<Catch,Long> {
-    fun existsByDooingle(dooingle: Dooingle): Boolean
-}
+interface CatchRepository : JpaRepository<Catch,Long>
