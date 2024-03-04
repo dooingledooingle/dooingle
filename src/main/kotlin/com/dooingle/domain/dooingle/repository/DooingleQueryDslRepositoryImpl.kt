@@ -30,12 +30,12 @@ class DooingleQueryDslRepositoryImpl(
                 )
             )
             .from(dooingle)
-            .join(dooingle.owner, owner) // fetchJoin() 사용하면 에러 발생
+            .join(dooingle.owner, owner)
             .where(lessThanCursor(cursor))
             .orderBy(dooingle.id.desc())
             .limit(selectSize.toLong())
             .fetch()
-            .let { SliceImpl(it, pageable, hasNextSlice(it, selectSize)) }
+            .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
