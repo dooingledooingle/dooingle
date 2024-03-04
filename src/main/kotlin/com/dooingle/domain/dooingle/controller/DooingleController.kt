@@ -34,6 +34,7 @@ class DooingleController(
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
+    @Operation(summary = "개인 뒹글 페이지 조회")
     @GetMapping
     fun dooinglePage (
         @PathVariable userId: Long,
@@ -46,6 +47,7 @@ class DooingleController(
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
     // 추후 사용된다면 ownerId로 해당 유저가 존재하는지 확인하는 로직을 추가
+    @Operation(summary = "미사용 API")
     @GetMapping("/{dooingleId}")
     fun getDooingle(
         @PathVariable userId: Long,

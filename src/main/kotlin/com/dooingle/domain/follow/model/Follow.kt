@@ -14,7 +14,6 @@ class Follow(
     @JoinColumn(name = "from_user_id")
     val fromUser: User,
 ) {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
