@@ -4,7 +4,6 @@ import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.user.model.QUser
 import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -17,7 +16,9 @@ class DooingleQueryDslRepositoryImpl(
     private val dooingle = QDooingle.dooingle
     private val owner = QUser("ow")
 
-    override fun getDooinglePageable(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+    override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+        val selectSize = pageable.pageSize + 1
+
         return queryFactory
             .select(
                 Projections.constructor(
@@ -32,11 +33,12 @@ class DooingleQueryDslRepositoryImpl(
             .join(dooingle.owner, owner) // fetchJoin() 사용하면 에러 발생
             .where(lessThanCursor(cursor))
             .orderBy(dooingle.id.desc())
-            .limit(10) // TODO 10을 변수에 저장할 방법 생각하기
+            .limit(selectSize.toLong())
             .fetch()
-            .let { SliceImpl(it) }
+            .let { SliceImpl(it, pageable, hasNextSlice(it, selectSize)) }
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
-    // = if (cursor == null) null else dooingle.id.lt(cursor)
+
+    private fun hasNextSlice(dooingleList: List<DooingleResponse>, selectSize: Int) = (dooingleList.size == selectSize)
 }

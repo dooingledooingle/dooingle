@@ -44,7 +44,7 @@ class DooingleService (
     }
 
     fun getDooingleFeeds(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
-        return dooingleRepository.getDooinglePageable(cursor, pageRequest)
+        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
     }
 
     // TODO 팔로우 기능 구현 후 구현 필요
