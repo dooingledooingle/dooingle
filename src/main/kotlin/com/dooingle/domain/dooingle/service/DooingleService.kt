@@ -6,12 +6,13 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.repository.UserRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
     private val userRepository: UserRepository,
@@ -48,4 +49,13 @@ class DooingleService (
 
         return DooingleResponse.from(dooingle)
     }
+
+    fun getDooingleFeeds(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
+        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
+    }
+
+    // TODO 팔로우 기능 구현 후 구현 필요
+//    fun getDooingleFeedsOfFollows(cursor: Long, pageRequest: PageRequest): Slice<DooingleResponse> {
+//        return
+//    }
 }
