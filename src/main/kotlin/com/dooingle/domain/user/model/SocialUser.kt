@@ -1,7 +1,7 @@
 package com.dooingle.domain.user.model
 
 import com.dooingle.global.entity.BaseEntity
-import com.dooingle.global.oauth2.OAuth2Provider
+import com.dooingle.global.oauth2.provider.OAuth2Provider
 import jakarta.persistence.*
 
 @Entity
