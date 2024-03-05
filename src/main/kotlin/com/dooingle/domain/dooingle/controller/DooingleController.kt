@@ -4,6 +4,7 @@ import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.service.DooingleService
 import io.swagger.v3.oas.annotations.Operation
+import org.springframework.data.domain.Slice
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController
 class DooingleController(
     private val dooingleService: DooingleService
 ) {
-
     // 뒹글 생성
     @Operation(summary = "뒹글을 생성하는 API")
     @PostMapping
@@ -37,11 +37,12 @@ class DooingleController(
     @GetMapping
     fun dooinglePage (
         @PathVariable userId: Long,
-        @RequestParam loginUserId: Long // TODO : 로그인한 유저의 ID (추후 인증/인가 구현되면 변경)
-    ) : ResponseEntity<List<DooingleResponse>>{
+        @RequestParam loginUserId: Long, // TODO : 로그인한 유저의 ID (추후 인증/인가 구현되면 변경)
+        cursor: Long?
+    ) : ResponseEntity<Slice<DooingleResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(dooingleService.getPage(userId, loginUserId))
+            .body(dooingleService.getPage(userId, loginUserId, cursor))
     }
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)

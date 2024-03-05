@@ -3,6 +3,7 @@ package com.dooingle.domain.dooingle.model
 import com.dooingle.domain.catch.model.Catch
 import com.dooingle.domain.user.model.User
 import com.dooingle.global.entity.BaseEntity
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
@@ -17,6 +18,7 @@ class Dooingle(
     val owner: User,
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "catch_id")
     var catch: Catch?,
 

@@ -24,11 +24,11 @@ class CatchService (
         // 해당 dooingle 의 주인은 하나의 catch 만 작성 가능하다
         if (dooingle.catch != null) throw Exception("")
 
-        val catch = addCatchRequest.to()
+        val catch = addCatchRequest.to(dooingle)
         dooingle.catch = catch
         catchRepository.save(catch)
 
-        return CatchResponse.from(catch, dooingle)
+        return CatchResponse.from(catch)
     }
 
     // 캐치 삭제

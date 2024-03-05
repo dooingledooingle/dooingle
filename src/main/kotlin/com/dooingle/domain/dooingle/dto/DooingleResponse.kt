@@ -19,7 +19,7 @@ data class DooingleResponse(
                 content = dooingle.content,
                 catch = (dooingle.catch)?.let {
                     if (it.deletedAt == null)
-                        CatchResponse.from(it, dooingle)
+                        CatchResponse.from(it)
                     else
                         "삭제된 캐치입니다."
                     },
