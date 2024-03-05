@@ -1,5 +1,7 @@
 package com.dooingle.global.oauth2
 
+import com.dooingle.global.oauth2.client.OAuth2ClientService
+import com.dooingle.global.oauth2.provider.OAuth2Provider
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -9,11 +11,14 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/oauth2")
-class OAuth2LoginController {
+class OAuth2LoginController(
+    private val oAuth2ClientService: OAuth2ClientService
+) {
 
     @GetMapping("/login/{provider}")
     fun redirectLoginPage(@PathVariable provider: OAuth2Provider, response: HttpServletResponse) {
-        TODO("리소스 제공자 로그인 페이지 URI로 redirect")
+        val loginPageUrl = oAuth2ClientService.generateLoginPageUrl(provider)
+        response.sendRedirect(loginPageUrl)
     }
 
     @GetMapping("/callback/{provider}")
