@@ -1,7 +1,7 @@
 package com.dooingle.global.oauth2.client.kakao
 
 import com.dooingle.global.oauth2.client.OAuth2Client
-import com.dooingle.global.oauth2.OAuth2UserInfo
+import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.global.oauth2.client.kakao.dto.KakaoTokenResponse
 import com.dooingle.global.oauth2.client.kakao.dto.KakaoUserInfoResponse
 import com.dooingle.global.oauth2.provider.OAuth2Provider

@@ -1,17 +1,20 @@
 package com.dooingle.domain.user.service
 
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
+import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.Profile
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
-import com.dooingle.global.oauth2.OAuth2UserInfo
+import com.dooingle.domain.user.dto.OAuth2UserInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SocialUserService(
     private val socialUserRepository: SocialUserRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val dooingleCountService: DooingleCountService
 ) {
 
     @Transactional
@@ -31,6 +34,14 @@ class SocialUserService(
             socialUserRepository.save(socialUser)
         } else {
             socialUserRepository.findByProviderAndProviderId(oAuth2UserInfo.provider, oAuth2UserInfo.id)
+        }
+    }
+
+    fun getDooinglerList(condition: String?): List<DooinglerResponse> {
+        return when (condition) {
+            "hot" -> dooingleCountService.getHotDooinglerList()
+            "new" -> socialUserRepository.getNewDooinglers()
+            else -> throw IllegalArgumentException() // TODO
         }
     }
 

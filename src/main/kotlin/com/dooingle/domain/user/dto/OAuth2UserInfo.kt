@@ -1,4 +1,4 @@
-package com.dooingle.global.oauth2
+package com.dooingle.domain.user.dto
 
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 

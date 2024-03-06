@@ -12,7 +12,7 @@ data class DooingleResponse(
     companion object {
         fun from(dooingle: Dooingle): DooingleResponse {
             return DooingleResponse(
-                ownerName = dooingle.owner.name,
+                ownerName = dooingle.owner.nickname,
                 dooingleId = dooingle.id!!,
                 content = dooingle.content,
                 createdAt = dooingle.createdAt

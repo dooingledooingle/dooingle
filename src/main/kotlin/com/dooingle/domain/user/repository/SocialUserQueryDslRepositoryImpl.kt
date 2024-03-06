@@ -1,28 +1,28 @@
 package com.dooingle.domain.user.repository
 
 import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.model.QUser
+import com.dooingle.domain.user.model.QSocialUser
 import com.dooingle.global.property.DooinglersProperties
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
-class UserQueryDslRepositoryImpl(
+class SocialUserQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
     private val dooinglerListProperties: DooinglersProperties
-) : UserQueryDslRepository {
+) : SocialUserQueryDslRepository {
 
-    private val user = QUser.user
+    private val socialUser = QSocialUser.socialUser
 
     override fun getNewDooinglers(): List<DooinglerResponse> {
         return queryFactory.select(
             Projections.constructor(
                 DooinglerResponse::class.java,
-                user.id,
-                user.name
+                socialUser.id,
+                socialUser.nickname
             )
         )
-            .from(user)
-            .orderBy(user.id.desc())
+            .from(socialUser)
+            .orderBy(socialUser.id.desc())
             .limit(dooinglerListProperties.new.toLong())
             .fetch()
     }

@@ -5,7 +5,7 @@ import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
-import com.dooingle.domain.user.repository.UserRepository
+import com.dooingle.domain.user.repository.SocialUserRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
-    private val userRepository: UserRepository,
+    private val socialUserRepository: SocialUserRepository,
     private val dooingleCountRepository: DooingleCountRepository
 ) {
 
     // 뒹글 생성
     @Transactional
     fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
-        val guest = userRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
-        val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+        val guest = socialUserRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
+        val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
 
         dooingleRepository.save(dooingle)

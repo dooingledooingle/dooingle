@@ -1,6 +1,5 @@
-package com.dooingle.global.oauth2
+package com.dooingle.domain.user.service
 
-import com.dooingle.domain.user.service.SocialUserService
 import com.dooingle.global.jwt.JwtHelper
 import com.dooingle.global.oauth2.client.OAuth2ClientService
 import com.dooingle.global.oauth2.provider.OAuth2Provider

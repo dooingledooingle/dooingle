@@ -1,6 +1,6 @@
 package com.dooingle.domain.notice.model
 
-import com.dooingle.domain.user.model.User
+import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
 
@@ -14,7 +14,7 @@ class Notice(
     var content: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    val user: User,
+    val user: SocialUser,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,6 @@
 package com.dooingle.domain.dooinglecount.model
 
-import com.dooingle.domain.user.model.User
+import com.dooingle.domain.user.model.SocialUser
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -15,7 +15,7 @@ import jakarta.persistence.Table
 class DooingleCount(
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    val owner: User,
+    val owner: SocialUser,
 
     @Column
     var count: Int = 0

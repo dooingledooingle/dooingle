@@ -2,6 +2,6 @@ package com.dooingle.domain.user.repository
 
 import com.dooingle.domain.user.dto.DooinglerResponse
 
-interface UserQueryDslRepository {
+interface SocialUserQueryDslRepository {
     fun getNewDooinglers(): List<DooinglerResponse>
 }

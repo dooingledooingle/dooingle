@@ -1,5 +1,6 @@
-package com.dooingle.global.oauth2
+package com.dooingle.domain.user.controller
 
+import com.dooingle.domain.user.service.OAuth2LoginService
 import com.dooingle.global.oauth2.client.OAuth2ClientService
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import jakarta.servlet.http.HttpServletResponse

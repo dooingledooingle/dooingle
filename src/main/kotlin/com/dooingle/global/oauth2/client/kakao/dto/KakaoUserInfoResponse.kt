@@ -1,6 +1,6 @@
 package com.dooingle.global.oauth2.client.kakao.dto
 
-import com.dooingle.global.oauth2.OAuth2UserInfo
+import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming

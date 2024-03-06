@@ -1,6 +1,6 @@
 package com.dooingle.global.oauth2.client
 
-import com.dooingle.global.oauth2.OAuth2UserInfo
+import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 
 interface OAuth2Client {

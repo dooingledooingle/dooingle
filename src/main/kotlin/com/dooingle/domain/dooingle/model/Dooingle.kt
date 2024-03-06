@@ -1,6 +1,6 @@
 package com.dooingle.domain.dooingle.model
 
-import com.dooingle.domain.user.model.User
+import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
 
@@ -9,11 +9,11 @@ import jakarta.persistence.*
 class Dooingle(
     @ManyToOne
     @JoinColumn(name = "guest_id")
-    val guest: User,
+    val guest: SocialUser,
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    val owner: User,
+    val owner: SocialUser,
 
     @Column
     val content: String,

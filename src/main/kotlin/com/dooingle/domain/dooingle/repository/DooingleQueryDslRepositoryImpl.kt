@@ -2,7 +2,7 @@ package com.dooingle.domain.dooingle.repository
 
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
-import com.dooingle.domain.user.model.QUser
+import com.dooingle.domain.user.model.QSocialUser
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
@@ -14,7 +14,7 @@ class DooingleQueryDslRepositoryImpl(
 ) : DooingleQueryDslRepository {
 
     private val dooingle = QDooingle.dooingle
-    private val owner = QUser("ow")
+    private val owner = QSocialUser("ow")
 
     override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
         val selectSize = pageable.pageSize + 1
@@ -23,7 +23,7 @@ class DooingleQueryDslRepositoryImpl(
             .select(
                 Projections.constructor(
                     DooingleResponse::class.java,
-                    owner.name,
+                    owner.nickname,
                     dooingle.id,
                     dooingle.content,
                     dooingle.createdAt
