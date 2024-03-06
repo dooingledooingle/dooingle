@@ -14,6 +14,7 @@ class SocialUser(
     val provider: OAuth2Provider,
     val providerId: String,
     val nickname: String,
+    val profileImage: String,
 
     @Enumerated(EnumType.STRING)
     val role: UserRole = UserRole.USER,

@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/oauth2")
 class OAuth2LoginController(
-    private val oAuth2ClientService: OAuth2ClientService
+    private val oAuth2ClientService: OAuth2ClientService,
+    private val oAuth2LoginService: OAuth2LoginService
 ) {
 
     @GetMapping("/login/{provider}")
@@ -26,6 +27,6 @@ class OAuth2LoginController(
         @PathVariable provider: OAuth2Provider,
         @RequestParam(name = "code") authorizationCode: String
     ): String {
-        TODO("인가 코드로 액세스 토큰 얻어 사용자 정보 조회해 회원가입/로그인 후 우리 쪽 액세스 토큰 반환")
+        return oAuth2LoginService.login(provider, authorizationCode)
     }
 }
