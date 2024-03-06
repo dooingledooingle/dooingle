@@ -40,7 +40,7 @@ class FollowController(
     }
 
     @Operation(summary = "내 팔로워 수 조회")
-    @GetMapping
+    @GetMapping("/number")
     fun showFollowersNumber(
         @RequestParam userId: Long // TODO : 인증/인가 기능 구현되면 추후 수정
     ) : ResponseEntity<Int>{

@@ -6,6 +6,7 @@ import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class FollowService(
@@ -43,6 +44,7 @@ class FollowService(
         return followersList.size
     }
 
+    @Transactional
     fun cancelFollowing(toUserId: Long, fromUserId: Long) {
         val toUser = userRepository.findByIdOrNull(toUserId) ?: throw Exception("") // TODO
         val fromUser = userRepository.findByIdOrNull(fromUserId) ?: throw Exception("") // TODO
