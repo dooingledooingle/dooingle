@@ -29,4 +29,5 @@ class OAuth2LoginController(
     ): String {
         return oAuth2LoginService.login(provider, authorizationCode)
     }
+
 }
