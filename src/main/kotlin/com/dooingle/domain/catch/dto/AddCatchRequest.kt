@@ -9,8 +9,8 @@ data class AddCatchRequest(
 ){
     fun to(dooingle: Dooingle): Catch {
         return Catch(
-            dooingle = dooingle,
-            content = content
+            content = content,
+            dooingle = dooingle
         )
     }
 }

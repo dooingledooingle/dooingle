@@ -11,7 +11,8 @@ data class AddDooingleRequest (
         return Dooingle(
             guest = guest,
             owner = owner,
-            content = content
+            content = content,
+            catch = null
         )
     }
 }
