@@ -51,6 +51,11 @@ dependencies {
     // 데이터베이스: h2
     runtimeOnly("com.h2database:h2")
 
+    // 모니터링(액추에이터)
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // 모니터링(프로메테우스)
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
     // 테스트(스프링 부트 테스트): spring-boot-starter-test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     // 테스트(Kotest): kotest
