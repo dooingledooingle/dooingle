@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Header from "../components/Header.jsx";
+import Dooingle from "../components/Dooingle.jsx";
 
 export default function FeedPage() {
   return (
@@ -26,9 +27,34 @@ export default function FeedPage() {
           </div>
         </nav>
 
-        <section className="col-start-4 col-span-6 flex justify-center text-[#5f6368] bg-amber-100">
-          <div>주 콘텐츠 영역</div>
-          {/* 주 콘텐츠 영역 */}
+        <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
+          <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
+            <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+              <button className="py-[0.5rem]">
+                <div>
+                  전체
+                </div>
+              </button>
+            </div>
+            <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+              <button className="py-[0.5rem]">
+                <div>
+                  팔로우
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="py-[1rem]">
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+            <Dooingle></Dooingle>
+          </div>
         </section>
 
         <aside className="col-start-10 col-span-3 flex justify-center text-[#5f6368] bg-amber-50">
