@@ -8,5 +8,10 @@ const router = createBrowserRouter([
 ])
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return <>
+    <div>
+      <button type="button" className="bg-amber-400">Hello tailwindcss</button>
+    </div>
+    <RouterProvider router={router}/>
+  </>
 }
