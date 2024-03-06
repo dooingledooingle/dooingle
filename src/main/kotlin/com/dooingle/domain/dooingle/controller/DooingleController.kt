@@ -1,6 +1,7 @@
 package com.dooingle.domain.dooingle.controller
 
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
+import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.service.DooingleService
 import io.swagger.v3.oas.annotations.Operation
@@ -39,7 +40,7 @@ class DooingleController(
         @PathVariable userId: Long,
         @RequestParam loginUserId: Long, // TODO : 로그인한 유저의 ID (추후 인증/인가 구현되면 변경)
         cursor: Long?
-    ) : ResponseEntity<Slice<DooingleResponse>>{
+    ) : ResponseEntity<Slice<DooingleAndCatchResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(dooingleService.getPage(userId, loginUserId, cursor))

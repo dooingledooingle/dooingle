@@ -3,6 +3,7 @@ package com.dooingle.domain.dooingle.service
 import com.dooingle.domain.catch.model.Catch
 import com.dooingle.domain.catch.repository.CatchRepository
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
+import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
@@ -44,13 +45,13 @@ class DooingleService (
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
-    fun getPage(ownerId: Long, loginUserId: Long, cursor: Long?): Slice<DooingleResponse> {
+    fun getPage(ownerId: Long, loginUserId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
         val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
             .map {
-                it.toDooingleResponse(
+                it.toDooingleAndCatchResponse(
                     catch = getCatchWithDooingleId(it.dooingleId)
                 )
             }
