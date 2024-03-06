@@ -42,6 +42,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     // 인증, 인가: spring-boot-starter-security
     implementation("org.springframework.boot:spring-boot-starter-security")
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
     // 데이터(JPA): spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
