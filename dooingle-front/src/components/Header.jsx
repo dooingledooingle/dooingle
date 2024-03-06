@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="border-b-[0.0625rem] border-[#d3d3d3]">
+    <header className="shadow-[inset_0_-0.0625rem_0_0_#d3d3d3]">
       <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
 
         <div className="col-start-4 col-span-6 flex justify-center items-center text-[#8692ff]">
