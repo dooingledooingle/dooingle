@@ -40,6 +40,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     // 빈 검증: spring-boot-starter-validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    // 인증, 인가: spring-boot-starter-security
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     // 데이터(JPA): spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
