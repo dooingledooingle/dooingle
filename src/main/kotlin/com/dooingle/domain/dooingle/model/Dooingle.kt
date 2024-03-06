@@ -17,9 +17,7 @@ class Dooingle(
     @JoinColumn(name = "owner_id")
     val owner: User,
 
-    @OneToOne
-    @JsonIgnore
-    @JoinColumn(name = "catch_id")
+    @OneToOne(mappedBy = "dooingle")
     var catch: Catch?,
 
     @Column

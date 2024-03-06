@@ -1,7 +1,6 @@
 package com.dooingle.domain.dooingle.repository
 
 import com.dooingle.domain.dooingle.dto.DooingleResponse
-import com.dooingle.domain.dooingle.dto.DooingleQueryResponse
 import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.user.model.QUser
 import com.dooingle.domain.user.model.User
@@ -41,29 +40,28 @@ class DooingleQueryDslRepositoryImpl(
             .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
     }
 
-    override fun getPersonalPageBySlice(owner: User, cursor: Long?, pageable: Pageable): Slice<DooingleQueryResponse> {
+    override fun getPersonalPageBySlice(owner: User, cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+        val selectSize = pageable.pageSize + 1
         val whereClause = BooleanBuilder()
             .and(lessThanCursor(cursor))
             .and(dooingle.owner.eq(owner))
         val list = getContents(whereClause, pageable)
 
         return SliceImpl(
-            if (list.size < 6) list else list.dropLast(1),
+            if (list.size < selectSize) list else list.dropLast(1),
             pageable,
-            hasNextSliceOfDooingle(list, pageable.pageSize + 1))
+            hasNextSlice(list, selectSize))
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
 
     private fun hasNextSlice(dooingleList: List<DooingleResponse>, selectSize: Int) = (dooingleList.size == selectSize)
 
-    private fun hasNextSliceOfDooingle(dooingleList: List<DooingleQueryResponse>, selectSize: Int) = (dooingleList.size == selectSize)
-
     private fun getContents(whereClause: BooleanBuilder, pageable: Pageable) =
         queryFactory
             .select(
                 Projections.constructor(
-                    DooingleQueryResponse::class.java,
+                    DooingleResponse::class.java,
                     owner.name,
                     dooingle.id,
                     dooingle.content,
