@@ -29,7 +29,7 @@ class CatchService (
         dooingle.catch = catch
         catchRepository.save(catch)
 
-        return CatchResponse.from(catch, dooingle)
+        return CatchResponse.from(catch)
     }
 
     // 캐치 삭제
