@@ -25,7 +25,11 @@ class SecurityConfig(
             .cors { it.disable() }
             .headers { it.frameOptions { foc -> foc.disable() } }
             .authorizeHttpRequests {
-                it.anyRequest().permitAll()
+                it
+//                    .requestMatchers(
+//                        "/api/**"
+//                    ).authenticated()
+                    .anyRequest().permitAll()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
