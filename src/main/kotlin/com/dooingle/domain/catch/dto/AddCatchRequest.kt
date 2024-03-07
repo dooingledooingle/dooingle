@@ -8,7 +8,8 @@ data class AddCatchRequest(
 ){
     fun to(): Catch {
         return Catch(
-            content = content
+            content = content,
+            dooingle = dooingle
         )
     }
 }

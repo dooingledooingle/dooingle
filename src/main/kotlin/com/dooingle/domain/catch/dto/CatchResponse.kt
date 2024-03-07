@@ -5,7 +5,6 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import java.time.ZonedDateTime
 
 data class CatchResponse(
-    val dooingleId: Long,
     val catchId: Long,
     val content: String,
     val createdAt: ZonedDateTime
