@@ -1,22 +1,19 @@
-package com.dooingle.domain.dooinglecount.repository
+package com.dooingle.domain.user.repository
 
-import com.dooingle.domain.dooinglecount.model.QDooingleCount
 import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.QUser
 import com.dooingle.global.property.DooinglersProperties
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
-class DooingleCountQueryDslRepositoryImpl(
+class UserQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
     private val dooinglerListProperties: DooinglersProperties
-) : DooingleCountQueryDslRepository {
+) : UserQueryDslRepository {
 
     private val user = QUser.user
-    private val dooingleCount = QDooingleCount.dooingleCount
 
-    override fun getHighCountDooinglers(): List<DooinglerResponse> {
-
+    override fun getNewDooinglers(): List<DooinglerResponse> {
         return queryFactory.select(
             Projections.constructor(
                 DooinglerResponse::class.java,
@@ -24,10 +21,9 @@ class DooingleCountQueryDslRepositoryImpl(
                 user.name
             )
         )
-            .from(dooingleCount)
-            .leftJoin(dooingleCount.owner, user)
-            .orderBy(dooingleCount.count.desc())
-            .limit(dooinglerListProperties.hot.toLong())
+            .from(user)
+            .orderBy(user.id.desc())
+            .limit(dooinglerListProperties.new.toLong())
             .fetch()
     }
 
