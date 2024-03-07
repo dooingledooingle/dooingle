@@ -34,3 +34,15 @@ dooingler:
     size:
       hot: 5
       new: 5
+
+oauth2:
+  kakao:
+    client_id: ""
+    redirect_url: "http://localhost:8080/oauth2/callback/kakao"
+    auth_server_base_url: "https://kauth.kakao.com"
+    resource_server_base_url: "https://kapi.kakao.com"
+
+jwt:
+  secret_key: ""
+  issuer: "dooingle.com"
+  access_token_expiration_hour: 1

@@ -2,8 +2,8 @@ package com.dooingle.domain.dooingle.repository
 
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
-import com.dooingle.domain.user.model.QUser
-import com.dooingle.domain.user.model.User
+import com.dooingle.domain.user.model.QSocialUser
+import com.dooingle.domain.user.model.SocialUser
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -16,7 +16,7 @@ class DooingleQueryDslRepositoryImpl(
 ) : DooingleQueryDslRepository {
 
     private val dooingle = QDooingle.dooingle
-    private val owner = QUser("ow")
+    private val owner = QSocialUser("ow")
 
     override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
         val selectSize = pageable.pageSize + 1
@@ -25,7 +25,7 @@ class DooingleQueryDslRepositoryImpl(
             .select(
                 Projections.constructor(
                     DooingleResponse::class.java,
-                    owner.name,
+                    owner.nickname,
                     dooingle.id,
                     dooingle.content,
                     dooingle.createdAt
@@ -40,7 +40,7 @@ class DooingleQueryDslRepositoryImpl(
             .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
     }
 
-    override fun getPersonalPageBySlice(owner: User, cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+    override fun getPersonalPageBySlice(owner: SocialUser, cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
         val selectSize = pageable.pageSize + 1
         val whereClause = BooleanBuilder()
             .and(lessThanCursor(cursor))
@@ -62,7 +62,7 @@ class DooingleQueryDslRepositoryImpl(
             .select(
                 Projections.constructor(
                     DooingleResponse::class.java,
-                    owner.name,
+                    owner.nickname,
                     dooingle.id,
                     dooingle.content,
                     dooingle.createdAt

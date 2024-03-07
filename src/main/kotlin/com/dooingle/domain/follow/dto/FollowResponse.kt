@@ -8,7 +8,7 @@ data class FollowResponse(
     companion object {
         fun from(follow: Follow): FollowResponse {
             return FollowResponse(
-                followingUserName = follow.toUser.name
+                followingUserName = follow.toUser.nickname
             )
         }
     }

@@ -9,7 +9,7 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
-import com.dooingle.domain.user.repository.UserRepository
+import com.dooingle.domain.user.repository.SocialUserRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DooingleService (
     private val dooingleRepository: DooingleRepository,
+    private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val userRepository: UserRepository,
     private val dooingleCountRepository: DooingleCountRepository
 ) {
     companion object {
@@ -30,8 +30,8 @@ class DooingleService (
     // 뒹글 생성
     @Transactional
     fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
-        val guest = userRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
-        val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+        val guest = socialUserRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
+        val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
 
         dooingleRepository.save(dooingle)
@@ -46,7 +46,7 @@ class DooingleService (
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
     fun getPage(ownerId: Long, loginUserId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
-        val owner = userRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+        val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
