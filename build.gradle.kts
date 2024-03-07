@@ -44,6 +44,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     // Amazon Cloud 연결
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
     // 데이터(JPA): spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -52,6 +56,11 @@ dependencies {
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     // 데이터베이스: h2
     runtimeOnly("com.h2database:h2")
+
+    // 모니터링(액추에이터)
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // 모니터링(프로메테우스)
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     // 테스트(스프링 부트 테스트): spring-boot-starter-test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
