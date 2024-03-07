@@ -11,6 +11,16 @@ data class DooingleResponse(
     val content: String,
     val createdAt: ZonedDateTime
 ) {
+    companion object {
+        fun from(dooingle: Dooingle): DooingleResponse {
+            return DooingleResponse(
+                ownerName = dooingle.owner.name,
+                dooingleId = dooingle.id!!,
+                content = dooingle.content,
+                createdAt = dooingle.createdAt
+            )
+        }
+    }
 
     fun toDooingleAndCatchResponse(catch: Catch?): DooingleAndCatchResponse {
         return DooingleAndCatchResponse(
