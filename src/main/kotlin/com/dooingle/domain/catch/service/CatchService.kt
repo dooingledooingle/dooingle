@@ -25,10 +25,11 @@ class CatchService (
         if (dooingle.catch != null) throw Exception("")
 
         val catch = addCatchRequest.to(dooingle)
+
         dooingle.catch = catch
         catchRepository.save(catch)
 
-        return CatchResponse.from(catch)
+        return CatchResponse.from(catch, dooingle)
     }
 
     // 캐치 삭제

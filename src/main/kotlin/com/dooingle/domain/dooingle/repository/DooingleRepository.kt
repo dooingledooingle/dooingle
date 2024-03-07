@@ -7,3 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface DooingleRepository : JpaRepository<Dooingle, Long>, DooingleQueryDslRepository {
     fun findAllByOwner(owner: User): List<Dooingle>
 }
+
