@@ -11,19 +11,12 @@ import org.springframework.context.annotation.Configuration
 
 
 @Configuration
-class S3Config {
-
-    @Value("cloud.aws.credentials.accessKey")
-    private val accessKey: String? = null
-
-    @Value("cloud.aws.credentials.secretKey")
-    private val secretKey: String? = null
-
-    @Value("cloud.aws.s3.bucketName")
-    private val bucketName: String? = null
-
-    @Value("cloud.aws.region.static")
-    private val region: String? = null
+class S3Config(
+    @Value("\${cloud.aws.credentials.accessKey}") private val accessKey: String,
+    @Value("\${cloud.aws.credentials.secretKey}") private val secretKey: String,
+    @Value("\${cloud.aws.s3.bucketName}") private val bucketName: String,
+    @Value("\${cloud.aws.region.static}") private val region: String
+) {
 
     @Bean
     fun s3Builder(): AmazonS3 {

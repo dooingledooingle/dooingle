@@ -5,6 +5,8 @@ import com.dooingle.domain.user.dto.UpdateProfileRequest
 import com.dooingle.domain.user.dto.UpdateProfileResponse
 import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
+import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -27,11 +29,11 @@ class UserController(
         return ResponseEntity.ok().body(socialUserService.getDooinglerList(condition))
     }
 
-    @PatchMapping("/{userId}/profile")
+    @PatchMapping(value = ["/{userId}/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun UpdateProfile(@PathVariable userId:Long,
-                      @RequestPart(value = "request") request: UpdateProfileRequest,
-                      @RequestPart(value = "img") img:MultipartFile?)
+                      @RequestPart(value = "request") @Valid request: UpdateProfileRequest,
+                      @RequestPart(value = "img", required = false) img:MultipartFile?)
     : ResponseEntity<UpdateProfileResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfile(userId, request, img))
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
     }
 }
