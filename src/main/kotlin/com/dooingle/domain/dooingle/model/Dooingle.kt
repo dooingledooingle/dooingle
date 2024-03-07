@@ -1,6 +1,7 @@
 package com.dooingle.domain.dooingle.model
 
 import com.dooingle.domain.user.model.SocialUser
+import com.dooingle.domain.catch.model.Catch
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
 
@@ -14,6 +15,9 @@ class Dooingle(
     @ManyToOne
     @JoinColumn(name = "owner_id")
     val owner: SocialUser,
+
+    @OneToOne(mappedBy = "dooingle")
+    var catch: Catch?,
 
     @Column
     val content: String,
