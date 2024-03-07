@@ -8,10 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface FollowRepository : JpaRepository<Follow, Long> {
     fun existsByFromUserAndToUser(fromUser: User, toUser: User): Boolean
-
     fun findAllByFromUser(fromUser: User): List<Follow>
-
-    fun findAllByToUser(toUser: User): List<Follow>
-
+    fun countByToUser(toUser: User): Int
     fun deleteByFromUserAndToUser(fromUser: User, toUser: User)
 }

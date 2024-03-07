@@ -39,9 +39,9 @@ class FollowService(
 
     fun showFollowersNumber(userId: Long): Int {
         val toUser = userRepository.findByIdOrNull(userId) ?: throw Exception("") // TODO
-        val followersList = followRepository.findAllByToUser(toUser)
+        val followers = followRepository.countByToUser(toUser)
 
-        return followersList.size
+        return followers
     }
 
     @Transactional
