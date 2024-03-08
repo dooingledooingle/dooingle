@@ -11,7 +11,7 @@ class Profile(
     var description: String? = null,
 
     @Column
-    var profileImage: String? = null,
+    var imageUrl: String? = null,
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -38,7 +38,7 @@ class SocialUserService(
 
             oAuth2UserInfo.profileImage?.let {
                 profileRepository.save(
-                    Profile(user = socialUser, profileImage = oAuth2UserInfo.profileImage))
+                    Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
             }
 
             socialUserRepository.save(socialUser)
@@ -57,7 +57,7 @@ class SocialUserService(
 
     @Transactional
     fun updateProfile(userId: Long, request: UpdateProfileRequest, img: MultipartFile?): UpdateProfileResponse {
-        var s3Url:String? = null
+        var imageUrl:String? = null
 
         img?.let {
             // 1. 중복 방지를 위해 이미지에 랜덤 아이디 붙이기
@@ -76,7 +76,7 @@ class SocialUserService(
             }.onFailure {
                 throw RuntimeException("S3 이미지 업로드에 실패했습니다")
             }
-            s3Url = amazonS3.getUrl(bucketName, newName).toString()
+            imageUrl = amazonS3.getUrl(bucketName, newName).toString()
         }
 
         //DB에 profile이 있으면 수정, 없으면 새로 생성
@@ -84,14 +84,14 @@ class SocialUserService(
         val profile = profileRepository.findByUser(user)
 
         if(profile != null){
-            profile.profileImage = s3Url
+            profile.imageUrl = imageUrl
             profile.description = request.description
             val newProfile = profileRepository.save(profile)
-            return UpdateProfileResponse(newProfile.description, newProfile.profileImage)
+            return UpdateProfileResponse(newProfile.description, newProfile.imageUrl)
         }
         else{
-            val newProfile = profileRepository.save(Profile(description = request.description, profileImage = s3Url, user = user))
-            return UpdateProfileResponse(newProfile.description, newProfile.profileImage)
+            val newProfile = profileRepository.save(Profile(description = request.description, imageUrl = imageUrl, user = user))
+            return UpdateProfileResponse(newProfile.description, newProfile.imageUrl)
         }
     }
 }
