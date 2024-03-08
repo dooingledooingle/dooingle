@@ -10,6 +10,7 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.badwordfliter.BadWordFilter
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -21,7 +22,8 @@ class DooingleService (
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository
+    private val dooingleCountRepository: DooingleCountRepository,
+    private val badWordFilter: BadWordFilter,
 ) {
     companion object {
         const val USER_FEED_PAGE_SIZE = 5
@@ -30,6 +32,8 @@ class DooingleService (
     // 뒹글 생성
     @Transactional
     fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
+        if (badWordFilter.check(addDooingleRequest.content)) throw IllegalArgumentException("욕설 포함")
+
         val guest = socialUserRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
         val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
