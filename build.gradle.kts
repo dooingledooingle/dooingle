@@ -49,6 +49,12 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
+    // envers(임시)
+    implementation("org.springframework.data:spring-data-envers")
+
+    // 욕설 필터링 라이브러리(임시)
+    implementation("io.github.vaneproject:badwordfiltering:1.0.0")
+
     // 데이터(JPA): spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // 데이터(QueryDSL):
