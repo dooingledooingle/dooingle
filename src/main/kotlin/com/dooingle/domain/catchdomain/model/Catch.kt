@@ -1,4 +1,4 @@
-package com.dooingle.domain.catch.model
+package com.dooingle.domain.catchdomain.model
 
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.global.entity.BaseEntity
