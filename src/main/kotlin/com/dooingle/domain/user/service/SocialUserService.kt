@@ -1,9 +1,7 @@
 package com.dooingle.domain.user.service
 
 import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
-import com.amazonaws.services.s3.model.PutObjectRequest
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.Profile
@@ -62,7 +60,7 @@ class SocialUserService(
         var s3Url:String? = null
 
         img?.let {
-            // 1. 이미지에 랜덤 아이디 붙이기
+            // 1. 중복 방지를 위해 이미지에 랜덤 아이디 붙이기
             val originName = img.originalFilename
             val ext = originName!!.substring(originName.lastIndexOf("."))
             val randomId = UUID.randomUUID().toString()
@@ -72,17 +70,17 @@ class SocialUserService(
             val metadata = ObjectMetadata()
             metadata.contentType="image/$ext"
 
-            // 3. S3에 이미지 저장
+            // 3. S3에 이미지 업로드
             runCatching {
                 amazonS3.putObject(bucketName, newName, img.inputStream, metadata)
             }.onFailure {
-                throw RuntimeException("S3 이미지 저장 실패")
+                throw RuntimeException("S3 이미지 업로드에 실패했습니다")
             }
             s3Url = amazonS3.getUrl(bucketName, newName).toString()
         }
 
-        //DB에서 profile 가져와서 있으면 수정, 없으면 새로 생성
-        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("유저 없음")
+        //DB에 profile이 있으면 수정, 없으면 새로 생성
+        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 ID의 유저가 존재하지 않습니다")
         val profile = profileRepository.findByUser(user)
 
         if(profile != null){

@@ -5,14 +5,14 @@ import com.dooingle.domain.user.dto.UpdateProfileRequest
 import com.dooingle.domain.user.dto.UpdateProfileResponse
 import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
+import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
@@ -30,10 +30,13 @@ class UserController(
     }
 
     @PatchMapping(value = ["/{userId}/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun UpdateProfile(@PathVariable userId:Long,
+    fun updateProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal,
+                      @PathVariable userId:Long,
                       @RequestPart(value = "request") @Valid request: UpdateProfileRequest,
                       @RequestPart(value = "img", required = false) img:MultipartFile?)
     : ResponseEntity<UpdateProfileResponse> {
+        if(userPrincipal.id != userId) throw RuntimeException("본인이 아닙니다")
+
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
     }
 }
