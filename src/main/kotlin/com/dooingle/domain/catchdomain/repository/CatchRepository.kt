@@ -1,6 +1,6 @@
-package com.dooingle.domain.catch.repository
+package com.dooingle.domain.catchdomain.repository
 
-import com.dooingle.domain.catch.model.Catch
+import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.domain.dooingle.model.Dooingle
 import org.springframework.data.jpa.repository.JpaRepository
 

@@ -1,7 +1,7 @@
 package com.dooingle.domain.dooingle.service
 
-import com.dooingle.domain.catch.model.Catch
-import com.dooingle.domain.catch.repository.CatchRepository
+import com.dooingle.domain.catchdomain.model.Catch
+import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
@@ -25,7 +25,7 @@ class DooingleService (
     private val dooingleCountRepository: DooingleCountRepository
 ) {
     companion object {
-        const val USER_FEED_PAGE_SIZE = 5
+        const val USER_FEED_PAGE_SIZE = 10
     }
 
     // 뒹글 생성
@@ -53,11 +53,6 @@ class DooingleService (
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
-            .map {
-                it.toDooingleAndCatchResponse(
-                    catch = getCatchWithDooingleId(it.dooingleId)
-                )
-            }
     }
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)

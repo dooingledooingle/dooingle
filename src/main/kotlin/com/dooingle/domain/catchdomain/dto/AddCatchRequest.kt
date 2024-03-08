@@ -1,6 +1,6 @@
-package com.dooingle.domain.catch.dto
+package com.dooingle.domain.catchdomain.dto
 
-import com.dooingle.domain.catch.model.Catch
+import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.domain.dooingle.model.Dooingle
 
 data class AddCatchRequest(
