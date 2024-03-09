@@ -18,7 +18,13 @@ class SseEmitters {
     private val notificationEmitters = ConcurrentHashMap<String, MutableList<SseEmitter>>()
 
     // ConcurrentHashMap 에 저장
-    fun add(userId: Long, emitter: SseEmitter): SseEmitter {
+    fun addWith(userId: Long): SseEmitter {
+        val emitter = SseEmitter() // 만료 시간 설정 (기본 30초). 만료 시간 되면 브라우저에서 자동으로 서버에 재연결 요청
+        // emitter 생성 후 만료 시간까지 아무 데이터도 보내지 않으면 브라우저에서 재연결 요청시 503 Service Unavailable 에러 발생하므로
+        // 처음 연결 시 더미 데이터 전달
+        emitter.sendData(eventName = "connect", data = "connected")
+
+        // 향후 이벤트 발생 시 클라이언트로 이벤트 전송하기 위해 ConcurrentHashMap 에 로그인 유저 아이디를 키로 서버에 저장
         val key = userId.toString()
         // key(userId)가 존재하면 value 반환하고, 존재하지 않으면 빈 list 생성해 value 에 넣고 반환
         val emitterList = notificationEmitters.getOrPut(key) { CopyOnWriteArrayList() }
@@ -43,16 +49,8 @@ class SseEmitters {
     }
 
     fun sendNotification(userId: Long, notification: String) {
-        try {
-            notificationEmitters[userId.toString()]?.forEach { emitter ->
-                emitter.send(
-                    SseEmitter.event()
-                        .name("notification")
-                        .data(notification)
-                )
-            }
-        } catch (e: IOException) {
-            throw RuntimeException(e)
+        notificationEmitters[userId.toString()]?.forEach { emitter ->
+            emitter.sendData(eventName = "notification", data = notification)
         }
     }
 
@@ -80,19 +78,23 @@ class SseEmitters {
         val count = counter.incrementAndGet() // thread-safe하게 숫자 증가
         // List의 모든 emitter로 testData 보냄. SSE 커넥션이 열려있는 모든 클라이언트에게 전달됨.
         testEmitters.forEach(Consumer { emitter: SseEmitter ->
-            try {
-                emitter.send(
-                    SseEmitter.event()
-                        .name("test")
-                        .data("testData$count")
-                )
-            } catch (e: IOException) {
-                throw RuntimeException(e)
-            }
+            emitter.sendData(eventName = "test", data = "testData$count")
         })
     }
 
     companion object {
         private val counter = AtomicLong()
+    }
+}
+
+fun SseEmitter.sendData(eventName: String, data: Any) {
+    try {
+        send(
+            SseEmitter.event()
+                .name(eventName) // 클라이언트에서 해당 이름의 이벤트를 받을 수 있음
+                .data(data) // 더미 데이터
+        )
+    } catch (e: IOException) {
+        throw RuntimeException(e)   // TODO: CustomException 생성
     }
 }
