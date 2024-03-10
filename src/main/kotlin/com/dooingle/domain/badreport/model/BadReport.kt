@@ -11,6 +11,7 @@ class BadReport(
     @JoinColumn(name = "reporter_id")
     val reporter: SocialUser,
 
+    @Enumerated(EnumType.STRING)
     @Column
     val reportedTargetType: ReportedTargetType,
 
