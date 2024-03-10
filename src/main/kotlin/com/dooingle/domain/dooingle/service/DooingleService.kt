@@ -60,9 +60,12 @@ class DooingleService(
                 notificationType = NotificationType.DOOINGLE,
                 resourceId = dooingle.id!!
             )
-        )
-            .let { NotificationResponse.from(it) }
-            .let { sseEmitters.sendNotification(ownerId, "${it.message}-${it.cursor}") }
+        ).let {
+            NotificationResponse.from(it)
+        }.let {
+            sseEmitters.sendUserNotification(ownerId, "${it.message}-${it.cursor}")
+            sseEmitters.sendNewFeedNotification()
+        }
 
         return DooingleResponse.from(dooingle)
     }

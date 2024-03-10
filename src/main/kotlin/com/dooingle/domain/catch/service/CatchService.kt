@@ -42,9 +42,11 @@ class CatchService (
                 notificationType = NotificationType.CATCH,
                 resourceId = dooingleId
             )
-        )
-            .let { NotificationResponse.from(it) }
-            .let { sseEmitters.sendNotification(dooingle.owner.id!!, "${it.message}-${it.cursor}") }
+        ).let {
+            NotificationResponse.from(it)
+        }.let {
+            sseEmitters.sendUserNotification(dooingle.owner.id!!, "${it.message}-${it.cursor}")
+        }
 
         return CatchResponse.from(catch)
     }
