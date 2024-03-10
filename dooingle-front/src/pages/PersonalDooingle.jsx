@@ -1,6 +1,6 @@
 import Header from "../components/Header.jsx";
 
-export default function UserDooinglePage() {
+export default function PersonalDooinglePage() {
   return (
     <>
       <Header />

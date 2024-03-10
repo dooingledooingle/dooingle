@@ -1,8 +1,10 @@
+import {Link} from "react-router-dom";
+
 export default function Navigation() {
   return (
     <div className="flex flex-col items-center gap-[1rem]">
       <div>
-        <a href="#">내 뒹글함</a>
+        <Link to="/personal-dooingles">내 뒹글함</Link>
       </div>
       <div>
         <a href="#">팔로우하는 뒹글러</a>
