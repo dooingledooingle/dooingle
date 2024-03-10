@@ -10,3 +10,13 @@ jwt:
   secret_key: "test123456test123456test123456test123456"
   issuer: "test.com"
   access_token_expiration_hour: 1
+
+cloud:
+  aws:
+    credentials:
+      accessKey: "test"
+      secretKey: "test"
+    region:
+      static: "test"
+    s3:
+      bucketName: "test"
