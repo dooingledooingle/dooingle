@@ -10,6 +10,7 @@ const BASE_URL = "http://localhost:8080"
 export default function FeedPage() {
 
   const [notification, setNotification] = useState(null);
+  const [feed, setFeed] = useState(null);
 
   const handleConnect = () => {
 
@@ -30,6 +31,15 @@ export default function FeedPage() {
 
       // 전달받는 텍스트 데이터는 메세지-dooingleId 형식. 예) 새로운 뒹글이 굴러왔어요!-5
       // TODO : 이벤트 발생 시 알림 팝업 띄워서 메세지 보여주고, 팝업 클릭 시 UserDooingle 페이지로 이동(cursor로 dooingleId 보내기)
+    });
+
+    sse.addEventListener('feed', e => {
+      const { data: receivedFeed } = e;
+
+      console.log(receivedFeed);
+      setFeed(receivedFeed)
+
+      // TODO : 피드 새로운 글 알림(새로고침이나 화살표 같은..) 버튼을 위에 뜨게 함
     });
   }
 
@@ -114,6 +124,7 @@ export default function FeedPage() {
 
           <button onClick={handleConnect}>connect 요청</button>
           <div>{notification}</div>
+          <div>{feed}</div>
           <button onClick={handleTestConnect}>test connect 요청</button>
           <button onClick={handleTestClick}>test 요청</button>
           <div>{testData}</div>
