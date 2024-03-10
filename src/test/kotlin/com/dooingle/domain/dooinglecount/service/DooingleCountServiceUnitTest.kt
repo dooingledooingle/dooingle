@@ -15,7 +15,7 @@ class DooingleCountServiceUnitTest : AnnotationSpec() {
     private val dooingleCountService = DooingleCountService(dooingleCountRepository)
 
     @Test
-    fun `뜨거운 뒹글러 목록을 요청하면 뜨거운 뒹글러 목록을 반환한다`() {
+    fun `뜨거운 뒹글러 목록을 조회하고자 하면 뜨거운 뒹글러 목록을 조회할 수 있다`() {
         // given
         val hotDooinglerList = getFixtureOfHotDooingler()
         every { dooingleCountRepository.getHighCountDooinglers() } returns hotDooinglerList
@@ -28,7 +28,7 @@ class DooingleCountServiceUnitTest : AnnotationSpec() {
     }
 
     @Test
-    fun `DooingleCount를 초기화하려는 경우, DooingleCountService에서 DooingleCountRepository의 deleteAllInBatch()를 호출한다`() {
+    fun `DooingleCount를 초기화하려는 경우, DooingleCountService가 DooingleCountRepository의 deleteAllInBatch()를 호출한다`() {
         // given
         every { dooingleCountRepository.deleteAllInBatch() } just Runs
 

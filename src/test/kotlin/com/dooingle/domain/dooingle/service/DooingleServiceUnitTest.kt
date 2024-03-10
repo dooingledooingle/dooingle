@@ -82,7 +82,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
      */
     
     @Test
-    fun `뒹글을 등록할 때 존재하지 않는 guestId를 전달하면 예외가 발생한다`() {
+    fun `존재하지 않는 guestId를 전달하면 뒹글을 등록할 때 예외가 발생한다`() {
         // given
         val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
 
@@ -97,7 +97,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     }
 
     @Test
-    fun `뒹글을 등록할 때 존재하지 않는 ownerId를 전달하면 예외가 발생한다`() {
+    fun `존재하지 않는 ownerId를 전달하면 뒹글을 등록할 때 예외가 발생한다`() {
         // given
         val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
 
@@ -134,7 +134,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
      */
 
     @Test
-    fun `개인 뒹글 페이지 최신 뒹글+캐치 스크롤을 조회할 때 존재하지 않는 페이지 소유자 id(ownerId)를 전달하면 예외가 발생한다`() {
+    fun `존재하지 않는 페이지 소유자 id(ownerId)를 전달하면 개인 뒹글 페이지 최신 뒹글+캐치 스크롤을 조회할 때 예외가 발생한다`() {
         // given
         every { mockSocialUserRepository.findByIdOrNull(owner.id!!) } returns null // 존재하지 않는 ownerId 가정
 
@@ -147,7 +147,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     }
 
     @Test
-    fun `개인 뒹글 페이지 최신 바로 다음의 뒹글+캐치 스크롤을 조회할 때 존재하지 않는 페이지 소유자 id(ownerId)를 전달하면 예외가 발생한다`() {
+    fun `존재하지 않는 페이지 소유자 id(ownerId)를 전달하면 개인 뒹글 페이지 최신 바로 다음의 뒹글+캐치 스크롤을 조회할 때 예외가 발생한다`() {
         // given
         every { mockSocialUserRepository.findByIdOrNull(owner.id!!) } returns null // 존재하지 않는 ownerId 가정
 
@@ -177,7 +177,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     @Test
     fun `최신 뒹글 피드의 다음 스크롤을 조회하고자 하면 최신 뒹글 피드의 다음 스크롤을 조회할 수 있다`() {
         // given
-        val cursor = DooingleFeedController.PAGE_SIZE.toLong() // 최신 뒹글 피드 조건
+        val cursor = DooingleFeedController.PAGE_SIZE.toLong() // 최신 뒹글 피드 다음 스크롤 조건
         val pageRequest = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
         every { mockDooingleRepository.getDooinglesBySlice(cursor, pageRequest) } returns theNextOfLatestSliceOfDooingleResponseList
 
