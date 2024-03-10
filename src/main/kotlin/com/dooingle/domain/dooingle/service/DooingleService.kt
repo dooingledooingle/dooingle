@@ -10,6 +10,7 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.security.UserPrincipal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -29,10 +30,12 @@ class DooingleService (
 
     // 뒹글 생성
     @Transactional
-    fun addDooingle(ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
-        val guest = socialUserRepository.findByIdOrNull(addDooingleRequest.guestId) ?: throw Exception("") // TODO
+    fun addDooingle(userPrincipal: UserPrincipal, ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
+        val guest = socialUserRepository.findByIdOrNull(userPrincipal.id) ?: throw Exception("") // TODO
         val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
+
+        if (guest.id == owner.id) throw Exception("") // TODO
 
         dooingleRepository.save(dooingle)
 
@@ -45,7 +48,7 @@ class DooingleService (
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
-    fun getPage(ownerId: Long, loginUserId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
+    fun getPage(ownerId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
         val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
@@ -58,7 +61,7 @@ class DooingleService (
     }
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
-    fun getDooingle(ownerId: Long, dooingleId: Long): DooingleResponse {
+    fun getDooingle(userId: Long, dooingleId: Long): DooingleResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")
 
         return DooingleResponse.from(dooingle)
