@@ -5,6 +5,11 @@ import com.dooingle.domain.catch.dto.CatchResponse
 import com.dooingle.domain.catch.dto.DeleteCatchRequest
 import com.dooingle.domain.catch.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
+import com.dooingle.domain.notification.NotificationRepository
+import com.dooingle.domain.notification.dto.NotificationResponse
+import com.dooingle.domain.notification.model.Notification
+import com.dooingle.domain.notification.model.NotificationType
+import com.dooingle.global.sse.SseEmitters
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CatchService (
     private val dooingleRepository: DooingleRepository,
-    private val catchRepository: CatchRepository
+    private val catchRepository: CatchRepository,
+    private val notificationRepository: NotificationRepository,
+    private val sseEmitters: SseEmitters
 ){
     // 캐치 생성
     fun addCatch(dooingleId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
@@ -28,6 +35,16 @@ class CatchService (
 
         dooingle.catch = catch
         catchRepository.save(catch)
+
+        notificationRepository.save(
+            Notification(
+                user = dooingle.owner,
+                notificationType = NotificationType.CATCH,
+                resourceId = dooingleId
+            )
+        )
+            .let { NotificationResponse.from(it) }
+            .let { sseEmitters.sendNotification(dooingle.owner.id!!, "${it.message}-${it.cursor}") }
 
         return CatchResponse.from(catch)
     }
