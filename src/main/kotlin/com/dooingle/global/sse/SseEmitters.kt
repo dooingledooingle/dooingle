@@ -48,9 +48,9 @@ class SseEmitters {
         return emitter
     }
 
-    fun sendUserNotification(userId: Long, notification: String) {
+    fun sendUserNotification(userId: Long, data: Any) {
         notificationEmitters[userId.toString()]?.forEach { emitter ->
-            emitter.sendData(eventName = "notification", data = notification)
+            emitter.sendData(eventName = "notification", data = data)
         }
     }
 
