@@ -4,7 +4,7 @@
 
 @font-face {
     font-family: "NotoSansKR";
-    src: url("../public/fonts/NotoSansKR-VariableFont_wght.ttf");
+    src: url("fonts/NotoSansKR-VariableFont_wght.ttf");
     /* TODO 폰트 용량 문제 생각할 것 */
 }
 

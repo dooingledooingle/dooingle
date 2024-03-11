@@ -90,8 +90,17 @@ export default function FeedPage() {
       <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
         <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3.75rem] gap-[1.25rem]">
-            <ProfileImageFrame />
-            <Navigation />
+            <ProfileImageFrame/>
+            <Navigation/>
+            <div className="flex flex-col items-center pt-10">
+              <div className="text-xl text-red-500">알림 관련 임시</div>
+              <button onClick={handleConnect}>connect 요청</button>
+              <div>{notification}</div>
+              <div>{feed}</div>
+              <button onClick={handleTestConnect}>test connect 요청</button>
+              <button onClick={handleTestClick}>test 요청</button>
+              <div>{testData}</div>
+            </div>
           </div>
         </nav>
 
@@ -112,13 +121,6 @@ export default function FeedPage() {
               </button>
             </div>
           </div>
-
-          <button onClick={handleConnect}>connect 요청</button>
-          <div>{notification}</div>
-          <div>{feed}</div>
-          <button onClick={handleTestConnect}>test connect 요청</button>
-          <button onClick={handleTestClick}>test 요청</button>
-          <div>{testData}</div>
 
           <div className="py-[1rem]">
             <Dooingle></Dooingle>
