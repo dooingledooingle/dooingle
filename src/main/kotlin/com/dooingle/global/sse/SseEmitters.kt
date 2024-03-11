@@ -48,9 +48,17 @@ class SseEmitters {
         return emitter
     }
 
-    fun sendNotification(userId: Long, notification: String) {
+    fun sendUserNotification(userId: Long, data: Any) {
         notificationEmitters[userId.toString()]?.forEach { emitter ->
-            emitter.sendData(eventName = "notification", data = notification)
+            emitter.sendData(eventName = "notification", data = data)
+        }
+    }
+
+    fun sendNewFeedNotification() {
+        notificationEmitters.forEach { key, list ->
+            list.forEach { emitter ->
+                emitter.sendData(eventName = "feed", data = "new feed")
+            }
         }
     }
 

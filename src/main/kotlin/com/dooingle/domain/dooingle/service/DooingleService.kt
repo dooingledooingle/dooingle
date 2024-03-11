@@ -9,13 +9,9 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
-import com.dooingle.domain.notification.NotificationRepository
-import com.dooingle.domain.notification.dto.NotificationResponse
-import com.dooingle.domain.notification.model.Notification
-import com.dooingle.domain.notification.model.NotificationType
+import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.security.UserPrincipal
-import com.dooingle.global.sse.SseEmitters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -28,8 +24,7 @@ class DooingleService(
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
-    private val sseEmitters: SseEmitters,
-    private val notificationRepository: NotificationRepository
+    private val notificationService: NotificationService
 ) {
     companion object {
         const val USER_FEED_PAGE_SIZE = 10
@@ -54,15 +49,7 @@ class DooingleService(
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
         dooingleCount.plus()
 
-        notificationRepository.save(
-            Notification(
-                user = owner,
-                notificationType = NotificationType.DOOINGLE,
-                resourceId = dooingle.id!!
-            )
-        )
-            .let { NotificationResponse.from(it) }
-            .let { sseEmitters.sendNotification(ownerId, "${it.message}-${it.cursor}") }
+        notificationService.addDooingleNotification(user = owner, dooingleId = dooingle.id!!)
 
         return DooingleResponse.from(dooingle)
     }
