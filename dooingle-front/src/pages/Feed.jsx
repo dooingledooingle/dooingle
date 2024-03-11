@@ -1,8 +1,50 @@
 import { Link } from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Dooingle from "../components/Dooingle.jsx";
+import {useState} from "react";
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8080"
 
 export default function FeedPage() {
+
+  const [testData, setTestData] = useState(null);
+
+  const handleConnect = () =>{
+    // SSE 연결 요청. EventSource 라는 인터페이스를 써야 하는데 헤더 전달을 지원하는 Event-Source-Polyfill 사용
+    const sse = new EventSourcePolyfill(`${BASE_URL}/connect`);
+
+    // connect 라는 이름의 이벤트가 발생할 때 콘솔에 데이터 출력하는 이벤트 리스너 등록
+    sse.addEventListener('connect', (e) => {
+      // 첫 연결 시 만료 시간까지 아무런 데이터도 보내지 않으면 에러 발생하기 때문에 더미 데이터 보냄
+      const { data: receivedConnectData } = e;
+
+      console.log('connect event data: ',receivedConnectData);
+    });
+
+    // test 라는 이름의 이벤트가 발생할 때 콘솔에 변경된 데이터 출력하고, testData 업데이트하는 이벤트 리스너 등록
+    // 다른 브라우저에서 test 호출 시 내 브라우저에 서버에서 변경된 testData가 찍히게 됨
+    sse.addEventListener('test', e => {
+
+      const { data: receivedTestData } = e;
+
+      console.log("test event data",receivedTestData);
+      setTestData(receivedTestData);
+    })
+  }
+
+  // test 요청 버튼 클릭 시 localhost/test 로 요청 보냄
+  const handleTestClick = async () => {
+    await axios.post(`${BASE_URL}/test`)
+        .then(function (response) {
+          console.log('handleTestClick',response);
+        })
+        .catch(function (error) {
+          console.log('error',error);
+        });
+  }
+
   return (
     <>
       <Header />
@@ -45,6 +87,10 @@ export default function FeedPage() {
             </div>
           </div>
 
+          <button onClick={handleConnect}>connect 요청</button>
+          <button onClick={handleTestClick}>test 요청</button>
+          <div>{testData}</div>
+
           <div className="py-[1rem]">
             <Dooingle></Dooingle>
             <Dooingle></Dooingle>
@@ -58,9 +104,9 @@ export default function FeedPage() {
         </section>
 
         <aside
-          className="col-start-10 col-span-3 flex flex-col justify-end items-center text-[#5f6368]">
+            className="col-start-10 col-span-3 flex flex-col justify-end items-center text-[#5f6368]">
           <div className="sticky bottom-0 py-[4.5rem]">
-            <div className="flex flex-col items-center gap-[0.25rem] rounded-br-[0.625rem] border-b-[0.0625rem] border-[#ef7ec2]">
+          <div className="flex flex-col items-center gap-[0.25rem] rounded-br-[0.625rem] border-b-[0.0625rem] border-[#ef7ec2]">
               <div className="flex flex-col gap-[0.5rem] px-[1rem] py-[0.625rem]">
                 <div className="font-bold text-[#5f6368] text-[1rem]">
                   <p>새로운 뒹글 페이지</p>
