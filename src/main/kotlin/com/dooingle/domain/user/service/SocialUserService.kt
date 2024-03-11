@@ -11,6 +11,7 @@ import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.domain.user.dto.UpdateProfileRequest
 import com.dooingle.domain.user.dto.UpdateProfileResponse
+import com.dooingle.global.exception.custom.InvalidParameterException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -51,7 +52,7 @@ class SocialUserService(
         return when (condition) {
             "hot" -> dooingleCountService.getHotDooinglerList()
             "new" -> socialUserRepository.getNewDooinglers()
-            else -> throw IllegalArgumentException() // TODO
+            else -> throw InvalidParameterException(null)
         }
     }
 
