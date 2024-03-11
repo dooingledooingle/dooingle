@@ -2,9 +2,7 @@ package com.dooingle.global.sse
 
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.IOException
 
@@ -13,7 +11,7 @@ class SseController(
     private val sseEmitters: SseEmitters
 ) {
 
-    // 알림 구독. text/event-stream 형태로 이벤트 전달해야 함.
+    // 알림 구독 예시. text/event-stream 형태로 이벤트 전달해야 함.
     @GetMapping(value = ["/connect"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun connect(): ResponseEntity<SseEmitter> {
         val emitter = SseEmitter(60 * 1000L) // 만료 시간 설정 (기본 30초). 만료 시간 되면 브라우저에서 자동으로 서버에 재연결 요청
@@ -23,7 +21,7 @@ class SseController(
         try {
             emitter.send(
                 SseEmitter.event()
-                    .name("connect") // 클라이언트에서 해당 이름의 이벤트를 받을 수 있음
+                    .name("test-connect") // 클라이언트에서 해당 이름의 이벤트를 받을 수 있음
                     .data("connected!") // 더미 데이터
             )
         } catch (e: IOException) {

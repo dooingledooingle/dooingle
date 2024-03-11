@@ -9,8 +9,13 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.notification.NotificationRepository
+import com.dooingle.domain.notification.dto.NotificationResponse
+import com.dooingle.domain.notification.model.Notification
+import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.security.UserPrincipal
+import com.dooingle.global.sse.SseEmitters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -18,11 +23,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DooingleService (
+class DooingleService(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository
+    private val dooingleCountRepository: DooingleCountRepository,
+    private val sseEmitters: SseEmitters,
+    private val notificationRepository: NotificationRepository
 ) {
     companion object {
         const val USER_FEED_PAGE_SIZE = 10
@@ -30,7 +37,11 @@ class DooingleService (
 
     // 뒹글 생성
     @Transactional
-    fun addDooingle(userPrincipal: UserPrincipal, ownerId: Long, addDooingleRequest: AddDooingleRequest): DooingleResponse {
+    fun addDooingle(
+        userPrincipal: UserPrincipal,
+        ownerId: Long,
+        addDooingleRequest: AddDooingleRequest
+    ): DooingleResponse {
         val guest = socialUserRepository.findByIdOrNull(userPrincipal.id) ?: throw Exception("") // TODO
         val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
         val dooingle = addDooingleRequest.to(guest, owner)
@@ -41,8 +52,17 @@ class DooingleService (
 
         val dooingleCount = dooingleCountRepository.findByOwnerId(ownerId)
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
-
         dooingleCount.plus()
+
+        notificationRepository.save(
+            Notification(
+                user = owner,
+                notificationType = NotificationType.DOOINGLE,
+                resourceId = dooingle.id!!
+            )
+        )
+            .let { NotificationResponse.from(it) }
+            .let { sseEmitters.sendNotification(ownerId, "${it.message}-${it.cursor}") }
 
         return DooingleResponse.from(dooingle)
     }
@@ -66,12 +86,12 @@ class DooingleService (
         return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
     }
 
-    private fun getDooingle(dooingleId: Long) : Dooingle {
+    private fun getDooingle(dooingleId: Long): Dooingle {
         return dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")
     }
 
     // dooingle 에 해당하는 catch 를 가져오는 내부 메서드
-    private fun getCatchWithDooingleId(dooingleId: Long) : Catch? {
+    private fun getCatchWithDooingleId(dooingleId: Long): Catch? {
         val dooingle = getDooingle(dooingleId)
         return catchRepository.findByDooingle(dooingle)
     }
