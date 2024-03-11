@@ -2,7 +2,10 @@ package com.dooingle.domain.user.model
 
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
+import org.hibernate.envers.Audited
+import org.hibernate.envers.RelationTargetAuditMode
 
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 @Entity
 @Table(name = "profile")
 class Profile(
@@ -15,7 +18,7 @@ class Profile(
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    var user: SocialUser
+    val user: SocialUser
 
 ) : BaseEntity() {
 
