@@ -26,8 +26,7 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .csrf { it.disable() }
-            .cors { it.disable() }
-            .headers { it.frameOptions { foc -> foc.disable() } }
+            .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } }
             .authorizeHttpRequests {
                 it
 //                    .requestMatchers(
