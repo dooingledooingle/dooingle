@@ -1,9 +1,9 @@
-package com.dooingle.domain.catch.service
+package com.dooingle.domain.catchdomain.service
 
-import com.dooingle.domain.catch.dto.AddCatchRequest
-import com.dooingle.domain.catch.dto.CatchResponse
-import com.dooingle.domain.catch.dto.DeleteCatchRequest
-import com.dooingle.domain.catch.repository.CatchRepository
+import com.dooingle.domain.catchdomain.dto.AddCatchRequest
+import com.dooingle.domain.catchdomain.dto.CatchResponse
+import com.dooingle.domain.catchdomain.dto.DeleteCatchRequest
+import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
 import org.springframework.data.repository.findByIdOrNull

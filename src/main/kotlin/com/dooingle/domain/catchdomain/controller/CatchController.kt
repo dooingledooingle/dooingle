@@ -1,9 +1,9 @@
-package com.dooingle.domain.catch.controller
+package com.dooingle.domain.catchdomain.controller
 
-import com.dooingle.domain.catch.dto.AddCatchRequest
-import com.dooingle.domain.catch.dto.CatchResponse
-import com.dooingle.domain.catch.dto.DeleteCatchRequest
-import com.dooingle.domain.catch.service.CatchService
+import com.dooingle.domain.catchdomain.dto.AddCatchRequest
+import com.dooingle.domain.catchdomain.dto.CatchResponse
+import com.dooingle.domain.catchdomain.dto.DeleteCatchRequest
+import com.dooingle.domain.catchdomain.service.CatchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
