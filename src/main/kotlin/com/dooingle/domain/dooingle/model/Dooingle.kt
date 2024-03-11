@@ -1,7 +1,7 @@
 package com.dooingle.domain.dooingle.model
 
 import com.dooingle.domain.user.model.SocialUser
-import com.dooingle.domain.catch.model.Catch
+import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
 
