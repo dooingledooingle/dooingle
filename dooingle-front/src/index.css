@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: "NotoSansKR";
+    src: url("fonts/NotoSansKR-VariableFont_wght.ttf");
+    /* TODO 폰트 용량 문제 생각할 것 */
+}
+
+body {
+    font-family: "NotoSansKR", sans-serif;
+    font-weight: normal;
+}
