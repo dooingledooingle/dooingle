@@ -1,5 +1,8 @@
 package com.dooingle.domain.dooingle.repository
 
+import com.dooingle.domain.catchdomain.dto.CatchResponse
+import com.dooingle.domain.catchdomain.model.QCatch
+import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.user.model.QSocialUser
@@ -16,6 +19,7 @@ class DooingleQueryDslRepositoryImpl(
 ) : DooingleQueryDslRepository {
 
     private val dooingle = QDooingle.dooingle
+    private val catch = QCatch("catch")
     private val owner = QSocialUser("ow")
 
     override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
@@ -40,7 +44,7 @@ class DooingleQueryDslRepositoryImpl(
             .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
     }
 
-    override fun getPersonalPageBySlice(owner: SocialUser, cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+    override fun getPersonalPageBySlice(owner: SocialUser, cursor: Long?, pageable: Pageable): Slice<DooingleAndCatchResponse> {
         val selectSize = pageable.pageSize + 1
         val whereClause = BooleanBuilder()
             .and(lessThanCursor(cursor))
@@ -50,26 +54,35 @@ class DooingleQueryDslRepositoryImpl(
         return SliceImpl(
             if (list.size < selectSize) list else list.dropLast(1),
             pageable,
-            hasNextSlice(list, selectSize))
+            hasNextSliceBySlice(list, selectSize))
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
 
     private fun hasNextSlice(dooingleList: List<DooingleResponse>, selectSize: Int) = (dooingleList.size == selectSize)
+    private fun hasNextSliceBySlice(dooingleList: List<DooingleAndCatchResponse>, selectSize: Int) = (dooingleList.size == selectSize)
 
     private fun getContents(whereClause: BooleanBuilder, pageable: Pageable) =
         queryFactory
             .select(
                 Projections.constructor(
-                    DooingleResponse::class.java,
+                    DooingleAndCatchResponse::class.java,
                     owner.nickname,
                     dooingle.id,
                     dooingle.content,
+                    Projections.constructor(
+                        CatchResponse::class.java,
+                        catch.id,
+                        catch.content,
+                        catch.createdAt
+                    ),
                     dooingle.createdAt
                 )
             )
             .from(dooingle)
-            .join(dooingle.owner, owner)
+            .join(dooingle)
+                .leftJoin(owner).on(dooingle.owner.eq(owner))
+                .leftJoin(catch).on(catch.dooingle.eq(dooingle))
             .where(whereClause)
             .orderBy(dooingle.id.desc())
             .limit((pageable.pageSize + 1).toLong())

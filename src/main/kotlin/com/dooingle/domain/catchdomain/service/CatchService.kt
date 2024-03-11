@@ -1,10 +1,11 @@
-package com.dooingle.domain.catch.service
+package com.dooingle.domain.catchdomain.service
 
-import com.dooingle.domain.catch.dto.AddCatchRequest
-import com.dooingle.domain.catch.dto.CatchResponse
-import com.dooingle.domain.catch.dto.DeleteCatchRequest
-import com.dooingle.domain.catch.repository.CatchRepository
+import com.dooingle.domain.catchdomain.dto.AddCatchRequest
+import com.dooingle.domain.catchdomain.dto.CatchResponse
+import com.dooingle.domain.catchdomain.dto.DeleteCatchRequest
+import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
+import com.dooingle.domain.notification.service.NotificationService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CatchService (
     private val dooingleRepository: DooingleRepository,
-    private val catchRepository: CatchRepository
+    private val catchRepository: CatchRepository,
+    private val notificationService: NotificationService
 ){
     // 캐치 생성
     fun addCatch(dooingleId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
@@ -28,6 +30,8 @@ class CatchService (
 
         dooingle.catch = catch
         catchRepository.save(catch)
+
+        notificationService.addCatchNotification(user = dooingle.owner, dooingleId = dooingleId)
 
         return CatchResponse.from(catch)
     }

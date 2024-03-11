@@ -1,12 +1,12 @@
-package com.dooingle.domain.catch.dto
+package com.dooingle.domain.catchdomain.dto
 
-import com.dooingle.domain.catch.model.Catch
+import com.dooingle.domain.catchdomain.model.Catch
 import java.time.ZonedDateTime
 
 data class CatchResponse(
-    val catchId: Long,
-    val content: String,
-    val createdAt: ZonedDateTime
+    val catchId: Long?,
+    val content: String?,
+    val createdAt: ZonedDateTime?
 ){
     companion object {
         fun from(catch: Catch): CatchResponse {
