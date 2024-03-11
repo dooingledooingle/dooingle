@@ -1,6 +1,7 @@
 package com.dooingle.domain.user.controller
 
 import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.dto.ProfileResponse
 import com.dooingle.domain.user.dto.UpdateProfileDto
 import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
@@ -37,5 +38,10 @@ class UserController(
         if(userPrincipal.id != userId) throw RuntimeException("본인이 아닙니다")
 
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
+    }
+
+    @GetMapping("/{userId}/profile")
+    fun getProfile(@PathVariable userId:Long) : ResponseEntity<ProfileResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userId))
     }
 }
