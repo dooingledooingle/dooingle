@@ -12,6 +12,7 @@ import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.domain.user.dto.UpdateProfileRequest
 import com.dooingle.domain.user.dto.UpdateProfileResponse
 import com.dooingle.global.exception.custom.InvalidParameterException
+import com.dooingle.global.exception.custom.ModelNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -81,7 +82,8 @@ class SocialUserService(
         }
 
         //DB에 profile이 있으면 수정, 없으면 새로 생성
-        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 ID의 유저가 존재하지 않습니다")
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
         val profile = profileRepository.findByUser(user)
 
         if(profile != null){

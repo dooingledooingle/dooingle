@@ -6,6 +6,7 @@ import com.dooingle.domain.catchdomain.dto.DeleteCatchRequest
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
+import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.NotPermittedException
 import org.springframework.data.repository.findByIdOrNull
@@ -31,7 +32,9 @@ class CatchService(
         }
 
         // 해당 dooingle 의 주인은 하나의 catch 만 작성 가능하다
-        if (dooingle.catch != null) throw Exception("")
+        if (dooingle.catch != null) {
+            throw ConflictStateException("이미 캐치를 등록했습니다.")
+        }
 
         val catch = addCatchRequest.to(dooingle)
 

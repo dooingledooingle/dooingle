@@ -34,7 +34,9 @@ class NoticeService(
 
     @Transactional
     fun updateNotice(userPrincipal: UserPrincipal, noticeId: Long, request: AddNoticeRequest) {
-        val user = socialUserRepository.findByIdOrNull(userPrincipal.id) ?: throw Exception("")
+        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+
         val notice = getNotice(noticeId)
 
         if (user.id != notice.user.id) {
@@ -48,7 +50,9 @@ class NoticeService(
 
     @Transactional
     fun deleteNotice(userPrincipal: UserPrincipal, noticeId: Long) {
-        val user = socialUserRepository.findByIdOrNull(userPrincipal.id) ?: throw Exception("")
+        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+
         val notice = getNotice(noticeId)
 
         if (user.id != notice.user.id) {
