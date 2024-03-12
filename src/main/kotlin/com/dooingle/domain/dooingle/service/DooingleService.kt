@@ -67,16 +67,20 @@ class DooingleService(
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
     }
 
+    fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
+        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
+    }
+
+    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
+        return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
+    }
+
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
     fun getDooingle(userId: Long, dooingleId: Long): DooingleResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
             ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 
         return DooingleResponse.from(dooingle)
-    }
-
-    fun getDooingleFeeds(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
-        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
     }
 
     private fun getDooingle(dooingleId: Long): Dooingle {
@@ -90,8 +94,4 @@ class DooingleService(
         return catchRepository.findByDooingle(dooingle)
     }
 
-    // TODO 팔로우 기능 구현 후 구현 필요
-//    fun getDooingleFeedsOfFollows(cursor: Long, pageRequest: PageRequest): Slice<DooingleResponse> {
-//        return
-//    }
 }

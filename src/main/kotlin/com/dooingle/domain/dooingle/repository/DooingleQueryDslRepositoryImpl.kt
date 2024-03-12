@@ -5,6 +5,7 @@ import com.dooingle.domain.catchdomain.model.QCatch
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
+import com.dooingle.domain.follow.model.QFollow
 import com.dooingle.domain.user.model.QSocialUser
 import com.dooingle.domain.user.model.SocialUser
 import com.querydsl.core.BooleanBuilder
@@ -21,6 +22,7 @@ class DooingleQueryDslRepositoryImpl(
     private val dooingle = QDooingle.dooingle
     private val catch = QCatch("catch")
     private val owner = QSocialUser("ow")
+    private val follow = QFollow.follow
 
     override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
         val selectSize = pageable.pageSize + 1
@@ -41,7 +43,47 @@ class DooingleQueryDslRepositoryImpl(
             .orderBy(dooingle.id.desc())
             .limit(selectSize.toLong())
             .fetch()
-            .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
+            .let {
+                SliceImpl(
+                    if (it.size < selectSize) it else it.dropLast(1),
+                    pageable,
+                    hasNextSlice(it, selectSize)
+                )
+            }
+    }
+
+    override fun getDooinglesFollowingBySlice(
+        userId: Long,
+        cursor: Long?,
+        pageable: Pageable
+    ): Slice<DooingleResponse> {
+        val selectSize = pageable.pageSize + 1
+
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    DooingleResponse::class.java,
+                    owner.nickname,
+                    dooingle.id,
+                    dooingle.content,
+                    dooingle.createdAt
+                )
+            )
+            .from(dooingle)
+            .leftJoin(dooingle.owner, owner)
+            .leftJoin(follow).on(dooingle.owner.id.eq(follow.toUser.id))
+            .where(lessThanCursor(cursor))
+            .where(follow.fromUser.id.eq(userId))
+            .orderBy(dooingle.id.desc())
+            .limit(selectSize.toLong())
+            .fetch()
+            .let {
+                SliceImpl(
+                    if (it.size < selectSize) it else it.dropLast(1),
+                    pageable,
+                    hasNextSlice(it, selectSize)
+                )
+            }
     }
 
     override fun getPersonalPageBySlice(owner: SocialUser, cursor: Long?, pageable: Pageable): Slice<DooingleAndCatchResponse> {
@@ -80,7 +122,6 @@ class DooingleQueryDslRepositoryImpl(
                 )
             )
             .from(dooingle)
-            .join(dooingle)
                 .leftJoin(owner).on(dooingle.owner.eq(owner))
                 .leftJoin(catch).on(catch.dooingle.eq(dooingle))
             .where(whereClause)
