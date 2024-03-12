@@ -44,11 +44,7 @@ class DooingleQueryDslRepositoryImpl(
             .limit(selectSize.toLong())
             .fetch()
             .let {
-                SliceImpl(
-                    if (it.size < selectSize) it else it.dropLast(1),
-                    pageable,
-                    hasNextSlice(it, selectSize)
-                )
+                changeToSlice(it, selectSize, pageable)
             }
     }
 
@@ -78,11 +74,7 @@ class DooingleQueryDslRepositoryImpl(
             .limit(selectSize.toLong())
             .fetch()
             .let {
-                SliceImpl(
-                    if (it.size < selectSize) it else it.dropLast(1),
-                    pageable,
-                    hasNextSlice(it, selectSize)
-                )
+                changeToSlice(it, selectSize, pageable)
             }
     }
 
@@ -92,17 +84,19 @@ class DooingleQueryDslRepositoryImpl(
             .and(lessThanCursor(cursor))
             .and(dooingle.owner.eq(owner))
         val list = getContents(whereClause, pageable)
-
-        return SliceImpl(
-            if (list.size < selectSize) list else list.dropLast(1),
-            pageable,
-            hasNextSliceBySlice(list, selectSize))
+        return changeToSlice(list, selectSize, pageable)
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
 
-    private fun hasNextSlice(dooingleList: List<DooingleResponse>, selectSize: Int) = (dooingleList.size == selectSize)
-    private fun hasNextSliceBySlice(dooingleList: List<DooingleAndCatchResponse>, selectSize: Int) = (dooingleList.size == selectSize)
+    private fun <T> hasNextSlice(dooingleList: List<T>, selectSize: Int) = (dooingleList.size == selectSize)
+
+    private fun <T> changeToSlice(list: List<T>, selectSize: Int, pageable: Pageable) =
+        SliceImpl(
+            if (list.size < selectSize) list else list.dropLast(1),
+            pageable,
+            hasNextSlice(list, selectSize)
+        )
 
     private fun getContents(whereClause: BooleanBuilder, pageable: Pageable) =
         queryFactory
@@ -128,4 +122,5 @@ class DooingleQueryDslRepositoryImpl(
             .orderBy(dooingle.id.desc())
             .limit((pageable.pageSize + 1).toLong())
             .fetch()
+
 }
