@@ -1,8 +1,8 @@
 package com.dooingle.domain.user.controller
 
 import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.dto.UpdateProfileRequest
-import com.dooingle.domain.user.dto.UpdateProfileResponse
+import com.dooingle.domain.user.dto.ProfileResponse
+import com.dooingle.domain.user.dto.UpdateProfileDto
 import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
 import com.dooingle.global.security.UserPrincipal
@@ -32,11 +32,16 @@ class UserController(
     @PatchMapping(value = ["/{userId}/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal,
                       @PathVariable userId:Long,
-                      @RequestPart(value = "request") @Valid request: UpdateProfileRequest,
+                      @RequestPart(value = "request") @Valid request: UpdateProfileDto,
                       @RequestPart(value = "img", required = false) img:MultipartFile?)
-    : ResponseEntity<UpdateProfileResponse> {
+    : ResponseEntity<UpdateProfileDto> {
         if(userPrincipal.id != userId) throw RuntimeException("본인이 아닙니다")
 
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
+    }
+
+    @GetMapping("/{userId}/profile")
+    fun getProfile(@PathVariable userId:Long) : ResponseEntity<ProfileResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userId))
     }
 }
