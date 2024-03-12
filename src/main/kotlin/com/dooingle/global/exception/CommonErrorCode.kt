@@ -11,5 +11,7 @@ enum class CommonErrorCode(
     NOT_PERMITTED(HttpStatus.FORBIDDEN, "해당 유저는 모델에 대한 권한이 없습니다."),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "올바르지 않은 입력입니다."),
     CONFLICT_STATE(HttpStatus.CONFLICT, "허용되지 않은 요청입니다."),
+    NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "API 호출 권한이 없습니다."),
+    AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "JWT 인증에 실패했습니다."),
 
 }
