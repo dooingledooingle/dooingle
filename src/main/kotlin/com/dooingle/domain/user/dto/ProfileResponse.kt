@@ -1,6 +1,7 @@
 package com.dooingle.domain.user.dto
 
-data class UpdateProfileResponse(
+data class ProfileResponse(
+    val nickname:String,
     val description:String?,
     val imageUrl:String?
 )
