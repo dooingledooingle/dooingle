@@ -2,6 +2,7 @@ package com.dooingle.domain.badreport.controller
 
 import com.dooingle.domain.badreport.dto.AddBadReportRequest
 import com.dooingle.domain.badreport.dto.BadReportResponse
+import com.dooingle.domain.badreport.dto.BlockBadReportDto
 import com.dooingle.domain.badreport.model.ReportedTargetType
 import com.dooingle.domain.badreport.service.BadReportService
 import com.dooingle.global.security.UserPrincipal
@@ -44,5 +45,21 @@ class BadReportController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(badReportService.getBadReportPagedList(reportedTargetType, pageRequest))
+    }
+
+    @PatchMapping("/dooingles")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun blockReportedDooingles(@RequestBody request: BlockBadReportDto) : ResponseEntity<Unit> {
+        badReportService.blockReportedDooingles(request)
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
+    @PatchMapping("/catches")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun blockReportedCatches(@RequestBody request: BlockBadReportDto) : ResponseEntity<Unit> {
+        badReportService.blockReportedCatches(request)
+
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 }
