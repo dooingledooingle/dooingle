@@ -7,6 +7,8 @@ import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.notification.repository.NotificationRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.exception.custom.ModelNotFoundException
+import com.dooingle.global.security.UserPrincipal
 import com.dooingle.global.sse.SseEmitters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
@@ -54,8 +56,9 @@ class NotificationService(
         }
     }
 
-    fun getNotifications(userId: Long, cursor: Long?): Slice<NotificationResponse> {
-        val user = socialUserRepository.findByIdOrNull(userId)?: throw Exception("")
+    fun getNotifications(userPrincipal: UserPrincipal, cursor: Long?): Slice<NotificationResponse> {
+        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
         val pageRequest = PageRequest.ofSize(NOTIFICATION_PAGE_SIZE)
 
         return notificationRepository.getNotificationBySlice(user, cursor, pageRequest)
