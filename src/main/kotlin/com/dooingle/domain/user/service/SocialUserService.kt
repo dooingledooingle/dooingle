@@ -9,6 +9,8 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.domain.user.dto.OAuth2UserInfo
+import com.dooingle.global.exception.custom.InvalidParameterException
+import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.domain.user.dto.ProfileResponse
 import com.dooingle.domain.user.dto.UpdateProfileDto
 import org.springframework.beans.factory.annotation.Value
@@ -51,7 +53,7 @@ class SocialUserService(
         return when (condition) {
             "hot" -> dooingleCountService.getHotDooinglerList()
             "new" -> socialUserRepository.getNewDooinglers()
-            else -> throw IllegalArgumentException() // TODO
+            else -> throw InvalidParameterException(null)
         }
     }
 
@@ -70,7 +72,8 @@ class SocialUserService(
         }
 
         //DB에 profile이 존재한다면 수정, 없다면 새로 생성
-        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 ID의 유저가 존재하지 않습니다")
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
         val profile = profileRepository.findByUser(user)
 
         if(profile != null) {
@@ -106,7 +109,8 @@ class SocialUserService(
     }
 
     fun getProfile(userId: Long) : ProfileResponse {
-        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 ID의 유저가 존재하지 않습니다")
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
         val profile = profileRepository.findByUser(user)
 
         if(profile != null){

@@ -5,6 +5,7 @@ import com.dooingle.domain.user.dto.ProfileResponse
 import com.dooingle.domain.user.dto.UpdateProfileDto
 import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
+import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
@@ -35,7 +36,7 @@ class UserController(
                       @RequestPart(value = "request") @Valid request: UpdateProfileDto,
                       @RequestPart(value = "img", required = false) img:MultipartFile?)
     : ResponseEntity<UpdateProfileDto> {
-        if(userPrincipal.id != userId) throw RuntimeException("본인이 아닙니다")
+        if(userPrincipal.id != userId) throw NotPermittedException(userId = userPrincipal.id, modelName = "User", modelId = userPrincipal.id)
 
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
     }
