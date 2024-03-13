@@ -1,6 +1,6 @@
 package com.dooingle.domain.notification.repository
 
-import com.dooingle.domain.notification.dto.NotificationQueryResponse
+import com.dooingle.domain.notification.dto.NotificationResponse
 import com.dooingle.domain.notification.model.QNotification
 import com.dooingle.domain.user.model.QSocialUser
 import com.dooingle.domain.user.model.SocialUser
@@ -23,7 +23,7 @@ class NotificationQueryDslRepositoryImpl(
         user: SocialUser,
         cursor: Long?,
         pageable: Pageable
-    ): Slice<NotificationQueryResponse> {
+    ): Slice<NotificationResponse> {
         val selectSize = pageable.pageSize + 1
         val whereClause = BooleanBuilder()
             .and(lessThanCursor(cursor))
@@ -38,14 +38,14 @@ class NotificationQueryDslRepositoryImpl(
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { notification.id.lt(it) }
 
-    private fun hasNextSlice(list: List<NotificationQueryResponse>, selectSize: Int) = (list.size == selectSize)
+    private fun hasNextSlice(list: List<NotificationResponse>, selectSize: Int) = (list.size == selectSize)
 
     private fun getContents(whereClause: BooleanBuilder, selectSize: Long) =
         queryFactory
             .select(
                 Projections.constructor(
-                    NotificationQueryResponse::class.java,
-                    notification.notificationType,
+                    NotificationResponse::class.java,
+                    notification.notificationType.stringValue(),
                     notification.resourceId
                 )
             ).from(notification)

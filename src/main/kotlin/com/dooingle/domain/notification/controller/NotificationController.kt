@@ -31,13 +31,13 @@ class NotificationController(
 
     @Operation(summary = "지난 알림 조회")
     @GetMapping
-    fun fastNotifications(
+    fun findPastNotifications(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         cursor: Long?
     ): ResponseEntity<Slice<NotificationResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(notificationService.getNotifications(userPrincipal, cursor))
+            .body(notificationService.getNotifications(userPrincipal.id, cursor))
     }
 
 }
