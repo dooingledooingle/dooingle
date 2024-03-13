@@ -13,7 +13,6 @@ import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
-import com.dooingle.global.security.UserPrincipal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -35,12 +34,12 @@ class DooingleService(
     // 뒹글 생성
     @Transactional
     fun addDooingle(
-        userPrincipal: UserPrincipal,
+        fromUserId: Long,
         ownerId: Long,
         addDooingleRequest: AddDooingleRequest
     ): DooingleResponse {
-        val guest = socialUserRepository.findByIdOrNull(userPrincipal.id)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+        val guest = socialUserRepository.findByIdOrNull(fromUserId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
         val owner = socialUserRepository.findByIdOrNull(ownerId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = ownerId)
         val dooingle = addDooingleRequest.to(guest, owner)
