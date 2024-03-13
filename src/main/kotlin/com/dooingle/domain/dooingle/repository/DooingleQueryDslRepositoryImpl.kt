@@ -5,6 +5,7 @@ import com.dooingle.domain.catchdomain.model.QCatch
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.QDooingle
+import com.dooingle.domain.follow.model.QFollow
 import com.dooingle.domain.user.model.QSocialUser
 import com.dooingle.domain.user.model.SocialUser
 import com.querydsl.core.BooleanBuilder
@@ -21,6 +22,7 @@ class DooingleQueryDslRepositoryImpl(
     private val dooingle = QDooingle.dooingle
     private val catch = QCatch("catch")
     private val owner = QSocialUser("ow")
+    private val follow = QFollow.follow
 
     override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
         val selectSize = pageable.pageSize + 1
@@ -41,7 +43,39 @@ class DooingleQueryDslRepositoryImpl(
             .orderBy(dooingle.id.desc())
             .limit(selectSize.toLong())
             .fetch()
-            .let { SliceImpl(it.dropLast(1), pageable, hasNextSlice(it, selectSize)) }
+            .let {
+                changeToSlice(it, selectSize, pageable)
+            }
+    }
+
+    override fun getDooinglesFollowingBySlice(
+        userId: Long,
+        cursor: Long?,
+        pageable: Pageable
+    ): Slice<DooingleResponse> {
+        val selectSize = pageable.pageSize + 1
+
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    DooingleResponse::class.java,
+                    owner.nickname,
+                    dooingle.id,
+                    dooingle.content,
+                    dooingle.createdAt
+                )
+            )
+            .from(dooingle)
+            .leftJoin(dooingle.owner, owner)
+            .leftJoin(follow).on(dooingle.owner.id.eq(follow.toUser.id))
+            .where(lessThanCursor(cursor))
+            .where(follow.fromUser.id.eq(userId))
+            .orderBy(dooingle.id.desc())
+            .limit(selectSize.toLong())
+            .fetch()
+            .let {
+                changeToSlice(it, selectSize, pageable)
+            }
     }
 
     override fun getPersonalPageBySlice(owner: SocialUser, cursor: Long?, pageable: Pageable): Slice<DooingleAndCatchResponse> {
@@ -50,17 +84,19 @@ class DooingleQueryDslRepositoryImpl(
             .and(lessThanCursor(cursor))
             .and(dooingle.owner.eq(owner))
         val list = getContents(whereClause, pageable)
-
-        return SliceImpl(
-            if (list.size < selectSize) list else list.dropLast(1),
-            pageable,
-            hasNextSliceBySlice(list, selectSize))
+        return changeToSlice(list, selectSize, pageable)
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }
 
-    private fun hasNextSlice(dooingleList: List<DooingleResponse>, selectSize: Int) = (dooingleList.size == selectSize)
-    private fun hasNextSliceBySlice(dooingleList: List<DooingleAndCatchResponse>, selectSize: Int) = (dooingleList.size == selectSize)
+    private fun <T> hasNextSlice(dooingleList: List<T>, selectSize: Int) = (dooingleList.size == selectSize)
+
+    private fun <T> changeToSlice(list: List<T>, selectSize: Int, pageable: Pageable) =
+        SliceImpl(
+            if (list.size < selectSize) list else list.dropLast(1),
+            pageable,
+            hasNextSlice(list, selectSize)
+        )
 
     private fun getContents(whereClause: BooleanBuilder, pageable: Pageable) =
         queryFactory
@@ -80,11 +116,11 @@ class DooingleQueryDslRepositoryImpl(
                 )
             )
             .from(dooingle)
-            .join(dooingle)
                 .leftJoin(owner).on(dooingle.owner.eq(owner))
                 .leftJoin(catch).on(catch.dooingle.eq(dooingle))
             .where(whereClause)
             .orderBy(dooingle.id.desc())
             .limit((pageable.pageSize + 1).toLong())
             .fetch()
+
 }
