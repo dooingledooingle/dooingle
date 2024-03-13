@@ -192,6 +192,21 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         result.content.first().dooingleId shouldBe theNextOfLatestSliceOfDooingleResponseList.first().dooingleId
     }
 
+    @Test
+    fun `팔로우 피드를 조회하면 팔로우하는 사람의 뒹글 목록만 조회한다`() {
+        // 팔로우하지 않는 사람의 뒹글은 조회되지 않아야 함
+    }
+
+    @Test
+    fun `팔로우 피드 조회 시 커서가 전달되지 않는다면 최신 글부터 조회한다`() {
+
+    }
+
+    @Test
+    fun `팔로우 피드 조회 시 커서가 전달되면 커서 이전 글부터 조회한다`() {
+
+    }
+
     private fun getFixtureOfOwner() = SocialUser(
         id = ownerId,
         provider = ownerOAuthProvider,
