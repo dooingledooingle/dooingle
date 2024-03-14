@@ -3,7 +3,7 @@ package com.dooingle.domain.dooingle.repository
 import com.dooingle.domain.catchdomain.dto.CatchResponse
 import com.dooingle.domain.catchdomain.model.QCatch
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
-import com.dooingle.domain.dooingle.dto.DooingleResponse
+import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.follow.model.QFollow
 import com.dooingle.domain.user.model.QSocialUser
@@ -24,21 +24,24 @@ class DooingleQueryDslRepositoryImpl(
     private val owner = QSocialUser("ow")
     private val follow = QFollow.follow
 
-    override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleResponse> {
+    override fun getDooinglesBySlice(cursor: Long?, pageable: Pageable): Slice<DooingleFeedResponse> {
         val selectSize = pageable.pageSize + 1
 
         return queryFactory
             .select(
                 Projections.constructor(
-                    DooingleResponse::class.java,
+                    DooingleFeedResponse::class.java,
                     owner.nickname,
+                    owner.id,
                     dooingle.id,
                     dooingle.content,
-                    dooingle.createdAt
+                    catch.isNotNull,
+                    dooingle.createdAt,
                 )
             )
             .from(dooingle)
             .join(dooingle.owner, owner)
+            .leftJoin(catch).on(dooingle.eq(catch.dooingle))
             .where(lessThanCursor(cursor))
             .orderBy(dooingle.id.desc())
             .limit(selectSize.toLong())
@@ -52,22 +55,25 @@ class DooingleQueryDslRepositoryImpl(
         userId: Long,
         cursor: Long?,
         pageable: Pageable
-    ): Slice<DooingleResponse> {
+    ): Slice<DooingleFeedResponse> {
         val selectSize = pageable.pageSize + 1
 
         return queryFactory
             .select(
                 Projections.constructor(
-                    DooingleResponse::class.java,
+                    DooingleFeedResponse::class.java,
                     owner.nickname,
+                    owner.id,
                     dooingle.id,
                     dooingle.content,
-                    dooingle.createdAt
+                    catch.isNotNull,
+                    dooingle.createdAt,
                 )
             )
             .from(dooingle)
             .leftJoin(dooingle.owner, owner)
             .leftJoin(follow).on(dooingle.owner.id.eq(follow.toUser.id))
+            .leftJoin(catch).on(dooingle.eq(catch.dooingle))
             .where(lessThanCursor(cursor))
             .where(follow.fromUser.id.eq(userId))
             .orderBy(dooingle.id.desc())

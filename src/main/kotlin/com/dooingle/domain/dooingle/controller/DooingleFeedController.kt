@@ -1,6 +1,6 @@
 package com.dooingle.domain.dooingle.controller
 
-import com.dooingle.domain.dooingle.dto.DooingleResponse
+import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.service.DooingleService
 import com.dooingle.global.security.UserPrincipal
 import org.springframework.data.domain.PageRequest
@@ -18,7 +18,7 @@ class DooingleFeedController(
 ) {
 
     @GetMapping
-    fun getDooingleFeed(cursor: Long?): ResponseEntity<Slice<DooingleResponse>> {
+    fun getDooingleFeed(cursor: Long?): ResponseEntity<Slice<DooingleFeedResponse>> {
         val pageRequest = PageRequest.ofSize(PAGE_SIZE)
         return ResponseEntity.ok(dooingleService.getDooingleFeed(cursor, pageRequest))
     }
@@ -27,7 +27,7 @@ class DooingleFeedController(
     fun getDooingleFeedOfFollowing(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         cursor: Long?
-    ): ResponseEntity<Slice<DooingleResponse>> {
+    ): ResponseEntity<Slice<DooingleFeedResponse>> {
         val pageRequest = PageRequest.ofSize(PAGE_SIZE)
         return ResponseEntity.ok(dooingleService.getDooingleFeedOfFollowing(userPrincipal.id, cursor, pageRequest))
     }
