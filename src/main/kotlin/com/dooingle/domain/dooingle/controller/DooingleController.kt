@@ -32,7 +32,7 @@ class DooingleController(
         @PathVariable userId: Long,
         @RequestBody addDooingleRequest: AddDooingleRequest
     ): ResponseEntity<DooingleResponse>{
-        val response: DooingleResponse = dooingleService.addDooingle(userPrincipal, userId, addDooingleRequest)
+        val response: DooingleResponse = dooingleService.addDooingle(userPrincipal.id, userId, addDooingleRequest)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response)
