@@ -61,13 +61,13 @@ class SocialUserService(
     fun updateProfile(userId: Long, request: UpdateProfileDto, image: MultipartFile?): UpdateProfileDto {
         var imageUrl:String? = null
 
-        //기존 프로필사진이 있다면 S3를 거치지 않고 url 넘기기
-        if(request.imageUrl != null) {
-            imageUrl = request.imageUrl
+        //image 파일이 있다면 S3에 업로드, 파일이 없다면 URL은 있는지 확인
+        if(image != null){
+            imageUrl = upload2Cloud(image)
         }
         else {
-            image?.let {
-                imageUrl = upload2Cloud(image)
+            request.imageUrl?.let {
+                imageUrl = request.imageUrl
             }
         }
 
