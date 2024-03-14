@@ -147,25 +147,6 @@ export default function FeedPage() {
           </div>
 
           <div className="py-[1rem]">
-{/*            {dooingleSlice?.["content"]?.map((dooingle) => (
-              <Dooingle
-                key={dooingle?.["id"]}
-                ownerName={dooingle?.["ownerName"]}
-                content={dooingle?.["content"]}>
-              </Dooingle>
-            ))}
-            initial state를 주지 않았을 때 ?.을 이용해서 어떻게든 렌더링 해보려고 했던 흔적, 작동하긴 받아오긴 했음
-*/}
-{/*            {dooingleSlice.content.map(dooingle => (
-                <div key={dooingle.id}>
-                  <Dooingle
-                      ownerName={dooingle.ownerName}
-                      content={dooingle.content}
-                  />
-                </div>
-            ))}
-            dooingle에 id가 아니라 dooingleId가 들어가있음을 모르고 실수했던 흔적
-*/}
             {dooingleSlice.content.map(dooingle => (
                 <Dooingle
                     key={dooingle.dooingleId}
