@@ -62,8 +62,8 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedDooingles(request)
 
         //then
-        dooingleRepository.findAll().let {
-            it[0].blockedAt shouldNotBe(null)
+        dooingleRepository.findById(dooingle.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
         }
     }
 
@@ -83,9 +83,11 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedDooingles(request)
 
         //then
-        dooingleRepository.findAll().let {
-            it[0].blockedAt shouldNotBe(null)
-            it[1].blockedAt shouldNotBe(null)
+        dooingleRepository.findById(dooingle1.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
+        }
+        dooingleRepository.findById(dooingle2.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
         }
     }
 
@@ -105,8 +107,8 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedDooingles(request)
 
         //then
-        dooingleRepository.findAll().let {
-            it[0].blockedAt!!.toInstant().toEpochMilli() shouldBeEqual time.toInstant().toEpochMilli()
+        dooingleRepository.findById(dooingle.id!!).let {
+            it.get().blockedAt!!.toInstant().toEpochMilli() shouldBeEqual time.toInstant().toEpochMilli()
         }
     }
 
@@ -127,8 +129,8 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedCatches(request)
 
         //then
-        catchRepository.findAll().let {
-            it[0].blockedAt shouldNotBe(null)
+        catchRepository.findById(catch.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
         }
     }
 
@@ -152,9 +154,11 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedCatches(request)
 
         //then
-        catchRepository.findAll().let {
-            it[0].blockedAt shouldNotBe(null)
-            it[1].blockedAt shouldNotBe(null)
+        catchRepository.findById(catch1.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
+        }
+        catchRepository.findById(catch2.id!!).let {
+            it.get().blockedAt shouldNotBe(null)
         }
     }
 
@@ -176,8 +180,8 @@ class BadReportServiceDBTest @Autowired constructor(
         badReportService.blockReportedCatches(request)
 
         //then
-        catchRepository.findAll().let {
-            it[0].blockedAt!!.toInstant().toEpochMilli() shouldBeEqual time.toInstant().toEpochMilli()
+        catchRepository.findById(catch.id!!).let {
+            it.get().blockedAt!!.toInstant().toEpochMilli() shouldBeEqual time.toInstant().toEpochMilli()
         }
     }
 }
