@@ -36,9 +36,9 @@ class FollowService(
         )
     }
 
-    fun showFollowingList(userId: Long) : List<FollowResponse> {
-        val fromUser = socialUserRepository.findByIdOrNull(userId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
+    fun showFollowingList(fromUserId: Long) : List<FollowResponse> {
+        val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 
         return followRepository.findAllByFromUser(fromUser).map { FollowResponse.from(it) }
     }
