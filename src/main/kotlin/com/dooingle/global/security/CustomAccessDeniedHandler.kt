@@ -1,5 +1,7 @@
 package com.dooingle.global.security
 
+import com.dooingle.global.exception.CommonErrorCode
+import com.dooingle.global.exception.ErrorResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -21,7 +23,7 @@ class CustomAccessDeniedHandler: AccessDeniedHandler {
         response.characterEncoding = "UTF-8"
 
         val objectMapper = ObjectMapper()
-        val jsonString = objectMapper.writeValueAsString("No permission to run API") // TODO: ErrorResponse 생성
+        val jsonString = objectMapper.writeValueAsString(ErrorResponse(CommonErrorCode.NOT_AUTHORIZED))
         response.writer.write(jsonString)
     }
 }

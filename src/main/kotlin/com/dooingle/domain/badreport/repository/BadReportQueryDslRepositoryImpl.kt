@@ -10,12 +10,15 @@ import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.PredicateOperation
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.persistence.EntityManager
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import java.time.ZonedDateTime
 
 class BadReportQueryDslRepositoryImpl(
-    private val queryFactory: JPAQueryFactory
+    private val queryFactory: JPAQueryFactory,
+    private val entityManager: EntityManager
 ) : BadReportQueryDslRepository {
 
     private val badReport = QBadReport.badReport
@@ -90,5 +93,29 @@ class BadReportQueryDslRepositoryImpl(
             .limit(pageRequest.pageSize.toLong())
             .fetch()
             .let { PageImpl(it, pageRequest, totalCountOfCatchReport) }
+    }
+
+    override fun updateReportedDooingles(dooingleIdList: List<Long>) {
+        queryFactory
+            .update(dooingle)
+            .set(dooingle.blockedAt, ZonedDateTime.now())
+            .where(dooingle.id.`in`(dooingleIdList).and(dooingle.blockedAt.isNull))
+            .execute()
+
+        //DB와 영속성 컨텍스트 동기화
+        entityManager.flush()
+        entityManager.clear()
+    }
+
+    override fun updateReportedCatches(catchIdList: List<Long>) {
+        queryFactory
+            .update(catch)
+            .set(catch.blockedAt, ZonedDateTime.now())
+            .where(catch.id.`in`(catchIdList).and(catch.blockedAt.isNull))
+            .execute()
+
+        //DB와 영속성 컨텍스트 동기화
+        entityManager.flush()
+        entityManager.clear()
     }
 }

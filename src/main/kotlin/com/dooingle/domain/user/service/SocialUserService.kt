@@ -9,8 +9,10 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.domain.user.dto.OAuth2UserInfo
-import com.dooingle.domain.user.dto.UpdateProfileRequest
-import com.dooingle.domain.user.dto.UpdateProfileResponse
+import com.dooingle.global.exception.custom.InvalidParameterException
+import com.dooingle.global.exception.custom.ModelNotFoundException
+import com.dooingle.domain.user.dto.ProfileResponse
+import com.dooingle.domain.user.dto.UpdateProfileDto
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -38,7 +40,7 @@ class SocialUserService(
 
             oAuth2UserInfo.profileImage?.let {
                 profileRepository.save(
-                    Profile(user = socialUser, profileImage = oAuth2UserInfo.profileImage))
+                    Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
             }
 
             socialUserRepository.save(socialUser)
@@ -51,47 +53,71 @@ class SocialUserService(
         return when (condition) {
             "hot" -> dooingleCountService.getHotDooinglerList()
             "new" -> socialUserRepository.getNewDooinglers()
-            else -> throw IllegalArgumentException() // TODO
+            else -> throw InvalidParameterException(null)
         }
     }
 
     @Transactional
-    fun updateProfile(userId: Long, request: UpdateProfileRequest, img: MultipartFile?): UpdateProfileResponse {
-        var s3Url:String? = null
+    fun updateProfile(userId: Long, request: UpdateProfileDto, image: MultipartFile?): UpdateProfileDto {
+        var imageUrl:String? = null
 
-        img?.let {
-            // 1. 중복 방지를 위해 이미지에 랜덤 아이디 붙이기
-            val originName = img.originalFilename
-            val ext = originName!!.substring(originName.lastIndexOf("."))
-            val randomId = UUID.randomUUID().toString()
-            val newName = randomId+originName
-
-            // 2. 메서드 인자로 들어갈 메타데이터 생성
-            val metadata = ObjectMetadata()
-            metadata.contentType="image/$ext"
-
-            // 3. S3에 이미지 업로드
-            runCatching {
-                amazonS3.putObject(bucketName, newName, img.inputStream, metadata)
-            }.onFailure {
-                throw RuntimeException("S3 이미지 업로드에 실패했습니다")
+        //기존 프로필사진이 있다면 S3를 거치지 않고 url 넘기기
+        if(request.imageUrl != null) {
+            imageUrl = request.imageUrl
+        }
+        else {
+            image?.let {
+                imageUrl = upload2Cloud(image)
             }
-            s3Url = amazonS3.getUrl(bucketName, newName).toString()
         }
 
-        //DB에 profile이 있으면 수정, 없으면 새로 생성
-        val user = socialUserRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("해당 ID의 유저가 존재하지 않습니다")
+        //DB에 profile이 존재한다면 수정, 없다면 새로 생성
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
+        val profile = profileRepository.findByUser(user)
+
+        if(profile != null) {
+            profile.imageUrl = imageUrl
+            profile.description = request.description
+            val newProfile = profileRepository.save(profile)
+            return UpdateProfileDto(newProfile.description, newProfile.imageUrl)
+        }
+        else {
+            val newProfile = profileRepository.save(Profile(description = request.description, imageUrl = imageUrl, user = user))
+            return UpdateProfileDto(newProfile.description, newProfile.imageUrl)
+        }
+    }
+
+    fun upload2Cloud(image: MultipartFile) : String {
+        // 1. 중복 방지를 위해 이미지에 랜덤 아이디 붙이기
+        val originName = image.originalFilename
+        val ext = originName!!.substring(originName.lastIndexOf("."))
+        val randomId = UUID.randomUUID().toString()
+        val newName = randomId + originName
+
+        // 2. 메서드 인자로 들어갈 메타데이터 생성
+        val metadata = ObjectMetadata()
+        metadata.contentType="image/$ext"
+
+        // 3. S3에 이미지 업로드
+        runCatching {
+            amazonS3.putObject(bucketName, newName, image.inputStream, metadata)
+        }.onFailure {
+            throw RuntimeException("S3 이미지 업로드에 실패했습니다")
+        }
+        return amazonS3.getUrl(bucketName, newName).toString()
+    }
+
+    fun getProfile(userId: Long) : ProfileResponse {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
         val profile = profileRepository.findByUser(user)
 
         if(profile != null){
-            profile.profileImage = s3Url
-            profile.description = request.description
-            val newProfile = profileRepository.save(profile)
-            return UpdateProfileResponse(newProfile.description, newProfile.profileImage)
+            return ProfileResponse(nickname = user.nickname, description = profile.description, imageUrl = profile.imageUrl)
         }
-        else{
-            val newProfile = profileRepository.save(Profile(description = request.description, profileImage = s3Url, user = user))
-            return UpdateProfileResponse(newProfile.description, newProfile.profileImage)
+        else {
+            return ProfileResponse(nickname = user.nickname, description = null, imageUrl = null)
         }
     }
 }

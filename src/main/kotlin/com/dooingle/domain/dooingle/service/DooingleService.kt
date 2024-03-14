@@ -4,6 +4,7 @@ import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
+import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
@@ -11,7 +12,8 @@ import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
-import com.dooingle.global.security.UserPrincipal
+import com.dooingle.global.exception.custom.InvalidParameterException
+import com.dooingle.global.exception.custom.ModelNotFoundException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -33,15 +35,17 @@ class DooingleService(
     // 뒹글 생성
     @Transactional
     fun addDooingle(
-        userPrincipal: UserPrincipal,
+        fromUserId: Long,
         ownerId: Long,
         addDooingleRequest: AddDooingleRequest
     ): DooingleResponse {
-        val guest = socialUserRepository.findByIdOrNull(userPrincipal.id) ?: throw Exception("") // TODO
-        val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+        val guest = socialUserRepository.findByIdOrNull(fromUserId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
+        val owner = socialUserRepository.findByIdOrNull(ownerId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = ownerId)
         val dooingle = addDooingleRequest.to(guest, owner)
 
-        if (guest.id == owner.id) throw Exception("") // TODO
+        if (guest.id == owner.id) throw InvalidParameterException("내 뒹글 페이지에 뒹글을 남길 수 없습니다.")
 
         dooingleRepository.save(dooingle)
 
@@ -56,25 +60,32 @@ class DooingleService(
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
     fun getPage(ownerId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
-        val owner = socialUserRepository.findByIdOrNull(ownerId) ?: throw Exception("") // TODO
+        val owner = socialUserRepository.findByIdOrNull(ownerId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = ownerId)
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
     }
 
+    fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
+        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
+    }
+
+    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
+        return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
+    }
+
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
     fun getDooingle(userId: Long, dooingleId: Long): DooingleResponse {
-        val dooingle = dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")
+        val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
+            ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 
         return DooingleResponse.from(dooingle)
     }
 
-    fun getDooingleFeeds(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
-        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
-    }
-
     private fun getDooingle(dooingleId: Long): Dooingle {
-        return dooingleRepository.findByIdOrNull(dooingleId) ?: throw Exception("")
+        return dooingleRepository.findByIdOrNull(dooingleId)
+            ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
     }
 
     // dooingle 에 해당하는 catch 를 가져오는 내부 메서드
@@ -83,8 +94,4 @@ class DooingleService(
         return catchRepository.findByDooingle(dooingle)
     }
 
-    // TODO 팔로우 기능 구현 후 구현 필요
-//    fun getDooingleFeedsOfFollows(cursor: Long, pageRequest: PageRequest): Slice<DooingleResponse> {
-//        return
-//    }
 }

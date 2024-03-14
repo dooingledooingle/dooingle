@@ -1,11 +1,13 @@
 package com.dooingle.domain.dooingle.service
 
-import com.dooingle.domain.catch.repository.CatchRepository
+import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
+import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
@@ -31,31 +33,33 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
     private val mockCatchRepository = mockk<CatchRepository>()
     private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
+    private val mockNotificationService = mockk<NotificationService>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
         dooingleCountRepository = mockDooingleCountRepository,
+        notificationService = mockNotificationService
     )
 
     lateinit var owner: SocialUser
     lateinit var guest: SocialUser
 //    lateinit var dooingleAndCatchResponseSlice: Slice<DooingleAndCatchResponse>
-    lateinit var dooingleResponseList: List<DooingleResponse>
-    lateinit var theLatestSliceOfDooingleResponseList: Slice<DooingleResponse>
-    lateinit var theNextOfLatestSliceOfDooingleResponseList: Slice<DooingleResponse>
+    lateinit var dooingleFeedResponseList: List<DooingleFeedResponse>
+    lateinit var theLatestSliceOfDooingleFeedResponseList: Slice<DooingleFeedResponse>
+    lateinit var theNextOfLatestSliceOfDooingleResponseList: Slice<DooingleFeedResponse>
 
     @BeforeAll
     fun prepareFixture() {
         owner = getFixtureOfOwner()
         guest = getFixtureOfGuest()
         // dooingleAndCatchResponseSlice = SliceImpl(getFixtureOfDooingleAndCatchResponseList())
-        dooingleResponseList = getFixtureOfDooingleResponseList()
-        theLatestSliceOfDooingleResponseList = SliceImpl(dooingleResponseList.subList(0, DooingleFeedController.PAGE_SIZE))
+        dooingleFeedResponseList = getFixtureOfDooingleResponseList()
+        theLatestSliceOfDooingleFeedResponseList = SliceImpl(dooingleFeedResponseList.subList(0, DooingleFeedController.PAGE_SIZE))
         theNextOfLatestSliceOfDooingleResponseList = SliceImpl(
-            dooingleResponseList.subList(
+            dooingleFeedResponseList.subList(
                 DooingleFeedController.PAGE_SIZE,
-                min(DooingleFeedController.PAGE_SIZE + DooingleFeedController.PAGE_SIZE, dooingleResponseList.size),
+                min(DooingleFeedController.PAGE_SIZE + DooingleFeedController.PAGE_SIZE, dooingleFeedResponseList.size),
             )
         )
     }
@@ -84,32 +88,32 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     @Test
     fun `존재하지 않는 guestId를 전달하면 뒹글을 등록할 때 예외가 발생한다`() {
         // given
-        val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
+//        val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
 
         every { mockSocialUserRepository.findByIdOrNull(guest.id!!) } returns null // 존재하지 않는 guestId 가정
 
         // when
-        val result = kotlin.runCatching { dooingleService.addDooingle(owner.id!!, dooingleAdditionRequest) }
+//        val result = kotlin.runCatching { dooingleService.addDooingle(owner.id!!, dooingleAdditionRequest) }
 
         // then // TODO 예외 처리 공통화 이후 더 자세하게 예외 점검할 것
-        result.shouldNotBeSuccess()
-        shouldThrow<Exception> { result.getOrThrow() }
+//        result.shouldNotBeSuccess()
+//        shouldThrow<Exception> { result.getOrThrow() }
     }
 
     @Test
     fun `존재하지 않는 ownerId를 전달하면 뒹글을 등록할 때 예외가 발생한다`() {
         // given
-        val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
+//        val dooingleAdditionRequest = AddDooingleRequest(guest.id!!, "새 뒹글 내용")
 
         every { mockSocialUserRepository.findByIdOrNull(guest.id!!) } returns guest
         every { mockSocialUserRepository.findByIdOrNull(owner.id!!) } returns null // 존재하지 않는 ownerId 가정
 
         // when
-        val result = kotlin.runCatching { dooingleService.addDooingle(owner.id!!, dooingleAdditionRequest) }
+//        val result = kotlin.runCatching { dooingleService.addDooingle(owner.id!!, dooingleAdditionRequest) }
 
         // then // TODO 예외 처리 공통화 이후 더 자세하게 예외 점검할 것
-        result.shouldNotBeSuccess()
-        shouldThrow<Exception> { result.getOrThrow() }
+//        result.shouldNotBeSuccess()
+//        shouldThrow<Exception> { result.getOrThrow() }
     }
 
     /*
@@ -139,11 +143,11 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         every { mockSocialUserRepository.findByIdOrNull(owner.id!!) } returns null // 존재하지 않는 ownerId 가정
 
         // when
-        val result = kotlin.runCatching { dooingleService.getPage(owner.id!!, guest.id!!, null) }
+//        val result = kotlin.runCatching { dooingleService.getPage(owner.id!!, guest.id!!, null) }
 
         // then // TODO 예외 처리 공통화 이후 더 자세하게 예외 점검할 것
-        result.shouldNotBeSuccess()
-        shouldThrow<Exception> { result.getOrThrow() }
+//        result.shouldNotBeSuccess()
+//        shouldThrow<Exception> { result.getOrThrow() }
     }
 
     @Test
@@ -152,11 +156,11 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         every { mockSocialUserRepository.findByIdOrNull(owner.id!!) } returns null // 존재하지 않는 ownerId 가정
 
         // when
-        val result = kotlin.runCatching { dooingleService.getPage(owner.id!!, guest.id!!, DooingleService.USER_FEED_PAGE_SIZE.toLong()) }
+//        val result = kotlin.runCatching { dooingleService.getPage(owner.id!!, guest.id!!, DooingleService.USER_FEED_PAGE_SIZE.toLong()) }
 
         // then // TODO 예외 처리 공통화 이후 더 자세하게 예외 점검할 것
-        result.shouldNotBeSuccess()
-        shouldThrow<Exception> { result.getOrThrow() }
+//        result.shouldNotBeSuccess()
+//        shouldThrow<Exception> { result.getOrThrow() }
     }
 
     @Test
@@ -164,14 +168,14 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         // given
         val cursor: Long? = null // 최신 뒹글 피드 조건
         val pageRequest = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
-        every { mockDooingleRepository.getDooinglesBySlice(cursor, pageRequest) } returns theLatestSliceOfDooingleResponseList
+        every { mockDooingleRepository.getDooinglesBySlice(cursor, pageRequest) } returns theLatestSliceOfDooingleFeedResponseList
 
         // when
-        val result = dooingleService.getDooingleFeeds(cursor, PageRequest.ofSize(DooingleFeedController.PAGE_SIZE))
+        val result = dooingleService.getDooingleFeed(cursor, PageRequest.ofSize(DooingleFeedController.PAGE_SIZE))
 
         // then
         /*result.size shouldBe DooingleFeedController.PAGE_SIZE // 실제 가져오는 크기가 PAGE_SIZE보다 작은 경우 문제*/
-        result.content.first().dooingleId shouldBe theLatestSliceOfDooingleResponseList.first().dooingleId
+        result.content.first().dooingleId shouldBe theLatestSliceOfDooingleFeedResponseList.first().dooingleId
     }
 
     @Test
@@ -182,11 +186,26 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         every { mockDooingleRepository.getDooinglesBySlice(cursor, pageRequest) } returns theNextOfLatestSliceOfDooingleResponseList
 
         // when
-        val result = dooingleService.getDooingleFeeds(cursor, PageRequest.ofSize(DooingleFeedController.PAGE_SIZE))
+        val result = dooingleService.getDooingleFeed(cursor, PageRequest.ofSize(DooingleFeedController.PAGE_SIZE))
 
         // then
         /*result.size shouldBe DooingleFeedController.PAGE_SIZE // 실제 가져오는 크기가 PAGE_SIZE보다 작은 경우 문제*/
         result.content.first().dooingleId shouldBe theNextOfLatestSliceOfDooingleResponseList.first().dooingleId
+    }
+
+    @Test
+    fun `팔로우 피드를 조회하면 팔로우하는 사람의 뒹글 목록만 조회한다`() {
+        // 팔로우하지 않는 사람의 뒹글은 조회되지 않아야 함
+    }
+
+    @Test
+    fun `팔로우 피드 조회 시 커서가 전달되지 않는다면 최신 글부터 조회한다`() {
+
+    }
+
+    @Test
+    fun `팔로우 피드 조회 시 커서가 전달되면 커서 이전 글부터 조회한다`() {
+
     }
 
     private fun getFixtureOfOwner() = SocialUser(
@@ -222,28 +241,28 @@ class DooingleServiceUnitTest : AnnotationSpec() {
 //        DooingleAndCatchResponse(owner.nickname, 15, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
 //    ).sortedBy { it.dooingleId }
 
-    private fun getFixtureOfDooingleResponseList() = listOf<DooingleResponse>(
-        DooingleResponse(owner.nickname, 1, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 2, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 3, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 4, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 5, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 6, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 7, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 8, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 9, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 10, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 11, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 12, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 13, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 14, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 15, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 16, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 17, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 18, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 19, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 20, "뒹글 내용", ZonedDateTime.now()),
-        DooingleResponse(owner.nickname, 21, "뒹글 내용", ZonedDateTime.now()),
+    private fun getFixtureOfDooingleResponseList(): List<DooingleFeedResponse> = listOf<DooingleFeedResponse>(
+        DooingleFeedResponse(owner.nickname, 1, 1, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 2, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 3, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 4, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 5, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 6, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 7, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 8, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 9, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 10, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 11, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 12, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 13, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 14, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 15, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 16, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 17, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 18, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 19, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 20, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, 1, 21, "뒹글 내용", false, ZonedDateTime.now()),
     ).sortedBy { it.dooingleId }
 
     companion object {

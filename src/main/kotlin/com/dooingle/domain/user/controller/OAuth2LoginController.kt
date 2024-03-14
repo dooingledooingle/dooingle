@@ -24,6 +24,7 @@ class OAuth2LoginController(
         response.sendRedirect(loginPageUrl)
     }
 
+
     @GetMapping("/callback/{provider}")
     fun callback(
         @PathVariable provider: OAuth2Provider,
