@@ -4,16 +4,40 @@ import Dooingle from "../components/Dooingle.jsx";
 import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8080"
+const sliceInitialState = {
+  // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
+  size: 0,
+  content: [],
+  number: 0,
+  sort: {},
+  first: true,
+  last: true,
+  numberOfElements: 0,
+  pageable: {},
+  empty: true,
+}
 
 export default function FeedPage() {
 
   const [notification, setNotification] = useState(null);
   const [feed, setFeed] = useState(null);
+  const [dooingleSlice, setDooingleSlice] = useState(sliceInitialState);
+
+  useEffect(() => {
+    async function fetchDooingleSlice() {
+      const response = await axios.get(`${BASE_URL}/api/dooingles`);
+      return response.data;
+    }
+
+    fetchDooingleSlice().then(data => {
+      setDooingleSlice(data)
+    });
+  }, []);
 
   const handleConnect = () => {
 
@@ -123,14 +147,13 @@ export default function FeedPage() {
           </div>
 
           <div className="py-[1rem]">
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
-            <Dooingle></Dooingle>
+            {dooingleSlice.content.map(dooingle => (
+                <Dooingle
+                    key={dooingle.dooingleId}
+                    ownerName={dooingle.ownerName}
+                    content={dooingle.content}
+                />
+            ))}
           </div>
         </section>
 
