@@ -61,13 +61,14 @@ class SocialUserService(
     fun updateProfile(userId: Long, request: UpdateProfileDto, image: MultipartFile?): UpdateProfileDto {
         var imageUrl:String? = null
 
-        //기존 프로필사진이 있다면 S3를 거치지 않고 url 넘기기
-        if(request.imageUrl != null) {
-            imageUrl = request.imageUrl
+        //image 파일이 있다면 S3에 업로드, 파일이 없다면 URL은 있는지 확인
+        if(image != null){
+            validateImage(image)
+            imageUrl = upload2Cloud(image)
         }
         else {
-            image?.let {
-                imageUrl = upload2Cloud(image)
+            request.imageUrl?.let {
+                imageUrl = request.imageUrl
             }
         }
 
@@ -88,6 +89,20 @@ class SocialUserService(
         }
     }
 
+    fun validateImage(imageFile:MultipartFile){
+        val supportedContentType = listOf("image/png", "image/jpg", "image/jpeg")
+        val maxSizeBytes = 5 * 1024 * 1024
+
+        val fileContentType = imageFile.contentType
+
+        if(!supportedContentType.contains(fileContentType)){
+            throw InvalidParameterException("지원하지 않는 이미지 확장자입니다")
+        }
+        if(imageFile.size > maxSizeBytes) {
+            throw InvalidParameterException("이미지 크기는 5MB를 초과할 수 없습니다")
+        }
+    }
+
     fun upload2Cloud(image: MultipartFile) : String {
         // 1. 중복 방지를 위해 이미지에 랜덤 아이디 붙이기
         val originName = image.originalFilename
@@ -103,7 +118,7 @@ class SocialUserService(
         runCatching {
             amazonS3.putObject(bucketName, newName, image.inputStream, metadata)
         }.onFailure {
-            throw RuntimeException("S3 이미지 업로드에 실패했습니다")
+            throw RuntimeException("S3 이미지 업로드에 실패했습니다") //todo
         }
         return amazonS3.getUrl(bucketName, newName).toString()
     }
