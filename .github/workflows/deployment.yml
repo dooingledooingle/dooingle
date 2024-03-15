@@ -1,0 +1,48 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - add/backend-deploy
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup Java JDK 17 Adopt
+        uses: actions/setup-java@v4.0.0
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: gradlew bootJar
+        run: ./gradlew bootJar
+
+      - name: Copy jar to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_SSH_HOST }}
+          username: ${{ secrets.AWS_EC2_USERNAME }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          port: 22
+          source: "./build/libs/*.jar"
+          target: "~"
+          strip_components: 2
+
+      - name: SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_SSH_HOST }}
+          username: ${{ secrets.AWS_EC2_USERNAME }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: \
+            kill -9 $(ps -ef | grep java | head -n 1 | awk '{print $2}')
+            nohup java -jar *.jar --spring.profiles.active=dev 1> /dev/null 2>&1
