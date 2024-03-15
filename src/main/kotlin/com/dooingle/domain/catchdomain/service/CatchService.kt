@@ -2,7 +2,6 @@ package com.dooingle.domain.catchdomain.service
 
 import com.dooingle.domain.catchdomain.dto.AddCatchRequest
 import com.dooingle.domain.catchdomain.dto.CatchResponse
-import com.dooingle.domain.catchdomain.dto.DeleteCatchRequest
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
@@ -20,14 +19,14 @@ class CatchService(
     private val notificationService: NotificationService
 ) {
     // 캐치 생성
-    fun addCatch(dooingleId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
+    fun addCatch(dooingleId: Long, ownerId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
             ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 
         // 해당 dooingle 의 주인만 catch 를 등록할 수 있다
-        if (dooingle.owner.id != addCatchRequest.ownerId) {
+        if (dooingle.owner.id != ownerId) {
             throw NotPermittedException(
-                userId = addCatchRequest.ownerId,
+                userId = ownerId,
                 modelName = "Dooingle", modelId = dooingleId)
         }
 
@@ -48,14 +47,14 @@ class CatchService(
 
     // 캐치 삭제
     @Transactional
-    fun deleteCatch(dooingleId: Long, catchId: Long, deleteCatchRequest: DeleteCatchRequest) {
+    fun deleteCatch(dooingleId: Long, catchId: Long, ownerId: Long) {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
             ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 
         // 해당 dooingle 의 주인만 catch 를 삭제할 수 있다
-        if (dooingle.owner.id != deleteCatchRequest.ownerId) {
+        if (dooingle.owner.id != ownerId) {
             throw NotPermittedException(
-                userId = deleteCatchRequest.ownerId,
+                userId = ownerId,
                 modelName = "Dooingle", modelId = dooingleId)
         }
 
