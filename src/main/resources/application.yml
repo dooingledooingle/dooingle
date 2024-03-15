@@ -4,3 +4,8 @@ spring:
       local-h2: local-env
       local-memory-h2: local-env
       test: local-memory-h2
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
