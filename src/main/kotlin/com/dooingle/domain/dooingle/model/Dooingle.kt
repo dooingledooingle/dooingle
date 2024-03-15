@@ -4,6 +4,7 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.global.entity.BaseEntity
 import jakarta.persistence.*
+import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "dooingle")
@@ -21,6 +22,9 @@ class Dooingle(
 
     @Column
     val content: String,
+
+    @Column
+    var blockedAt: ZonedDateTime? = null
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,6 +4,7 @@ import com.dooingle.domain.catchdomain.model.Catch
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
+import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
@@ -66,11 +67,11 @@ class DooingleService(
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
     }
 
-    fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
+    fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
         return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
     }
 
-    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleResponse> {
+    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
         return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
     }
 
