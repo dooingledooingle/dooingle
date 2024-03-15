@@ -19,7 +19,7 @@ class OAuth2LoginController(
     private val oAuth2LoginService: OAuth2LoginService,
     @Value("\${frontend.domain}") frontendUri: String,
 ) {
-    private val frontendFeedPageUri = frontendUri + "feeds"
+    private val frontendFeedPageUri = "$frontendUri/feeds"
 
     @GetMapping("/login/{provider}")
     fun redirectLoginPage(@PathVariable provider: OAuth2Provider, response: HttpServletResponse) {
