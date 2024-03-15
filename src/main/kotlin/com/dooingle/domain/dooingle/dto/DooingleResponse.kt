@@ -19,19 +19,4 @@ data class DooingleResponse(
             )
         }
     }
-
-//    fun toDooingleAndCatchResponse(catch: Catch?): DooingleAndCatchResponse {
-//        return DooingleAndCatchResponse(
-//            ownerName = ownerName,
-//            dooingleId = dooingleId,
-//            content = content,
-//            catch = (catch)?.let {
-//                if (it.deletedAt == null)
-//                    CatchResponse.from(it)
-//                else
-//                    "삭제된 캐치입니다."
-//            },
-//            createdAt = createdAt
-//        )
-//    }
 }
