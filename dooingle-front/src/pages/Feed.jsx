@@ -28,12 +28,11 @@ export default function FeedPage() {
 
     sse.addEventListener('notification', e => {
       const { data: receivedNotification } = e;
+      console.log(JSON.parse(receivedNotification))
 
-      console.log(receivedNotification);
-      setNotification(receivedNotification)
-
-      // 전달받는 텍스트 데이터는 메세지-dooingleId 형식. 예) 새로운 뒹글이 굴러왔어요!-5
-      // TODO : 이벤트 발생 시 알림 팝업 띄워서 메세지 보여주고, 팝업 클릭 시 UserDooingle 페이지로 이동(cursor로 dooingleId 보내기)
+      // 전달받는 데이터는 NotificationResponse 형식. 예시- {notificationType:'DOOINGLE', cursor:5}
+      // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
+      //  알림 컴포넌트 클릭 시 PersonalDooingle 페이지로 이동(cursor 함께 보내기)
     });
 
     sse.addEventListener('feed', e => {
