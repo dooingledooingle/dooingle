@@ -4,6 +4,7 @@ spring:
       local-h2: local-env
       local-memory-h2: local-env
       local-dev-infra: local-dev-env
+      dev: dev-env
       test: local-memory-h2
 
   servlet:
