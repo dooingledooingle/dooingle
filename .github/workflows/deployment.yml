@@ -48,4 +48,4 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           port: 22
           script_stop: true
-          script: ./deployment.sh
+          script: sudo ./deployment.sh
