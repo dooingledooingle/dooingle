@@ -3,9 +3,9 @@ PROJECT_ROOT="/home/ubuntu/dooingle"
 
 JAR_FILE="$PROJECT_ROOT/build/libs/dooingle-0.1.jar"
 
-APP_LOG="$PROJECT_ROOT/code-deploy-log/application.log"
-ERROR_LOG="$PROJECT_ROOT/code-deploy-log/error.log"
-DEPLOY_LOG="$PROJECT_ROOT/code-deploy-log/deploy.log"
+APP_LOG="$PROJECT_ROOT/application.log"
+ERROR_LOG="$PROJECT_ROOT/error.log"
+DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
 TIME_NOW=$(date +%c)
 
