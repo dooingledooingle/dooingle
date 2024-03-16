@@ -21,10 +21,15 @@ const sliceInitialState = {
   pageable: {},
   empty: true,
 }
+const notificationInitialState = {
+  notificationType: null,
+  message: null,
+  cursor: 0
+}
 
 export default function FeedPage() {
 
-  const [notification, setNotification] = useState(null);
+  const [sseNotification, setSseNotification] = useState(notificationInitialState);
   const [feed, setFeed] = useState(null);
   const [dooingleSlice, setDooingleSlice] = useState(sliceInitialState);
 
@@ -42,7 +47,7 @@ export default function FeedPage() {
   const handleConnect = () => {
 
     const sse = new EventSourcePolyfill(`${BASE_URL}/api/notifications/connect?userId=2`);
-    // TODO: headers 에 토큰 넣어서 보내야 함
+    // TODO: 토큰 넣어서 보내야 함
 
     sse.addEventListener('connect', (e) => {
       const { data: receivedConnectData } = e;
@@ -51,11 +56,16 @@ export default function FeedPage() {
     });
 
     sse.addEventListener('notification', e => {
-      const { data: receivedNotification } = e;
-      console.log(JSON.parse(receivedNotification))
+      const receivedNotification = JSON.parse(e.data);
+
+      switch (receivedNotification.notificationType) {
+        case 'DOOINGLE': receivedNotification.message = "새 뒹글이 굴러왔어요!"; break;
+        case 'CATCH': receivedNotification.message = "내 뒹글에 캐치가 달렸어요!"; break;
+      }
+      setSseNotification(receivedNotification)
 
       // 전달받는 데이터는 NotificationResponse 형식. 예시- {notificationType:'DOOINGLE', cursor:5}
-      // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
+      // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+ 팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
       //  알림 컴포넌트 클릭 시 PersonalDooingle 페이지로 이동(cursor 함께 보내기)
     });
 
@@ -118,7 +128,10 @@ export default function FeedPage() {
             <div className="flex flex-col items-center pt-10">
               <div className="text-xl text-red-500">알림 관련 임시</div>
               <button onClick={handleConnect}>connect 요청</button>
-              <div>{notification}</div>
+              <div className="py-[1rem]">
+                {sseNotification.message}
+                {sseNotification.cursor}
+              </div>
               <div>{feed}</div>
               <button onClick={handleTestConnect}>test connect 요청</button>
               <button onClick={handleTestClick}>test 요청</button>
