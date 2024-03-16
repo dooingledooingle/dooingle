@@ -12,6 +12,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
 
+      - name: Make development environment configuration yml file
+        run: mkdir -p ./src/main/resources \
+          && touch ./src/main/resources/application-dev-env.yml \
+          && echo "${{ secrets.DEV_ENV }}" > ./src/main/resources/application-dev-env.yml
+
       - name: Setup Java JDK 17 Adopt
         uses: actions/setup-java@v4.0.0
         with:
@@ -22,17 +27,6 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: gradlew bootJar
-        env:
-          oauth2.kakao.client_id: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
-          oauth2.kakao.redirect_url: ${{ secrets.OAUTH2_KAKAO_REDIRECT_URL }}
-          jwt.secret_key: ${{ secrets.JWT_SECRET_KEY }}
-          jwt.issuer: ${{ secrets.JWT_ISSUER }}
-          jwt.access_token_expiration_hour: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
-          cloud.aws.credentials.accessKey: ${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}
-          cloud.aws.credentials.secretKey: ${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}
-          cloud.aws.region: ${{ secrets.AWS_REGION }}
-          cloud.aws.s3.bucketName: ${{ secrets.AWS_S3_BUCKET_NAME }}
-          frontend.domain: ${{ secrets.FRONTEND_DOMAIN }}
         run: ./gradlew bootJar
 
       - name: Copy jar to server

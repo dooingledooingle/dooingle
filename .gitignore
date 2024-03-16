@@ -8,6 +8,7 @@ build/
 ### 환경 변수 - 절대 외부 노출 금지, 외부 노출 시 빽마당 식샷추 팀원 전원에게 돌려야 함
 application-local-env.yml
 application-local-dev-env.yml
+application-dev-env.yml
 
 ### vercel
 .vercel
