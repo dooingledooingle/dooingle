@@ -23,16 +23,16 @@ jobs:
 
       - name: gradlew bootJar
         env:
-          OAUTH2_KAKAO_CLIENT_ID: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
-          OAUTH2_KAKAO_REDIRECT_URL: ${{ secrets.OAUTH2_KAKAO_REDIRECT_URL }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
-          JWT_ACCESS_TOKEN_EXPIRATION_HOUR: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
-          AWS_CREDENTIALS_ACCESS_KEY: ${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}
-          AWS_CREDENTIALS_SECRET_KEY: ${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-          FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
+          oauth2.kakao.client_id: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
+          oauth2.kakao.redirect_url: ${{ secrets.OAUTH2_KAKAO_REDIRECT_URL }}
+          jwt.secret_key: ${{ secrets.JWT_SECRET_KEY }}
+          jwt.issuer: ${{ secrets.JWT_ISSUER }}
+          jwt.access_token_expiration_hour: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
+          cloud.aws.credentials.accessKey: ${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}
+          cloud.aws.credentials.secretKey: ${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}
+          cloud.aws.region: ${{ secrets.AWS_REGION }}
+          cloud.aws.s3.bucketName: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          frontend.domain: ${{ secrets.FRONTEND_DOMAIN }}
         run: ./gradlew bootJar
 
       - name: Copy jar to server
