@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew bootJar
         env:
           OAUTH2_KAKAO_CLIENT_ID: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
-          OAUTH2_KAKAO_REDIRECT_URL: ${{ screts.OAUTH2_KAKAO_REDIRECT_URL }}
+          OAUTH2_KAKAO_REDIRECT_URL: ${{ secrets.OAUTH2_KAKAO_REDIRECT_URL }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_ACCESS_TOKEN_EXPIRATION_HOUR: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
