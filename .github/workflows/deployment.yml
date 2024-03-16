@@ -23,6 +23,17 @@ jobs:
 
       - name: gradlew bootJar
         run: ./gradlew bootJar
+        env:
+          OAUTH2_KAKAO_CLIENT_ID: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
+          OAUTH2_KAKAO_REDIRECT_URL: ${{ screts.OAUTH2_KAKAO_REDIRECT_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_ACCESS_TOKEN_EXPIRATION_HOUR: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
+          AWS_CREDENTIALS_ACCESS_KEY: ${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}
+          AWS_CREDENTIALS_SECRET_KEY: ${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
 
       - name: Copy jar to server
         uses: appleboy/scp-action@v0.1.7

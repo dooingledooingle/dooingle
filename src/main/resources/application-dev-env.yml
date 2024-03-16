@@ -1,25 +1,25 @@
 # 감춰야 하는 변수들은 일단 모두 여기에 추가할 것
 oauth2:
   kakao:
-    client_id: ${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
-    redirect_url: ${{ screts.OAUTH2_KAKAO_REDIRECT_URL }}
+    client_id: ${{ OAUTH2_KAKAO_CLIENT_ID }}
+    redirect_url: ${{ OAUTH2_KAKAO_REDIRECT_URL }}
     auth_server_base_url: "https://kauth.kakao.com"
     resource_server_base_url: "https://kapi.kakao.com"
 
 jwt:
-  secret_key: ${{ secrets.JWT_SECRET_KEY }}
-  issuer: ${{ secrets.JWT_ISSUER }}
-  access_token_expiration_hour: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
+  secret_key: ${{ JWT_SECRET_KEY }}
+  issuer: ${{ JWT_ISSUER }}
+  access_token_expiration_hour: ${{ JWT_ACCESS_TOKEN_EXPIRATION_HOUR }}
 
 cloud:
   aws:
     credentials:
-      accessKey: ${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}
-      secretKey: ${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}
+      accessKey: ${{ AWS_CREDENTIALS_ACCESS_KEY }}
+      secretKey: ${{ AWS_CREDENTIALS_SECRET_KEY }}
     region:
-      static: ${{ secrets.AWS_REGION }}
+      static: ${{ AWS_REGION }}
     s3:
-      bucketName: ${{ secrets.AWS_S3_BUCKET_NAME }}
+      bucketName: ${{ AWS_S3_BUCKET_NAME }}
 
 frontend:
-  domain: ${{ secrets.FRONTEND_DOMAIN }}
+  domain: ${{ FRONTEND_DOMAIN }}
