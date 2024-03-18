@@ -31,9 +31,17 @@
     익명 서비스의 특성상 존재할 수 있는 악의적 이용자로부터 뒹글러들을 보호하기 위해 서비스 운영자가 관리, 감독할 수 있도록 신고, 차단 서비스를 제공합니다.
 
 ## 기술적 의사결정
-- [뜨거운 뒹글러 목록 조회](https://www.notion.so/rugii913/2024-02-28-38ec48a64e5c4d0494f14cde992d20ba)
-- [개인 뒹글 페이지 조회 쿼리 개션](https://www.notion.so/rugii913/2024-03-08-1edf38fa8e5947b78729bd492f3bca78)
-- [프론트엔드 로그인 구현 리다이렉트](https://www.notion.so/rugii913/2024-03-11-4762e20bbde64b6895fb4323abf08b60)
+- [기술 및 서비스 의사 결정](https://www.notion.so/rugii913/47139fe7a2d948ff830caa625cf742f6)
+  - [뜨거운 뒹글러 목록 조회](https://www.notion.so/rugii913/2024-02-28-38ec48a64e5c4d0494f14cde992d20ba)
+  - [개인 뒹글 페이지 조회 쿼리 개션](https://www.notion.so/rugii913/2024-03-08-1edf38fa8e5947b78729bd492f3bca78)
+  - [프론트엔드 로그인 구현 리다이렉트](https://www.notion.so/rugii913/2024-03-11-4762e20bbde64b6895fb4323abf08b60)
+
 ## 트러블 슈팅
+- [트러블 슈팅](https://www.notion.so/rugii913/42340aebdb3d4d0ea2b606e5bbbc6739)
+
 ## 아키텍쳐
+<img src="./readme-images/architecture-2024-03-18.png" width="full" alt="2024년 3월 18일 기준 서버 아키텍처">
+
 ## 빌드 방법
+- (백엔드) GitHub Actions를 이용한 jar 빌드 및 AWS S3 전송, AWS CodeDeploy를 이용하여 AWS S3에 올라온 jar 파일 배포 
+- (프론트엔드) GitHub Actions를 이용한 빌드 및 Vercel 자동 배포
