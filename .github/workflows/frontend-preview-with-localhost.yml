@@ -1,11 +1,11 @@
-name: frontend deployment
+name: frontend preview with localhost
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
     branches:
-      - frontend/main
+      - add/frontend/env-separation
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
@@ -16,16 +16,17 @@ jobs:
       # (2) .env 파일 작성
       - name: Make VITE yml file
         run: touch ./dooingle-front/.env \
-          && echo "${{ secrets.VITE_PRODUCTION_ENV }}" > ./dooingle-front/.env
+          && echo "${{ secrets.VITE_LOCALHOST_ENV }}" > ./dooingle-front/.env
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      # (4) Vercel preview 환경으로 배포 - https://vercel.com/guides/how-can-i-use-github-actions-with-vercel
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
