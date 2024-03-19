@@ -1,13 +1,13 @@
-name: frontend deployment # 프론트엔드 코드 배포 - secrets.VITE_PRODUCTION_ENV 내용은 AWS EC2 관련 환경 변수
+name: frontend deployment with dev server # 프론트엔드 코드 배포 - secrets.VITE_PRODUCTION_ENV 내용은 AWS EC2 dev 서버 관련 환경 변수
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
     branches:
-      - frontend/main
+      - frontend/dev
 jobs:
-  deploy-production:
+  deploy-dev:
     runs-on: ubuntu-latest
     steps:
       # (1) 체크아웃
