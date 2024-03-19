@@ -3,7 +3,7 @@ spring:
     group:
       local-h2: local-env
       local-memory-h2: local-env
-      local-dev-infra: local-dev-env
+      local-dev-infra: local-dev-infra-env
       dev: dev-env
       test: local-memory-h2
 
