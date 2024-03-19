@@ -16,7 +16,6 @@ import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeIn
-import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -64,7 +63,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `팔로우 피드 조회 시 커서가 전달되지 않는다면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
+    fun `특정 회원이 다른 회원들을 팔로우하는 경우 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -76,62 +75,55 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        result.content.forEach { it.ownerId shouldBeIn listOf(userB.id, userC.id) }
+        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
+        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
 
-        val dooinglesFollowing = dooingleRepository.findAll()
-            .filter { it.owner.id == userB.id || it.owner.id == userC.id }
+        val dooinglesFollowingSortedList = dooingleRepository.findAll()
+            .filter { followingUserIdList.contains(it.owner.id) }
             .sortedByDescending { it.id }
-        result.content[0].dooingleId shouldBe dooinglesFollowing[0].id
-
-        for (i in 0 until result.content.size - 1) {
-            result.content[i].dooingleId shouldBeGreaterThan result.content[i + 1].dooingleId
-        }
+        result.zip(dooinglesFollowingSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
 
         result.content.size shouldBe DooingleFeedController.PAGE_SIZE
         result.hasNext() shouldBe true
     }
 
     @Test
-    fun `팔로우 피드 조회 시 커서가 전달되면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
+    fun `특정 회원이 다른 회원들을 팔로우하는 경우 커서와 함께 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
-        dooingleRepository.saveAll(dooingleList)
+        val dooingles = dooingleRepository.saveAll(dooingleList)
 
         val userId: Long = userA.id!!
-        val cursor: Long = 6
+        val cursor: Long = dooingles[22].id!!
 
         // WHEN
         val result = dooingleService.getDooingleFeedOfFollowing(userId, cursor, DEFAULT_PAGE_REQUEST)
 
-        result.content.forEach { it.ownerId shouldBeIn listOf(userB.id, userC.id) }
+        // THEN
+        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
+        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
 
-        val dooinglesFollowingBeforeCursor = dooingleRepository.findAll()
-            .filter { it.owner.id == userB.id || it.owner.id == userC.id }
-            .filter { it.id!! < cursor }
+        val dooinglesFollowingBeforeCursorSortedList = dooingleRepository.findAll()
+            .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
             .sortedByDescending { it.id }
-        result.content[0].dooingleId shouldBe dooinglesFollowingBeforeCursor[0].id
+        result.zip(dooinglesFollowingBeforeCursorSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
 
-        for (i in 0 until result.content.size - 1) {
-            result.content[i].dooingleId shouldBeGreaterThan result.content[i + 1].dooingleId
-        }
-
-        result.content.size shouldBe dooinglesFollowingBeforeCursor.size
+        result.content.size shouldBe dooinglesFollowingBeforeCursorSortedList.size
         result.hasNext() shouldBe false
     }
 
     @Test
-    fun `팔로우 피드 조회 시 전달된 user id의 유저가 존재하지 않는다면 예외가 발생한다`() {
+    fun `존재하지 않는 유저의 팔로우 피드를 조회하면 예외가 발생한다`() {
         // GIVEN
-        socialUserRepository.saveAll(userList)
         val userId: Long = 100
 
         // WHEN & THEN
+        socialUserRepository.findByIdOrNull(userId) shouldBe null
+
         shouldThrow<ModelNotFoundException> {
             dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
         }
-
-        socialUserRepository.findByIdOrNull(userId) shouldBe null
     }
 
     private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
