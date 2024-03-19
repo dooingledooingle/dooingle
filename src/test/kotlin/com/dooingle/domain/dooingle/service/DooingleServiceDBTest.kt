@@ -63,7 +63,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `특정 회원이 다른 회원들을 팔로우하는 경우 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
+    fun `특정 유저가 다른 유저들을 팔로우하는 경우 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -88,7 +88,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `특정 회원이 다른 회원들을 팔로우하는 경우 커서와 함께 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
+    fun `특정 유저가 다른 유저들을 팔로우하는 경우 커서와 함께 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -110,6 +110,22 @@ class DooingleServiceDBTest(
         result.zip(dooinglesFollowingBeforeCursorSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
 
         result.content.size shouldBe dooinglesFollowingBeforeCursorSortedList.size
+        result.hasNext() shouldBe false
+    }
+
+    @Test
+    fun `특정 유저가 다른 유저를 팔로우하지 않는 경우 팔로우 피드를 조회하면 0건의 결과가 조회된다`() {
+        // GIVEN
+        socialUserRepository.saveAll(userList)
+        dooingleRepository.saveAll(dooingleList)
+
+        val userId: Long = userA.id!!
+
+        // WHEN
+        val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
+
+        // THEN
+        result.content.size shouldBe 0
         result.hasNext() shouldBe false
     }
 
