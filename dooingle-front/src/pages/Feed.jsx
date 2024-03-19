@@ -7,8 +7,8 @@ import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {useEffect, useState} from "react";
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import axios from "axios";
+import { BACKEND_SERVER_ORIGIN } from "../env.js"
 
-const BASE_URL = "http://localhost:8080"
 const sliceInitialState = {
   // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
   size: 0,
@@ -30,7 +30,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     async function fetchDooingleSlice() {
-      const response = await axios.get(`${BASE_URL}/api/dooingles`);
+      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`);
       return response.data;
     }
 
@@ -41,7 +41,7 @@ export default function FeedPage() {
 
   const handleConnect = () => {
 
-    const sse = new EventSourcePolyfill(`${BASE_URL}/api/notifications/connect?userId=2`);
+    const sse = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/api/notifications/connect?userId=2`);
     // TODO: headers 에 토큰 넣어서 보내야 함
 
     sse.addEventListener('connect', (e) => {
@@ -75,7 +75,7 @@ export default function FeedPage() {
   const handleTestConnect = () => {
 
     // SSE 연결 요청. EventSource 라는 인터페이스를 써야 하는데 헤더 전달을 지원하는 Event-Source-Polyfill 사용
-    const sse = new EventSourcePolyfill(`${BASE_URL}/connect`);
+    const sse = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/connect`);
 
     // test-connect 라는 이름의 이벤트가 발생할 때 콘솔에 데이터 출력하는 이벤트 리스너 등록
     sse.addEventListener('test-connect', (e) => {
@@ -98,7 +98,7 @@ export default function FeedPage() {
 
   // test 요청 버튼 클릭 시 localhost/test 로 요청 보냄
   const handleTestClick = async () => {
-    await axios.post(`${BASE_URL}/test`)
+    await axios.post(`${BACKEND_SERVER_ORIGIN}/test`)
         .then(function (response) {
           console.log('handleTestClick',response);
         })
