@@ -53,7 +53,7 @@ class DooingleService(
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
         dooingleCount.plus()
 
-        notificationService.addDooingleNotification(user = owner, dooingleId = dooingle.id!!)
+        notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 
         return DooingleResponse.from(dooingle)
     }

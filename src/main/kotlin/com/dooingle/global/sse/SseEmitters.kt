@@ -54,10 +54,10 @@ class SseEmitters {
         }
     }
 
-    fun sendNewFeedNotification() {
+    fun sendNewFeedNotification(data: Any) {
         notificationEmitters.forEach { (key, list) ->
             list.forEach { emitter ->
-                emitter.sendData(eventName = "feed", data = "new feed")
+                emitter.sendData(eventName = "feed", data = data)
             }
         }
     }
