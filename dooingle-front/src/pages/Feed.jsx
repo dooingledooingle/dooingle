@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Dooingle from "../components/Dooingle.jsx";
 import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {useEffect, useState} from "react";
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import {EventSourcePolyfill} from 'event-source-polyfill';
 import axios from "axios";
-import { BACKEND_SERVER_ORIGIN } from "../env.js"
+import {BACKEND_SERVER_ORIGIN} from "../env.js"
 
 const sliceInitialState = {
   // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
@@ -35,7 +35,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     async function fetchDooingleSlice() {
-      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`);
+      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`, {withCredentials: true});
       return response.data;
     }
 
