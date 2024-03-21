@@ -6,8 +6,8 @@ import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {Link, useSearchParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { BACKEND_SERVER_ORIGIN } from "../env.js"
 
-const BASE_URL = "http://localhost:8080"
 const sliceInitialState = {
   // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
   size: 0,
@@ -29,7 +29,7 @@ export default function PersonalDooinglePage() {
   useEffect(() => {
     const userId = query.get("user-id")
     async function fetchDooingleSlice() {
-      const response = await axios.get(`${BASE_URL}/api/users/${userId}/dooingles`);
+      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userId}/dooingles`);
       return response.data;
     }
 

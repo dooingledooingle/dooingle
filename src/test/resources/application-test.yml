@@ -20,3 +20,6 @@ cloud:
       static: "test"
     s3:
       bucketName: "test"
+
+frontend:
+  domain: "test"
