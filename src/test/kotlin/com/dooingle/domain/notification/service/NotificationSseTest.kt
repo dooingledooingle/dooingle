@@ -1,5 +1,7 @@
 package com.dooingle.domain.notification.service
 
+import com.dooingle.domain.dooingle.model.Dooingle
+import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.dto.NotificationResponse
 import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.user.model.SocialUser
@@ -30,7 +32,8 @@ import org.springframework.test.context.TestConstructor
 @ActiveProfiles("test")
 class NotificationSseTest(
     private val jwtHelper: JwtHelper,
-    private val socialUserRepository: SocialUserRepository
+    private val socialUserRepository: SocialUserRepository,
+    private val dooingleRepository: DooingleRepository
 ) {
     @Test
     @Throws(InterruptedException::class)
@@ -67,7 +70,7 @@ class NotificationSseTest(
         val eventWrapper = EventSourceWrapper()
         factory.newEventSource(connectRequest, eventWrapper.listener)
 
-        val addDooingleResponse = getAddDooingleResponse(userA.id!!, addDooingleRequest)
+        val addDooingleResponse = getResponse(addDooingleRequest)
 
         // THEN
         eventWrapper.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
@@ -87,7 +90,35 @@ class NotificationSseTest(
     @Test
     @Throws(InterruptedException::class, JSONException::class, IOException::class)
     fun `특정 유저가 SSE 연결된 경우 해당 유저가 남긴 뒹글에 캐치가 달리면 알림이 전달된다`() {
+        // GIVEN
+        socialUserRepository.save(userA)
+        socialUserRepository.save(userB)
+        val dooingle = dooingleRepository.save(Dooingle(guest = userA, owner = userB, content = "질문입니다.", catch = null))
 
+        val connectRequestOfA = generateConnectRequest(jwtHelper.generateAccessToken(userA.id!!, userA.role.toString()))
+        val addCatchRequest = generateAddCatchRequest(
+            token = jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()),
+            dooingleId = dooingle.id!!
+        )
+
+        // WHEN
+        val eventWrapperOfA = EventSourceWrapper()
+        factory.newEventSource(connectRequestOfA, eventWrapperOfA.listener)
+
+        val addCatchResponse = getResponse(addCatchRequest)
+
+        // THEN
+        eventWrapperOfA.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
+
+        addCatchResponse.code shouldBe HttpStatus.CREATED.value()
+
+        val notificationString = objectMapper.writeValueAsString(
+            NotificationResponse(
+                notificationType = NotificationType.CATCH.toString(),
+                cursor = dooingle.id!!
+            )
+        )
+        eventWrapperOfA.receivedData[1] shouldBe notificationString
     }
 
     @Test
@@ -104,10 +135,10 @@ class NotificationSseTest(
     }
 
     @Throws(IOException::class)
-    private fun getAddDooingleResponse(userId: Long, addDooingleRequest: Request): Response {
-        val call = client.newCall(addDooingleRequest)
-        val dooingleResponse = call.execute()
-        return dooingleResponse
+    private fun getResponse(request: Request): Response {
+        val call = client.newCall(request)
+        val response = call.execute()
+        return response
     }
 
     @Throws(JSONException::class)
@@ -116,6 +147,17 @@ class NotificationSseTest(
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
         return Request.Builder()
             .url("http://localhost:$port/api/users/$userId/dooingles")
+            .header("Cookie", "accessToken=$token")
+            .post(requestBody)
+            .build()
+    }
+
+    @Throws(JSONException::class)
+    private fun generateAddCatchRequest(token: String, dooingleId: Long): Request {
+        json.put("content", "답변입니다.")
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        return Request.Builder()
+            .url("http://localhost:$port/api/dooingles/$dooingleId/catches")
             .header("Cookie", "accessToken=$token")
             .post(requestBody)
             .build()
