@@ -14,10 +14,13 @@ class WebConfig : WebMvcConfigurer {
         registry.addConverter(OAuth2ProviderConverter())
     }
 
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
+    override fun addCorsMappings(registry: CorsRegistry) { /* TODO 이 부분은 나중에 SecurityConfig 쪽으로 옮기는 게 좋을 것 같습니다. */
+        registry
+            .addMapping("/**")
+            .allowedOrigins("http://localhost:5173") // CORS 설정 - http://localhost:5173 origin 허용
             .allowedMethods(*ALLOWED_METHOD_NAMES.split(",".toRegex()).dropLastWhile { it.isEmpty() }
                 .toTypedArray())
+            .allowCredentials(true) // credentials 포함한 요청 허용
             .exposedHeaders(HttpHeaders.LOCATION)
     }
 

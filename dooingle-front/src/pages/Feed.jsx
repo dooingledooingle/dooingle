@@ -30,7 +30,9 @@ export default function FeedPage() {
 
   useEffect(() => {
     async function fetchDooingleSlice() {
-      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`);
+      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`, {
+        withCredentials: true, // ajax 요청에서 withCredentials config 추가
+      });
       return response.data;
     }
 

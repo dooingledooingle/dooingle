@@ -28,11 +28,13 @@ class SecurityConfig(
             .csrf { it.disable() }
             .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } }
             .authorizeHttpRequests {
-                it
-//                    .requestMatchers(
-//                        "/api/**"
-//                    ).authenticated()
-                    .anyRequest().permitAll()
+                it.requestMatchers(
+                        "/api/**",
+                    ).authenticated()
+                    .requestMatchers(
+                        "/oauth2/login/**", "/oauth2/callback/**",
+                    ).permitAll() // 로그인, 콜백 리다이렉트 url은 인증 불필요
+//                    .anyRequest().permitAll()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {
