@@ -103,6 +103,6 @@ fun SseEmitter.sendData(eventName: String, data: Any) {
                 .data(data) // 더미 데이터
         )
     } catch (e: IOException) {
-        throw RuntimeException(e)   // TODO: CustomException 생성
+        complete() // 브라우저 닫은 뒤에 데이터 전송하면 broken pipe 에러 생기기 때문에 완료시킴
     }
 }
