@@ -41,8 +41,9 @@ export default function FeedPage() {
 
   const handleConnect = () => {
 
-    const sse = new EventSourcePolyfill(`${BASE_URL}/api/notifications/connect?userId=2`);
-    // TODO: headers 에 토큰 넣어서 보내야 함
+    const sse = new EventSourcePolyfill(
+        `${BASE_URL}/api/notifications/connect`,
+        {withCredentials: true});
 
     sse.addEventListener('connect', (e) => {
       const { data: receivedConnectData } = e;
