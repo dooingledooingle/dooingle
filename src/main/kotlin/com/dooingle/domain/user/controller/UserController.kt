@@ -26,7 +26,7 @@ class UserController(
     private val socialUserService: SocialUserService
 ) {
     @GetMapping
-    fun GetDooinglerList(@RequestParam condition: String?): ResponseEntity<List<DooinglerResponse>> {
+    fun getDooinglerList(@RequestParam condition: String?): ResponseEntity<List<DooinglerResponse>> {
         return ResponseEntity.ok().body(socialUserService.getDooinglerList(condition))
     }
 
