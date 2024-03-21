@@ -62,6 +62,14 @@ class SseEmitters {
         }
     }
 
+    fun completeAllEmitters() {
+        notificationEmitters.forEach { (key, list) ->
+            list.forEach { emitter ->
+                emitter.complete()
+            }
+        }
+    }
+
     private val testEmitters: MutableList<SseEmitter> = CopyOnWriteArrayList()
 
     fun add(emitter: SseEmitter): SseEmitter {
