@@ -1,9 +1,12 @@
 package com.dooingle.domain.notification.service
 
+import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
+import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.dto.NotificationResponse
 import com.dooingle.domain.notification.model.NotificationType
+import com.dooingle.domain.notification.repository.NotificationRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.jwt.JwtHelper
@@ -20,7 +23,9 @@ import okhttp3.sse.EventSources.createFactory
 import okio.IOException
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
@@ -33,8 +38,23 @@ import org.springframework.test.context.TestConstructor
 class NotificationSseTest(
     private val jwtHelper: JwtHelper,
     private val socialUserRepository: SocialUserRepository,
-    private val dooingleRepository: DooingleRepository
+    private val dooingleRepository: DooingleRepository,
+    private val catchRepository: CatchRepository,
+    private val dooingleCountRepository: DooingleCountRepository,
+    private val notificationRepository: NotificationRepository,
+    private val sseEmitters: SseEmitters
 ) {
+
+    @BeforeEach
+    fun clearData() {
+        sseEmitters.completeAllEmitters()
+        notificationRepository.deleteAll()
+        dooingleCountRepository.deleteAll()
+        catchRepository.deleteAll()
+        dooingleRepository.deleteAll()
+        socialUserRepository.deleteAll()
+    }
+
     @Test
     @Throws(InterruptedException::class)
     fun `특정 유저가 접속한 브라우저에서 SSE 연결을 요청하면 connect 이벤트의 데이터가 전달된다`() {
@@ -76,15 +96,18 @@ class NotificationSseTest(
         eventWrapper.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
 
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
-        val dooingleId = addDooingleResponse.body.string()
-            .substringAfter("dooingleId\":").substringBefore(",").toLong()
+        val dooingleString = addDooingleResponse.body.string()
+
         val notificationString = objectMapper.writeValueAsString(
             NotificationResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleId
+                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
             )
         )
         eventWrapper.receivedData[1] shouldBe notificationString
+
+        // 피드 알림
+        eventWrapper.receivedData[2] shouldBe dooingleString
     }
 
     @Test
@@ -96,7 +119,7 @@ class NotificationSseTest(
         val dooingle = dooingleRepository.save(Dooingle(guest = userA, owner = userB, content = "질문입니다.", catch = null))
 
         val connectRequestOfA = generateConnectRequest(jwtHelper.generateAccessToken(userA.id!!, userA.role.toString()))
-        val addCatchRequest = generateAddCatchRequest(
+        val addCatchRequestOfB = generateAddCatchRequest(
             token = jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()),
             dooingleId = dooingle.id!!
         )
@@ -105,7 +128,7 @@ class NotificationSseTest(
         val eventWrapperOfA = EventSourceWrapper()
         factory.newEventSource(connectRequestOfA, eventWrapperOfA.listener)
 
-        val addCatchResponse = getResponse(addCatchRequest)
+        val addCatchResponse = getResponse(addCatchRequestOfB)
 
         // THEN
         eventWrapperOfA.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
@@ -123,8 +146,53 @@ class NotificationSseTest(
 
     @Test
     @Throws(InterruptedException::class, JSONException::class, IOException::class)
-    fun `여러 브라우저가 SSE 연결된 경우 새 뒹글이 등록되면 모든 브라우저에 뒹글이 전달된다`() {
+    fun `여러 브라우저가 SSE 연결된 경우 새 뒹글이 등록되면 모든 브라우저에 알림이 전달된다`() {
+        // GIVEN
+        socialUserRepository.save(userA)
+        val tokenOfA = jwtHelper.generateAccessToken(userA.id!!, userA.role.toString())
+        val connectRequestOfA1 = generateConnectRequest(tokenOfA)
+        val connectRequestOfA2 = generateConnectRequest(tokenOfA)
 
+        socialUserRepository.save(userB)
+        val connectRequestOfB = generateConnectRequest(jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()))
+        val addDooingleRequest = generateAddDooingleRequest(
+            token = jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()),
+            userId = userA.id!!
+        )
+
+        // WHEN
+        val eventWrapperOfA1 = EventSourceWrapper()
+        factory.newEventSource(connectRequestOfA1, eventWrapperOfA1.listener)
+
+        val eventWrapperOfA2 = EventSourceWrapper()
+        factory.newEventSource(connectRequestOfA2, eventWrapperOfA2.listener)
+
+        val eventWrapperOfB = EventSourceWrapper()
+        factory.newEventSource(connectRequestOfB, eventWrapperOfB.listener)
+
+        val addDooingleResponse = getResponse(addDooingleRequest)
+
+        // THEN
+        eventWrapperOfA1.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
+        eventWrapperOfA2.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
+        eventWrapperOfB.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
+
+        addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
+        val dooingleString = addDooingleResponse.body.string()
+
+        val notificationString = objectMapper.writeValueAsString(
+            NotificationResponse(
+                notificationType = NotificationType.DOOINGLE.toString(),
+                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+            )
+        )
+        eventWrapperOfA1.receivedData[1] shouldBe notificationString
+        eventWrapperOfA2.receivedData[1] shouldBe notificationString
+
+        // 피드 알림
+        eventWrapperOfB.receivedData[1] shouldBe dooingleString
+        eventWrapperOfA1.receivedData[2] shouldBe dooingleString
+        eventWrapperOfA2.receivedData[2] shouldBe dooingleString
     }
 
     private fun generateConnectRequest(token: String): Request {
@@ -177,7 +245,6 @@ class NotificationSseTest(
             this.listener = object : EventSourceListener() {
                 override fun onOpen(eventSource: EventSource, response: Response) {
                     isOpened = true
-                    println("!!!!!!!!!!!!open!!!!!!!!!!!!!!")
                 }
 
                 override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
@@ -190,10 +257,8 @@ class NotificationSseTest(
 
                 override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
                     onFailureCalled = true
-                    println("!!!!!!!!!!!!failure!!!!!!!!!!!!!!")
-                    println(eventSource.toString())
-                    println(t.toString())
-                    println(response.toString())
+                    logger.error("!!!!!! event source closed with error")
+                    logger.error(t.toString())
                 }
             }
         }
@@ -205,8 +270,11 @@ class NotificationSseTest(
     companion object {
         private val client = OkHttpClient()
         private val factory: EventSource.Factory = createFactory(client)
+
         private val json = JSONObject()
         private val objectMapper = ObjectMapper()
+
+        private val logger = LoggerFactory.getLogger("~~~~~~~~SSE test Logger~~~~~~~~~~")
     }
 
 }
