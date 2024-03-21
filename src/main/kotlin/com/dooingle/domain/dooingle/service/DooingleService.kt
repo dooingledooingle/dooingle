@@ -72,6 +72,9 @@ class DooingleService(
     }
 
     fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
+
         return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
     }
 
