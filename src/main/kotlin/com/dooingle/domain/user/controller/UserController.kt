@@ -41,8 +41,8 @@ class UserController(
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.updateProfile(userId, request, img))
     }
 
-    @GetMapping("/{userId}/profile")
-    fun getProfile(@PathVariable userId:Long) : ResponseEntity<ProfileResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userId))
+    @GetMapping("/profile")
+    fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
 }

@@ -9,6 +9,7 @@ import {EventSourcePolyfill} from 'event-source-polyfill';
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js"
 
+/*
 const sliceInitialState = {
   // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
   size: 0,
@@ -21,33 +22,77 @@ const sliceInitialState = {
   pageable: {},
   empty: true,
 }
+ */
+
 const notificationInitialState = {
   notificationType: null,
   message: null,
   cursor: 0
 }
 
+async function fetchDooinglesFeed(lastDooingleId = null) {
+  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
+
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`.concat(queryParameter), {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data?.content;
+}
+
+async function fetchDooinglesFeedOfFollowing(lastDooingleId = null) {
+  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
+
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles/follow`.concat(queryParameter), {
+    withCredentials: true,
+  });
+  return response.data?.content;
+}
+
 export default function FeedPage() {
 
   const [sseNotification, setSseNotification] = useState(notificationInitialState);
   const [feed, setFeed] = useState(null);
-  const [dooingleSlice, setDooingleSlice] = useState(sliceInitialState);
+  const [dooingles, setDooingles] = useState([]);
+  const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
 
   useEffect(() => {
-    async function fetchDooingleSlice() {
-      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`, {withCredentials: true});
-      return response.data;
-    }
-
-    fetchDooingleSlice().then(data => {
-      setDooingleSlice(data)
-    });
+    fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
   }, []);
+
+  function handleMoreFeedButton(isEntireFeed) {
+    const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
+
+    if (isEntireFeed === true) {
+      fetchDooinglesFeed(lastDooingleId).then(newDooingles => {
+        setDooingles(prevDooingles => {
+          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          return [...prevDooingles, ...uniqueNewDooingles]
+        })
+      })
+    } else {
+      fetchDooinglesFeedOfFollowing(lastDooingleId).then(newDooingles => {
+        setDooingles(prevDooingles => {
+          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          return [...prevDooingles, ...uniqueNewDooingles]
+        })
+      })
+    }
+  }
+
+  function handleEntireFeedButton() {
+    fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
+    setIsEntireFeed(true);
+  }
+
+  function handleFollowingFeedButton() {
+    fetchDooinglesFeedOfFollowing().then(newDooingles => setDooingles(newDooingles));
+    setIsEntireFeed(false);
+  }
 
   const handleConnect = () => {
 
     const sse = new EventSourcePolyfill(
-        `${BASE_URL}/api/notifications/connect`,
+        `${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
         {withCredentials: true});
 
     sse.addEventListener('connect', (e) => {
@@ -142,14 +187,14 @@ export default function FeedPage() {
         <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
           <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
             <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button className="py-[0.5rem]">
+              <button onClick={handleEntireFeedButton} className="py-[0.5rem]">
                 <div>
                   전체
                 </div>
               </button>
             </div>
             <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button className="py-[0.5rem]">
+              <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
                 <div>
                   팔로우
                 </div>
@@ -158,7 +203,7 @@ export default function FeedPage() {
           </div>
 
           <div className="py-[1rem]">
-            {dooingleSlice.content.map(dooingle => (
+            {dooingles.map(dooingle => (
                 <Dooingle
                     key={dooingle.dooingleId}
                     ownerName={dooingle.ownerName}
@@ -166,9 +211,10 @@ export default function FeedPage() {
                 />
             ))}
           </div>
+          <button onClick={() => handleMoreFeedButton(isEntireFeed)} className="bg-amber-50">뒹글 더 보기</button>
         </section>
 
-        <DooinglerListAside />
+        <DooinglerListAside/>
 
         <div className="col-start-1 col-span-12 mt-10">
           <Link to={"/"}>웰컴 페이지로</Link>
