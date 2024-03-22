@@ -149,4 +149,8 @@ class SocialUserService(
             return ProfileResponse(nickname = user.nickname, description = null, imageUrl = null)
         }
     }
+
+    fun getCurrentDooingler(userId: Long): DooinglerResponse {
+        return socialUserRepository.getDooingler(userId)
+    }
 }

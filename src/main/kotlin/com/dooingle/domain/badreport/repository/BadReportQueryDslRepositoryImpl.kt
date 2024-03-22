@@ -52,7 +52,7 @@ class BadReportQueryDslRepositoryImpl(
                 Projections.constructor(
                     BadReportResponse::class.java,
                     badReport.id,
-                    badReport.reporter.id,
+                    badReport.reporter.userLink,
                     badReport.reporter.nickname,
                     badReport.reportedTargetType,
                     badReport.reportedTargetId,
@@ -78,7 +78,7 @@ class BadReportQueryDslRepositoryImpl(
                 Projections.constructor(
                     BadReportResponse::class.java,
                     badReport.id,
-                    badReport.reporter.id,
+                    badReport.reporter.userLink,
                     badReport.reporter.nickname,
                     badReport.reportedTargetType,
                     badReport.reportedTargetId,

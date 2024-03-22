@@ -1,6 +1,6 @@
 package com.dooingle.domain.user.dto
 
 data class DooinglerResponse(
-    val userId: Long,
+    val userLink: String,
     val nickname: String
 )
