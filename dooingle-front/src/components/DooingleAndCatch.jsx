@@ -11,7 +11,7 @@ export default function DooingleAndCatch({ ownerName, dooingleContent, catchCont
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem]">
+      {catchContent ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem]">
         <div className="px-[0.5rem] text-[#456bf5] font-bold">
           <p>{ownerName}</p>
         </div>
@@ -20,7 +20,7 @@ export default function DooingleAndCatch({ ownerName, dooingleContent, catchCont
             <p>{catchContent}</p>
           </div>
         </div>
-      </div>
+      </div> : null}
     </div>
   );
 }

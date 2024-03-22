@@ -21,21 +21,41 @@ const sliceInitialState = {
   empty: true,
 }
 
+async function fetchDooinglesAndCatches(userId, lastDooingleId = null) {
+  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
+
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userId}/dooingles`.concat(queryParameter), {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data;
+}
+
+async function fetchMyDooinglesAndCatches(lastDooingleId = null) {
+  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
+
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/my-dooingles`.concat(queryParameter), {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data;
+}
+
 export default function PersonalDooinglePage() {
 
-  const [dooingleAndCatchSlice, setDooingleAndCatchSlice] = useState(sliceInitialState);
+  const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
   const [query] = useSearchParams();
 
   useEffect(() => {
     const userId = query.get("user-id")
-    async function fetchDooingleSlice() {
-      const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userId}/dooingles`);
-      return response.data;
-    }
 
-    fetchDooingleSlice().then(data => {
-      setDooingleAndCatchSlice(data)
-    });
+    if (userId) {
+      fetchDooinglesAndCatches(userId).then(data => {
+        setDooinglesAndCatchesSlice(data)
+      });
+    } else {
+      fetchMyDooinglesAndCatches().then(data => {
+        setDooinglesAndCatchesSlice(data)
+      });
+    }
   }, [query]);
 
   return (
@@ -81,7 +101,7 @@ export default function PersonalDooinglePage() {
           </div>
 
           <div className="py-[1rem]">
-            {dooingleAndCatchSlice.content.map(dooingleAndCatch => (
+            {dooinglesAndCatchesSlice.content.map(dooingleAndCatch => (
                 <DooingleAndCatch
                     key={dooingleAndCatch.dooingleId}
                     ownerName={dooingleAndCatch.ownerName}
