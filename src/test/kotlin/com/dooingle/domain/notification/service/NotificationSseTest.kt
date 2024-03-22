@@ -57,7 +57,7 @@ class NotificationSseTest(
 
     @Test
     @Throws(InterruptedException::class)
-    fun `특정 유저가 접속한 브라우저에서 SSE 연결을 요청하면 connect 이벤트의 데이터가 전달된다`() {
+    fun `특정 유저 접속 브라우저에서 SSE 연결`() {
         // GIVEN
         val userId: Long = 1
         val role = "USER"
@@ -75,7 +75,7 @@ class NotificationSseTest(
 
     @Test
     @Throws(InterruptedException::class, JSONException::class, IOException::class)
-    fun `특정 유저가 SSE 연결된 경우 해당 유저에게 뒹글이 굴러오면 알림이 전달된다`() {
+    fun `SSE 연결된 유저에게 뒹글 등록 시 알림 전달`() {
         // GIVEN
         socialUserRepository.save(userA)
         val connectRequest = generateConnectRequest(jwtHelper.generateAccessToken(userA.id!!, userA.role.toString()))
@@ -104,15 +104,14 @@ class NotificationSseTest(
                 cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
             )
         )
-        eventWrapper.receivedData[1] shouldBe notificationString
+        eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
 
-        // 피드 알림
-        eventWrapper.receivedData[2] shouldBe dooingleString
+        eventWrapper.receivedData[2] shouldBe dooingleString // 피드 알림
     }
 
     @Test
     @Throws(InterruptedException::class, JSONException::class, IOException::class)
-    fun `특정 유저가 SSE 연결된 경우 해당 유저가 남긴 뒹글에 캐치가 달리면 알림이 전달된다`() {
+    fun `SSE 연결된 유저가 남겼던 뒹글에 캐치 등록 시 알림 전달`() {
         // GIVEN
         socialUserRepository.save(userA)
         socialUserRepository.save(userB)
@@ -146,12 +145,12 @@ class NotificationSseTest(
 
     @Test
     @Throws(InterruptedException::class, JSONException::class, IOException::class)
-    fun `여러 브라우저가 SSE 연결된 경우 새 뒹글이 등록되면 모든 브라우저에 알림이 전달된다`() {
+    fun `새 뒹글 등록 시 SSE 연결된 모든 브라우저에 알림 전달`() {
         // GIVEN
         socialUserRepository.save(userA)
         val tokenOfA = jwtHelper.generateAccessToken(userA.id!!, userA.role.toString())
         val connectRequestOfA1 = generateConnectRequest(tokenOfA)
-        val connectRequestOfA2 = generateConnectRequest(tokenOfA)
+        val connectRequestOfA2 = generateConnectRequest(tokenOfA) // 동일 유저가 새로운 브라우저 SSE 연결
 
         socialUserRepository.save(userB)
         val connectRequestOfB = generateConnectRequest(jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()))
@@ -186,11 +185,10 @@ class NotificationSseTest(
                 cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
             )
         )
-        eventWrapperOfA1.receivedData[1] shouldBe notificationString
+        eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림
         eventWrapperOfA2.receivedData[1] shouldBe notificationString
 
-        // 피드 알림
-        eventWrapperOfB.receivedData[1] shouldBe dooingleString
+        eventWrapperOfB.receivedData[1] shouldBe dooingleString // 피드 알림
         eventWrapperOfA1.receivedData[2] shouldBe dooingleString
         eventWrapperOfA2.receivedData[2] shouldBe dooingleString
     }
