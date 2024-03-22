@@ -63,7 +63,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `특정 유저가 다른 유저들을 팔로우하는 경우 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
+    fun `팔로우 피드를 조회하면 최신 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -78,17 +78,17 @@ class DooingleServiceDBTest(
         val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
         result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
 
-        val dooinglesFollowingSortedList = dooingleRepository.findAll()
+        val dooinglesFollowing = dooingleRepository.findAll()
             .filter { followingUserIdList.contains(it.owner.id) }
             .sortedByDescending { it.id }
-        result.zip(dooinglesFollowingSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
+        result.zip(dooinglesFollowing) { response, entity -> response.dooingleId shouldBe entity.id }
 
         result.content.size shouldBe DooingleFeedController.PAGE_SIZE
         result.hasNext() shouldBe true
     }
 
     @Test
-    fun `특정 유저가 다른 유저들을 팔로우하는 경우 커서와 함께 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
+    fun `커서와 함께 팔로우 피드를 조회하면 커서 이전 글부터 조회한다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -104,17 +104,17 @@ class DooingleServiceDBTest(
         val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
         result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
 
-        val dooinglesFollowingBeforeCursorSortedList = dooingleRepository.findAll()
+        val dooinglesFollowing = dooingleRepository.findAll()
             .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
             .sortedByDescending { it.id }
-        result.zip(dooinglesFollowingBeforeCursorSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
+        result.zip(dooinglesFollowing) { response, entity -> response.dooingleId shouldBe entity.id }
 
-        result.content.size shouldBe dooinglesFollowingBeforeCursorSortedList.size
+        result.content.size shouldBe dooinglesFollowing.size
         result.hasNext() shouldBe false
     }
 
     @Test
-    fun `특정 유저가 다른 유저를 팔로우하지 않는 경우 팔로우 피드를 조회하면 0건의 결과가 조회된다`() {
+    fun `다른 유저를 팔로우하지 않는 경우 팔로우 피드를 조회하면 0건의 결과가 조회된다`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         dooingleRepository.saveAll(dooingleList)
