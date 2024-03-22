@@ -46,8 +46,9 @@ export default function FeedPage() {
 
   const handleConnect = () => {
 
-    const sse = new EventSourcePolyfill(`${BASE_URL}/api/notifications/connect?userId=2`);
-    // TODO: 토큰 넣어서 보내야 함
+    const sse = new EventSourcePolyfill(
+        `${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
+        {withCredentials: true});
 
     sse.addEventListener('connect', (e) => {
       const { data: receivedConnectData } = e;
@@ -70,12 +71,11 @@ export default function FeedPage() {
     });
 
     sse.addEventListener('feed', e => {
-      const { data: receivedFeed } = e;
-
+      const receivedFeed = JSON.parse(e.data);
+      setFeed(receivedFeed);
       console.log(receivedFeed);
-      setFeed(receivedFeed)
-
-      // TODO : 피드 새로운 글 알림(새로고침이나 화살표 같은..) 버튼을 위에 뜨게 함
+      // 전달받는 데이터는 DooingleResponse 형식
+      // TODO : 전달받는 데이터로 뒹글 컴포넌트 만들어서 뒹글 목록 위에 추가
     });
   }
 
@@ -132,7 +132,6 @@ export default function FeedPage() {
                 {sseNotification.message}
                 {sseNotification.cursor}
               </div>
-              <div>{feed}</div>
               <button onClick={handleTestConnect}>test connect 요청</button>
               <button onClick={handleTestClick}>test 요청</button>
               <div>{testData}</div>

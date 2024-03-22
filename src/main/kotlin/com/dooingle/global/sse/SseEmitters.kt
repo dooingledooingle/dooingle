@@ -22,7 +22,7 @@ class SseEmitters {
         val emitter = SseEmitter() // 만료 시간 설정 (기본 30초). 만료 시간 되면 브라우저에서 자동으로 서버에 재연결 요청
         // emitter 생성 후 만료 시간까지 아무 데이터도 보내지 않으면 브라우저에서 재연결 요청시 503 Service Unavailable 에러 발생하므로
         // 처음 연결 시 더미 데이터 전달
-        emitter.sendData(eventName = "connect", data = "connected")
+        emitter.sendData(eventName = "connect", data = CONNECTED_MESSAGE)
 
         // 향후 이벤트 발생 시 클라이언트로 이벤트 전송하기 위해 ConcurrentHashMap 에 로그인 유저 아이디를 키로 서버에 저장
         val key = userId.toString()
@@ -54,10 +54,18 @@ class SseEmitters {
         }
     }
 
-    fun sendNewFeedNotification() {
+    fun sendNewFeedNotification(data: Any) {
         notificationEmitters.forEach { (key, list) ->
             list.forEach { emitter ->
-                emitter.sendData(eventName = "feed", data = "new feed")
+                emitter.sendData(eventName = "feed", data = data)
+            }
+        }
+    }
+
+    fun completeAllEmitters() {
+        notificationEmitters.forEach { (key, list) ->
+            list.forEach { emitter ->
+                emitter.complete()
             }
         }
     }
@@ -91,6 +99,7 @@ class SseEmitters {
     }
 
     companion object {
+        const val CONNECTED_MESSAGE = "connected"
         private val counter = AtomicLong()
     }
 }
@@ -103,6 +112,6 @@ fun SseEmitter.sendData(eventName: String, data: Any) {
                 .data(data) // 더미 데이터
         )
     } catch (e: IOException) {
-        throw RuntimeException(e)   // TODO: CustomException 생성
+        complete() // 브라우저 닫은 뒤에 데이터 전송하면 broken pipe 에러 생기기 때문에 완료시킴
     }
 }
