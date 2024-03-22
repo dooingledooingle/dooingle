@@ -7,7 +7,7 @@ export default function WelcomePage() {
   const navigateToFeedPage = () => navigate("/feeds")
 
   const handleStartButton = () => {
-    window.location.href = `${BACKEND_SERVER_ORIGIN}//oauth2/login/kakao`
+    window.location.href = `${BACKEND_SERVER_ORIGIN}/oauth2/login/kakao`
   }
 
   return (
