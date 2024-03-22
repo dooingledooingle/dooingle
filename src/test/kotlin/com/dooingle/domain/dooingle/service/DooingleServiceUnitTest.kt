@@ -198,6 +198,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         provider = ownerOAuthProvider,
         providerId = ownerIdFromOAuthProvider,
         nickname = ownerNickname,
+        userLink = "0000000000",
     )
 
     private fun getFixtureOfGuest() = SocialUser(
@@ -205,6 +206,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         provider = guestOAuthProvider,
         providerId = guestIdFromOAuthProvider,
         nickname = guestNickname,
+        userLink = "1111111111",
     )
 
 //    private fun getFixtureOfDooingleAndCatchResponseList() = listOf<DooingleAndCatchResponse>(

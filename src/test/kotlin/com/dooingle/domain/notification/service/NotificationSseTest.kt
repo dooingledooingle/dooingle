@@ -229,8 +229,8 @@ class NotificationSseTest(
             .build()
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
 
     private inner class EventSourceWrapper {
         val listener: EventSourceListener

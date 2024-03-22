@@ -50,8 +50,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `뒹글 1개를 블락하고자 할 때 해당 뒹글이 블락되는지 확인`(){
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val dooingle = Dooingle(guest = user1, owner = user2,  catch = null, content = "질문", blockedAt = null)
         socialUserRepository.saveAll(listOf(user1, user2))
         dooingleRepository.save(dooingle)
@@ -70,8 +70,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `뒹글 2개를 블락하고자 할 때 해당 뒹글들이 블락되는지 확인`(){
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val dooingle1 = Dooingle(guest = user1, owner = user2,  catch = null, content = "질문1", blockedAt = null)
         val dooingle2 = Dooingle(guest = user2, owner = user1, catch = null, content = "질문2", blockedAt = null)
         socialUserRepository.saveAll(listOf(user1, user2))
@@ -94,8 +94,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `이미 블락된 뒹글을 블락하고자 할 때 해당 뒹글의 BlockedAt 컬럼이 갱신되지 않는지 확인`() {
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val time = ZonedDateTime.now()
         val dooingle = Dooingle(guest = user1, owner = user2,  catch = null, content = "질문", blockedAt = time)
         socialUserRepository.saveAll(listOf(user1, user2))
@@ -115,8 +115,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `캐치 1개를 블락하고자 할 때 해당 캐치가 블락되는지 확인`(){
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val dooingle = Dooingle(guest = user1, owner = user2,  catch = null, blockedAt = null, content = "질문")
         val catch = Catch(dooingle = dooingle, deletedAt = null, blockedAt = null, content = "답변")
         socialUserRepository.saveAll(listOf(user1, user2))
@@ -137,8 +137,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `캐치 2개를 블락하고자 할 때 해당 캐치들이 블락되는지 확인`(){
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val dooingle1 = Dooingle(guest = user1, owner = user2,  catch = null, blockedAt = null, content = "질문1")
         val dooingle2 = Dooingle(guest = user2, owner = user1,  catch = null, blockedAt = null, content = "질문2")
         val catch1 = Catch(dooingle = dooingle1, deletedAt = null, blockedAt = null, content = "답변1")
@@ -165,8 +165,8 @@ class BadReportServiceDBTest @Autowired constructor(
     @Test
     fun `이미 블락된 캐치를 블락하고자 할 때 해당 캐치의 BlockedAt 컬럼이 갱신되지 않는지 확인`(){
         //given
-        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A")
-        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B")
+        val user1 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "123", nickname = "A", userLink = "0000000000")
+        val user2 = SocialUser(provider = OAuth2Provider.KAKAO, providerId = "456", nickname = "B", userLink = "1111111111")
         val dooingle = Dooingle(guest = user1, owner = user2,  catch = null, blockedAt = null, content = "질문")
         val time = ZonedDateTime.now()
         val catch = Catch(dooingle = dooingle, deletedAt = null, blockedAt = time, content = "답변")
