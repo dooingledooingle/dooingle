@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface SocialUserRepository : CrudRepository<SocialUser, Long>, SocialUserQueryDslRepository {
     fun existsByProviderAndProviderId(provider: OAuth2Provider, providerId: String): Boolean
     fun findByProviderAndProviderId(provider: OAuth2Provider, providerId: String): SocialUser
+    fun existsByUserLink(userLink: String): Boolean
 }
