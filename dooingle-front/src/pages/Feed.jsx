@@ -39,25 +39,54 @@ async function fetchDooinglesFeed(lastDooingleId = null) {
   return response.data?.content;
 }
 
+async function fetchDooinglesFeedOfFollowing(lastDooingleId = null) {
+  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
+
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles/follow`.concat(queryParameter), {
+    withCredentials: true,
+  });
+  return response.data?.content;
+}
+
 export default function FeedPage() {
 
   const [sseNotification, setSseNotification] = useState(notificationInitialState);
   const [feed, setFeed] = useState(null);
   const [dooingles, setDooingles] = useState([]);
+  const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
 
   useEffect(() => {
     fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
   }, []);
 
-  function handleMoreFeedButton() {
+  function handleMoreFeedButton(isEntireFeed) {
     const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
 
-    fetchDooinglesFeed(lastDooingleId).then(newDooingles => {
-      setDooingles(prevDooingles => {
-        const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
-        return [...prevDooingles, ...uniqueNewDooingles]
+    if (isEntireFeed === true) {
+      fetchDooinglesFeed(lastDooingleId).then(newDooingles => {
+        setDooingles(prevDooingles => {
+          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          return [...prevDooingles, ...uniqueNewDooingles]
+        })
       })
-    })
+    } else {
+      fetchDooinglesFeedOfFollowing(lastDooingleId).then(newDooingles => {
+        setDooingles(prevDooingles => {
+          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          return [...prevDooingles, ...uniqueNewDooingles]
+        })
+      })
+    }
+  }
+
+  function handleEntireFeedButton() {
+    fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
+    setIsEntireFeed(true);
+  }
+
+  function handleFollowingFeedButton() {
+    fetchDooinglesFeedOfFollowing().then(newDooingles => setDooingles(newDooingles));
+    setIsEntireFeed(false);
   }
 
   const handleConnect = () => {
@@ -158,14 +187,14 @@ export default function FeedPage() {
         <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
           <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
             <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button className="py-[0.5rem]">
+              <button onClick={handleEntireFeedButton} className="py-[0.5rem]">
                 <div>
                   전체
                 </div>
               </button>
             </div>
             <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button className="py-[0.5rem]">
+              <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
                 <div>
                   팔로우
                 </div>
@@ -182,7 +211,7 @@ export default function FeedPage() {
                 />
             ))}
           </div>
-          <button onClick={() => handleMoreFeedButton()} className="bg-amber-50">뒹글 더 보기</button>
+          <button onClick={() => handleMoreFeedButton(isEntireFeed)} className="bg-amber-50">뒹글 더 보기</button>
         </section>
 
         <DooinglerListAside/>
