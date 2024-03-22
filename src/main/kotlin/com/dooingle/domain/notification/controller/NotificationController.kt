@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
@@ -23,9 +22,9 @@ class NotificationController(
 
     @GetMapping(value = ["/connect"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun connect(
-        @RequestParam userId: Long, // TODO: @AuthenticationPrincipal 로 바꿔야 함
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<SseEmitter> {
-        val emitter = notificationService.connect(userId)
+        val emitter = notificationService.connect(userPrincipal.id)
         return ResponseEntity.ok(emitter)
     }
 
