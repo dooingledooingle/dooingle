@@ -1,0 +1,1 @@
+export const BACKEND_SERVER_ORIGIN = import.meta.env.VITE_BACKEND_SERVER_ORIGIN
