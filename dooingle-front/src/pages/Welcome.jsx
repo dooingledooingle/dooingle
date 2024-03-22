@@ -33,7 +33,7 @@ export default function WelcomePage() {
                 로그인
               </div>
             </button>
-            <Link to={`${BACKEND_SERVER_ORIGIN}//oauth2/login/kakao`}
+            <Link to={`${BACKEND_SERVER_ORIGIN}/oauth2/login/kakao`}
                   className="cursor-pointer p-3 bg-[#8692ff] self-stretch rounded-xl flex flex-col items-center justify-center hover:bg-blue-600">
               <div
                 className="relative text-[1.375rem] font-medium text-white inline-block">
