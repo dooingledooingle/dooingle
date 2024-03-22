@@ -3,7 +3,7 @@ import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooingleAndCatch from "../components/DooingleAndCatch.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
-import {Link, useSearchParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import { BACKEND_SERVER_ORIGIN } from "../env.js"
@@ -42,11 +42,10 @@ async function fetchMyDooinglesAndCatches(lastDooingleId = null) {
 export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
-  const [query] = useSearchParams();
+  const params = useParams();
+  const userId = params?.userId
 
   useEffect(() => {
-    const userId = query.get("user-id")
-
     if (userId) {
       fetchDooinglesAndCatches(userId).then(data => {
         setDooinglesAndCatchesSlice(data)
@@ -56,7 +55,7 @@ export default function PersonalDooinglePage() {
         setDooinglesAndCatchesSlice(data)
       });
     }
-  }, [query]);
+  }, [userId]);
 
   return (
     <>
