@@ -75,11 +75,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) }
+            .filter { followingUserLinkList.contains(it.owner.userLink) }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
@@ -101,11 +101,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, cursor, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
+            .filter { followingUserLinkList.contains(it.owner.userLink) && it.id!! < cursor }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
