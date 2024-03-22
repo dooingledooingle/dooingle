@@ -47,7 +47,7 @@ export default function FeedPage() {
   const handleConnect = () => {
 
     const sse = new EventSourcePolyfill(
-        `${BASE_URL}/api/notifications/connect`,
+        `${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
         {withCredentials: true});
 
     sse.addEventListener('connect', (e) => {
