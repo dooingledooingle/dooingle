@@ -18,6 +18,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -201,4 +202,13 @@ class DooingleServiceDBTest(
     )
 
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
+
+//    companion object {
+//        @JvmStatic
+//        @AfterAll
+//        fun clearData(): Unit {
+//            clearData()
+//        }
+//    }
+
 }

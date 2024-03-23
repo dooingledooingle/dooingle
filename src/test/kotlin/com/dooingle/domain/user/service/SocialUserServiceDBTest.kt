@@ -1,8 +1,11 @@
 package com.dooingle.domain.user.service
 
 import com.amazonaws.services.s3.AmazonS3
+import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.user.dto.OAuth2UserInfo
+import com.dooingle.domain.user.model.Profile
+import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
@@ -11,7 +14,7 @@ import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.mockk
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -36,10 +39,10 @@ class SocialUserServiceDBTest(
     private val bucketName = "mockName"
     private val socialUserService = SocialUserService(socialUserRepository, profileRepository, dooingleCountService, amazonS3, bucketName)
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
-        socialUserRepository.deleteAll()
         profileRepository.deleteAll()
+        socialUserRepository.deleteAll()
     }
 
     @Test
@@ -89,14 +92,19 @@ class SocialUserServiceDBTest(
             nickname = NICKNAME_1,
             profileImage = IMAGE_URL_1
         )
-        socialUserRepository.existsByProviderAndProviderId(oauth2UserInfo1.provider, oauth2UserInfo1.id) shouldBe false
 
         val oauth2UserInfo2 = OAuth2UserInfo(
             provider = kakao, id = PROVIDER_ID_2,
             nickname = NICKNAME_2,
             profileImage = IMAGE_URL_2
         )
-        val user2 = socialUserService.registerUser(oauth2UserInfo2)
+        val user2 = socialUserRepository.save(
+            SocialUser(
+                provider = kakao, providerId = oauth2UserInfo2.id,
+                nickname = oauth2UserInfo2.nickname
+            )
+        )
+        profileRepository.save(Profile(user = user2, imageUrl = oauth2UserInfo2.profileImage))
 
         // WHEN
         val result1 = socialUserService.registerIfAbsent(oauth2UserInfo1)

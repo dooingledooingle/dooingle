@@ -13,7 +13,7 @@ import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -39,7 +39,7 @@ class BadReportServiceDBTest @Autowired constructor(
 
     private val badReportService = BadReportService(socialUserRepository, badReportRepository)
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
         socialUserRepository.deleteAll()
