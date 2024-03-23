@@ -20,7 +20,7 @@ class DooingleCountQueryDslRepositoryImpl(
         return queryFactory.select(
             Projections.constructor(
                 DooinglerResponse::class.java,
-                socialUser.id,
+                socialUser.userLink,
                 socialUser.nickname
             )
         )
