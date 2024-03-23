@@ -21,19 +21,10 @@ const sliceInitialState = {
   empty: true,
 }
 
-async function fetchDooinglesAndCatches(userId, lastDooingleId = null) {
+async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userId}/dooingles`.concat(queryParameter), {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data;
-}
-
-async function fetchMyDooinglesAndCatches(lastDooingleId = null) {
-  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
-
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/my-dooingles`.concat(queryParameter), {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`.concat(queryParameter), {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
   });
   return response.data;
@@ -43,19 +34,13 @@ export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
   const params = useParams();
-  const userId = params?.userId
+  const userLink = params?.userLink
 
   useEffect(() => {
-    if (userId) {
-      fetchDooinglesAndCatches(userId).then(data => {
-        setDooinglesAndCatchesSlice(data)
-      });
-    } else {
-      fetchMyDooinglesAndCatches().then(data => {
-        setDooinglesAndCatchesSlice(data)
-      });
-    }
-  }, [userId]);
+    fetchDooinglesAndCatches(userLink).then(data => {
+      setDooinglesAndCatchesSlice(data)
+    });
+  }, [userLink]);
 
   return (
     <>
