@@ -83,7 +83,7 @@ class NotificationSseTest(
         socialUserRepository.save(userB)
         val addDooingleRequest = generateAddDooingleRequest(
             token = jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()),
-            userId = userA.id!!
+            userLink = userA.userLink
         )
 
         // WHEN
@@ -156,7 +156,7 @@ class NotificationSseTest(
         val connectRequestOfB = generateConnectRequest(jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()))
         val addDooingleRequest = generateAddDooingleRequest(
             token = jwtHelper.generateAccessToken(userB.id!!, userB.role.toString()),
-            userId = userA.id!!
+            userLink = userA.userLink
         )
 
         // WHEN
@@ -208,11 +208,11 @@ class NotificationSseTest(
     }
 
     @Throws(JSONException::class)
-    private fun generateAddDooingleRequest(token: String, userId: Long): Request {
+    private fun generateAddDooingleRequest(token: String, userLink: String): Request {
         json.put("content", "질문입니다.")
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
         return Request.Builder()
-            .url("http://localhost:$port/api/users/$userId/dooingles")
+            .url("http://localhost:$port/api/users/$userLink/dooingles")
             .header("Cookie", "accessToken=$token")
             .post(requestBody)
             .build()
