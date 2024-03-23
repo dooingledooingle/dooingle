@@ -18,8 +18,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -56,7 +55,7 @@ class DooingleServiceDBTest(
         mockNotificationService
     )
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
         dooingleRepository.deleteAll()
         followRepository.deleteAll()
@@ -133,7 +132,7 @@ class DooingleServiceDBTest(
     @Test
     fun `존재하지 않는 유저의 팔로우 피드 조회 시 예외 발생`() {
         // GIVEN
-        val userId: Long = 100
+        val userId: Long = 1000000
 
         // WHEN & THEN
         socialUserRepository.findByIdOrNull(userId) shouldBe null
@@ -202,13 +201,5 @@ class DooingleServiceDBTest(
     )
 
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
-
-//    companion object {
-//        @JvmStatic
-//        @AfterAll
-//        fun clearData(): Unit {
-//            clearData()
-//        }
-//    }
 
 }
