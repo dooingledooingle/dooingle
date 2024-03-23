@@ -46,14 +46,14 @@ class SocialUserServiceDBTest(
     fun `회원 등록 시 프로필 이미지는 존재할 때만 저장`() {
         // GIVEN
         val oauth2UserInfo1 = OAuth2UserInfo(
-            provider = OAuth2Provider.KAKAO, id = "1",
-            nickname = "A",
+            provider = kakao, id = PROVIDER_ID_1,
+            nickname = NICKNAME_1,
             profileImage = null
         )
         val oauth2UserInfo2 = OAuth2UserInfo(
-            provider = OAuth2Provider.KAKAO, id = "2",
-            nickname = "B",
-            profileImage = "imgUrl"
+            provider = kakao, id = PROVIDER_ID_2,
+            nickname = NICKNAME_2,
+            profileImage = IMAGE_URL_1
         )
 
         // WHEN
@@ -85,16 +85,16 @@ class SocialUserServiceDBTest(
     fun `OAuth2 사용자 정보가 기존 회원에 없으면 등록, 있으면 조회`() {
         // GIVEN
         val oauth2UserInfo1 = OAuth2UserInfo(
-            provider = OAuth2Provider.KAKAO, id = "1",
-            nickname = "A",
-            profileImage = "imgUrl"
+            provider = kakao, id = PROVIDER_ID_1,
+            nickname = NICKNAME_1,
+            profileImage = IMAGE_URL_1
         )
         socialUserRepository.existsByProviderAndProviderId(oauth2UserInfo1.provider, oauth2UserInfo1.id) shouldBe false
 
         val oauth2UserInfo2 = OAuth2UserInfo(
-            provider = OAuth2Provider.KAKAO, id = "2",
-            nickname = "B",
-            profileImage = "imgUrl"
+            provider = kakao, id = PROVIDER_ID_2,
+            nickname = NICKNAME_2,
+            profileImage = IMAGE_URL_2
         )
         val user2 = socialUserService.registerUser(oauth2UserInfo2)
 
@@ -121,6 +121,16 @@ class SocialUserServiceDBTest(
         val profile2 = profileRepository.findByUser(result2)
         profile2 shouldNotBe null
         profile2!!.imageUrl shouldBe oauth2UserInfo2.profileImage
+    }
+
+    companion object {
+        private val kakao = OAuth2Provider.KAKAO
+        const val PROVIDER_ID_1 = "1000000001"
+        const val PROVIDER_ID_2 = "1000000002"
+        const val NICKNAME_1 = "A"
+        const val NICKNAME_2 = "B"
+        const val IMAGE_URL_1 = "https://test.com/1.jpg"
+        const val IMAGE_URL_2 = "https://test.com/2.jpg"
     }
 
 }
