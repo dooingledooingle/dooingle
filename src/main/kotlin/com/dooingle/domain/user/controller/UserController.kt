@@ -45,4 +45,9 @@ class UserController(
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
+
+    @GetMapping("/current-dooingler")
+    fun getCurrentDooingler(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<DooinglerResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getCurrentDooingler(userPrincipal.id))
+    }
 }

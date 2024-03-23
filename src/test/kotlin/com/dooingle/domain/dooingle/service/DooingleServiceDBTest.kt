@@ -63,7 +63,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `특정 유저가 다른 유저들을 팔로우하는 경우 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 최신 글부터 조회한다`() {
+    fun `팔로우하는 유저 페이지의 최신 뒹글부터 조회`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -75,20 +75,20 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
-        val dooinglesFollowingSortedList = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) }
+        val dooinglesFollowingSorted = dooingleRepository.findAll()
+            .filter { followingUserLinkList.contains(it.owner.userLink) }
             .sortedByDescending { it.id }
-        result.zip(dooinglesFollowingSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
+        result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
         result.content.size shouldBe DooingleFeedController.PAGE_SIZE
         result.hasNext() shouldBe true
     }
 
     @Test
-    fun `특정 유저가 다른 유저들을 팔로우하는 경우 커서와 함께 팔로우 피드를 조회하면 팔로우하는 유저에게 굴러온 뒹글 목록을 커서 이전 글부터 조회한다`() {
+    fun `커서와 함께 팔로우 피드 조회 시 커서 이전 글부터 조회`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         followRepository.saveAll(followingList)
@@ -101,20 +101,20 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, cursor, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
-        val dooinglesFollowingBeforeCursorSortedList = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
+        val dooinglesFollowingSorted = dooingleRepository.findAll()
+            .filter { followingUserLinkList.contains(it.owner.userLink) && it.id!! < cursor }
             .sortedByDescending { it.id }
-        result.zip(dooinglesFollowingBeforeCursorSortedList) { response, entity -> response.dooingleId shouldBe entity.id }
+        result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
-        result.content.size shouldBe dooinglesFollowingBeforeCursorSortedList.size
+        result.content.size shouldBe dooinglesFollowingSorted.size
         result.hasNext() shouldBe false
     }
 
     @Test
-    fun `특정 유저가 다른 유저를 팔로우하지 않는 경우 팔로우 피드를 조회하면 0건의 결과가 조회된다`() {
+    fun `다른 유저 팔로우하지 않는 경우 팔로우 피드 조회 시 0건의 결과`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
         dooingleRepository.saveAll(dooingleList)
@@ -130,7 +130,7 @@ class DooingleServiceDBTest(
     }
 
     @Test
-    fun `존재하지 않는 유저의 팔로우 피드를 조회하면 예외가 발생한다`() {
+    fun `존재하지 않는 유저의 팔로우 피드 조회 시 예외 발생`() {
         // GIVEN
         val userId: Long = 100
 
@@ -142,10 +142,10 @@ class DooingleServiceDBTest(
         }
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
-    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3")
-    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4")
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
+    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3", userLink = "3333333333")
+    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4", userLink = "4444444444")
     private val userList = listOf(userA, userB, userC, userD)
 
     private val followingList = listOf(
