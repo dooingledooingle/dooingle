@@ -26,7 +26,7 @@ class DooingleCountQueryDslRepositoryImpl(
         )
             .from(dooingleCount)
             .leftJoin(dooingleCount.owner, socialUser)
-            .orderBy(dooingleCount.count.desc())
+            .orderBy(dooingleCount.count.desc(), dooingleCount.owner.id.asc())
             .limit(dooinglerListProperties.hot.toLong())
             .fetch()
     }
