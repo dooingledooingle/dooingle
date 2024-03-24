@@ -3,6 +3,7 @@ package com.dooingle.domain.user.service
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.PutObjectResult
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
+import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.dto.UpdateProfileDto
 import com.dooingle.domain.user.model.Profile
 import com.dooingle.domain.user.model.SocialUser
@@ -192,6 +193,41 @@ class SocialUserServiceTest : AnnotationSpec() {
         shouldThrow<ModelNotFoundException> { result.getOrThrow() }
     }
 
+    @Test
+    fun `뜨거운 뒹글러 키워드 입력 시 뜨거운 뒹글러 목록 조회`() {
+        // GIVEN
+        val keyword = SocialUserService.HOT_DOOINGLERS_KEYWORD
+        every { mockDooingleCountService.getHotDooinglerList() } returns hotDooinglerList
+
+        // WHEN
+        val result = socialUserService.getDooinglerList(keyword)
+
+        // THEN
+        result shouldBe hotDooinglerList
+    }
+
+    @Test
+    fun `새 뒹글러 키워드 입력 시 새 뒹글러 목록 조회`() {
+        // GIVEN
+        val keyword = SocialUserService.NEW_DOOINGLERS_KEYWORD
+        every { mockSocialUserRepository.getNewDooinglers() } returns newDooinglerList
+
+        // WHEN
+        val result = socialUserService.getDooinglerList(keyword)
+
+        // THEN
+        result shouldBe newDooinglerList
+    }
+
+    @Test
+    fun `조건으로 잘못된 문자가 입력되면 예외 발생`() {
+        // GIVEN
+        val keyword = "old"
+
+        // WHEN & THEN
+        shouldThrow<InvalidParameterException> { socialUserService.getDooinglerList(keyword) }
+    }
+
     companion object {
         private fun createSocialUser(id:Long, provider: OAuth2Provider, providerId:String, nickname:String) = SocialUser(
             id = id,
@@ -228,5 +264,21 @@ class SocialUserServiceTest : AnnotationSpec() {
         //모두 변경 (소개글, 이미지)
         private val newProfile5 = createProfile(user = socialUser1, description = "updatedDescription", imageUrl = "https://updated.com")
         private val newProfile6 = createProfile(user = socialUser2, description = "updatedDescription", imageUrl = "https://updated.com")
+
+        private val hotDooinglerList = listOf(
+            DooinglerResponse(1, "A"),
+            DooinglerResponse(2, "B"),
+            DooinglerResponse(3, "C"),
+            DooinglerResponse(4, "D"),
+            DooinglerResponse(5, "E")
+        )
+
+        private val newDooinglerList = listOf(
+            DooinglerResponse(10, "가"),
+            DooinglerResponse(9, "나"),
+            DooinglerResponse(8, "다"),
+            DooinglerResponse(7, "라"),
+            DooinglerResponse(6, "마")
+        )
     }
 }
