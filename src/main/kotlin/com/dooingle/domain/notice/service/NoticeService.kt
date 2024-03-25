@@ -4,6 +4,7 @@ import com.dooingle.domain.notice.dto.AddNoticeRequest
 import com.dooingle.domain.notice.dto.NoticeResponse
 import com.dooingle.domain.notice.model.Notice
 import com.dooingle.domain.notice.repository.NoticeRepository
+import com.dooingle.domain.user.model.UserRole
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.NotPermittedException
@@ -26,8 +27,9 @@ class NoticeService(
     fun addNotice(userId: Long, request: AddNoticeRequest): Long {
         val user = socialUserRepository.findByIdOrNull(userId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
-        val notice = noticeRepository.save(request.to(user = user))
+        check(user.role == UserRole.ADMIN) { throw NotPermittedException(userId = userId, modelName = "Notice", null) }
 
+        val notice = noticeRepository.save(request.to(user = user))
         return notice.id!!
     }
 
