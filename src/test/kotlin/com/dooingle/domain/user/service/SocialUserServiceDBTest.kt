@@ -1,7 +1,6 @@
 package com.dooingle.domain.user.service
 
 import com.amazonaws.services.s3.AmazonS3
-import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.domain.user.model.Profile
@@ -9,7 +8,6 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -18,7 +16,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
@@ -32,7 +29,6 @@ class SocialUserServiceDBTest(
     private val socialUserRepository: SocialUserRepository,
     private val profileRepository: ProfileRepository,
 ) {
-    @MockBean lateinit var dooinglersProperties: DooinglersProperties
 
     private val dooingleCountService: DooingleCountService = mockk<DooingleCountService>()
     private val amazonS3 = mockk<AmazonS3>()

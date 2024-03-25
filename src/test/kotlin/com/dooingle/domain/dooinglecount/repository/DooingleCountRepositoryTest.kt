@@ -1,19 +1,16 @@
 package com.dooingle.domain.dooinglecount.repository
 
 import com.dooingle.domain.dooinglecount.model.DooingleCount
-import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.domain.user.service.SocialUserService
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
