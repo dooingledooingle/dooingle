@@ -48,15 +48,26 @@ async function fetchDooinglesFeedOfFollowing(lastDooingleId = null) {
   return response.data?.content;
 }
 
+async function fetchLoggedInUserLink() {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data.userLink;
+}
+
 export default function FeedPage() {
 
   const [sseNotification, setSseNotification] = useState(notificationInitialState);
   const [feed, setFeed] = useState(null);
+  const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const [dooingles, setDooingles] = useState([]);
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
 
   useEffect(() => {
     fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
+    fetchLoggedInUserLink().then(loggedInUserLink => {
+      setCurrentUserLink(loggedInUserLink)
+    })
   }, []);
 
   function handleMoreFeedButton(isEntireFeed) {
@@ -168,7 +179,7 @@ export default function FeedPage() {
       <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
         <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3.75rem] gap-[1.25rem]">
-            <ProfileImageFrame/>
+            <ProfileImageFrame userLink={currentUserLink} />
             <Navigation/>
             <div className="flex flex-col items-center pt-10">
               <div className="text-xl text-red-500">알림 관련 임시</div>
