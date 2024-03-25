@@ -35,13 +35,14 @@ class DooingleCountRepositoryTest(
     fun `뒹글이 많이 등록된 순, 먼저 가입한 순으로 유저 조회`() {
         // GIVEN
         socialUserRepository.saveAll(userList)
-        dooingleCountRepository.saveAll(dooingleCountList)
+        val dooingleCountList = dooingleCountRepository.saveAll(dooingleCountList)
+        val size = SocialUserService.HOT_DOOINGLERS_SIZE
 
         // WHEN
-        val result = dooingleCountRepository.getHighCountDooinglers(SocialUserService.HOT_DOOINGLERS_SIZE)
+        val result = dooingleCountRepository.getHighCountDooinglers(size)
 
         // THEN
-        result.size shouldBe SocialUserService.HOT_DOOINGLERS_SIZE
+        result.size shouldBe size
 
         val dooingleCountSorted = dooingleCountList.sortedWith(
             compareByDescending<DooingleCount> { it.count }.thenBy { it.owner.id })
