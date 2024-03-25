@@ -3,16 +3,14 @@ package com.dooingle.domain.user.service
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
-import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.model.Profile
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
-import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
-import com.dooingle.domain.user.dto.ProfileResponse
-import com.dooingle.domain.user.dto.UpdateProfileDto
+import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
@@ -148,6 +146,13 @@ class SocialUserService(
         else {
             return ProfileResponse(nickname = user.nickname, description = null, imageUrl = null)
         }
+    }
+
+    fun getProfileImageUrlByUserLink(userLink: String): ProfileImageUrlResponse {
+        val targetUser = socialUserRepository.findByUserLink(userLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink)
+
+        return ProfileImageUrlResponse(profileRepository.findByUser(targetUser)?.imageUrl)
     }
 
     fun getCurrentDooingler(userId: Long): DooinglerResponse {
