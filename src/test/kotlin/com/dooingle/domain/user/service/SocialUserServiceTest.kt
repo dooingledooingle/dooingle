@@ -197,7 +197,8 @@ class SocialUserServiceTest : AnnotationSpec() {
     fun `뜨거운 뒹글러 키워드 입력 시 뜨거운 뒹글러 목록 조회`() {
         // GIVEN
         val keyword = SocialUserService.HOT_DOOINGLERS_KEYWORD
-        every { mockDooingleCountService.getHotDooinglerList() } returns hotDooinglerList
+        val size = SocialUserService.HOT_DOOINGLERS_SIZE
+        every { mockDooingleCountService.getHotDooinglerList(size) } returns hotDooinglerList
 
         // WHEN
         val result = socialUserService.getDooinglerList(keyword)
@@ -210,7 +211,8 @@ class SocialUserServiceTest : AnnotationSpec() {
     fun `새 뒹글러 키워드 입력 시 새 뒹글러 목록 조회`() {
         // GIVEN
         val keyword = SocialUserService.NEW_DOOINGLERS_KEYWORD
-        every { mockSocialUserRepository.getNewDooinglers() } returns newDooinglerList
+        val size = SocialUserService.NEW_DOOINGLERS_SIZE
+        every { mockSocialUserRepository.getNewDooinglers(size) } returns newDooinglerList
 
         // WHEN
         val result = socialUserService.getDooinglerList(keyword)
