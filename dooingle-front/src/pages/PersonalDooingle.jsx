@@ -30,9 +30,33 @@ async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   return response.data;
 }
 
+async function fetchIsFollowingUser(userLink) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data.isFollowingUser;
+}
+
+async function fetchAddFollow(userLink) {
+  const response = await axios.post(
+    `${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`,
+    null,
+    {withCredentials: true},
+  );
+  return response.data;
+}
+
+async function fetchCancelFollow(userLink) {
+  const response = await axios.delete(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
 export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
   const params = useParams();
   const userLink = params?.userLink
 
@@ -40,17 +64,33 @@ export default function PersonalDooinglePage() {
     fetchDooinglesAndCatches(userLink).then(data => {
       setDooinglesAndCatchesSlice(data)
     });
+
+    fetchIsFollowingUser(userLink).then(result => {
+      setIsFollowingUser(result)
+    })
   }, [userLink]);
+
+  function handleAddFollowButton() {
+    fetchAddFollow(userLink).then(() => setIsFollowingUser(true))
+  }
+
+  function handleCancelFollowButton() {
+    fetchCancelFollow(userLink).then(() => setIsFollowingUser(false))
+  }
 
   return (
     <>
       <Header />
 
       {/* 소개 섹션 반투명 */}
-      <section className="h-[8.75rem] bg-[#000000] opacity-40 shadow-[0_0.25rem__0.25rem_#000000]">
-        <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full">
-          <div className="col-start-1 col-span-3 flex justify-center items-center">
-            <ProfileImageFrame />
+      <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
+        <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
+          <div className="col-start-4 col-span-6 flex justify-start items-center">
+            <ProfileImageFrame/>
+            <div className="w-[3rem] h-[3rem] flex justify-center items-center">
+              {isFollowingUser && <button onClick={handleCancelFollowButton}>★</button>}
+              {!isFollowingUser && <button onClick={handleAddFollowButton}>☆</button>}
+            </div>
           </div>
         </div>
       </section>
