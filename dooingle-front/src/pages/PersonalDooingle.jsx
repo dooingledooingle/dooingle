@@ -71,12 +71,21 @@ async function fetchAddDooingle(userLink, dooingleContent) {
   return response.data;
 }
 
+async function fetchLoggedInUserLink() { // TODO Feed에도 있는 함수, 추후 반드시 정리 필요
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
+    withCredentials: true, // ajax 요청에서 withCredentials config 추가
+  });
+  return response.data.userLink;
+}
+
 export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const params = useParams();
   const pageOwnerUserLink = params?.userLink;
+  const isCurrentUserEqualToPageOwner = (currentUserLink === pageOwnerUserLink)
   const dooingleRef = useRef();
 
   useEffect(() => {
@@ -88,6 +97,12 @@ export default function PersonalDooinglePage() {
       setIsFollowingUser(result)
     })
   }, [pageOwnerUserLink]);
+
+  useEffect(() => {
+    fetchLoggedInUserLink().then(loggedInUserLink => {
+      setCurrentUserLink(loggedInUserLink)
+    })
+  }, []);
 
   function handleAddFollowButton() {
     fetchAddFollow(pageOwnerUserLink).then(() => setIsFollowingUser(true))
@@ -101,7 +116,6 @@ export default function PersonalDooinglePage() {
     event.preventDefault(); // 폼 제출 기본 동작 방지
 
     const dooingleContent = dooingleRef.current.value;
-    console.log(dooingleContent)
 
     fetchAddDooingle(pageOwnerUserLink, dooingleContent)
   }
@@ -152,7 +166,7 @@ export default function PersonalDooinglePage() {
             </div>
           </div>
 
-          <form
+          {isCurrentUserEqualToPageOwner || <form
             className="flex justify-center items-center my-[2rem] gap-[4%]"
             onSubmit={handleDooingleSubmit}
           >
@@ -166,21 +180,23 @@ export default function PersonalDooinglePage() {
                     className="max-w-fit bg-[#ef7ec2] p-[0.5rem] rounded-[0.625rem] text-white font-bold">
               굴려라~
             </button>
-          </form>
+          </form>}
           <div className="py-[1rem]">
             {dooinglesAndCatchesSlice.content.map(dooingleAndCatch => (
-                <DooingleAndCatch
-                    key={dooingleAndCatch.dooingleId}
-                    ownerName={dooingleAndCatch.ownerName}
-                    dooingleContent={dooingleAndCatch.content}
-                    catchContent={dooingleAndCatch.catch.content}
-                />
+              <DooingleAndCatch
+                key={dooingleAndCatch.dooingleId}
+                dooingleId={dooingleAndCatch.dooingleId}
+                ownerName={dooingleAndCatch.ownerName}
+                dooingleContent={dooingleAndCatch.content}
+                catchContent={dooingleAndCatch.catch.content}
+                isCurrentUserEqualToPageOwner={isCurrentUserEqualToPageOwner}
+              />
             ))}
           </div>
         </section>
 
         {/* aside */}
-        <DooinglerListAside />
+        <DooinglerListAside/>
 
         <div className="col-start-1 col-span-12 mt-10">
           <Link to={"/"}>웰컴 페이지로</Link>
