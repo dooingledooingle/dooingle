@@ -4,7 +4,7 @@ import Navigation from "../components/Navigation.jsx";
 import DooingleAndCatch from "../components/DooingleAndCatch.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {Link, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import { BACKEND_SERVER_ORIGIN } from "../env.js"
 
@@ -53,12 +53,31 @@ async function fetchCancelFollow(userLink) {
   return response.data;
 }
 
+async function fetchAddDooingle(userLink, dooingleContent) {
+  const addDooingleRequestBody = {
+    content: dooingleContent
+  }
+
+  const response = await axios.post(
+    `${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`,
+    addDooingleRequestBody,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  return response.data;
+}
+
 export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const params = useParams();
-  const userLink = params?.userLink
+  const userLink = params?.userLink;
+  const dooingleRef = useRef();
 
   useEffect(() => {
     fetchDooinglesAndCatches(userLink).then(data => {
@@ -76,6 +95,15 @@ export default function PersonalDooinglePage() {
 
   function handleCancelFollowButton() {
     fetchCancelFollow(userLink).then(() => setIsFollowingUser(false))
+  }
+
+  function handleDooingleSubmit(event) {
+    event.preventDefault(); // 폼 제출 기본 동작 방지
+
+    const dooingleContent = dooingleRef.current.value;
+    console.log(dooingleContent)
+
+    fetchAddDooingle(userLink, dooingleContent)
   }
 
   return (
@@ -124,6 +152,21 @@ export default function PersonalDooinglePage() {
             </div>
           </div>
 
+          <form
+            className="flex justify-center items-center my-[2rem] gap-[4%]"
+            onSubmit={handleDooingleSubmit}
+          >
+            <input
+              type="text"
+              ref={dooingleRef}
+              placeholder="뒹글은 당신의 얼굴입니다."
+              className="w-[70%] h-[5rem] border-[0.125rem] border-[#5f6368] rounded-[0.625rem] p-[1rem] focus:border-[0.2rem]"
+            />
+            <button type="submit"
+                    className="max-w-fit bg-[#ef7ec2] p-[0.5rem] rounded-[0.625rem] text-white font-bold">
+              굴려라~
+            </button>
+          </form>
           <div className="py-[1rem]">
             {dooinglesAndCatchesSlice.content.map(dooingleAndCatch => (
                 <DooingleAndCatch
