@@ -55,7 +55,8 @@ class SecurityConfig(
             .also { it.allowCredentials = true }
             .also { it.allowedOrigins = listOf(frontendOrigin) }
             .also { it.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "TRACE") }
-            // .also { it.allowedHeaders = listOf("*") }.also { it.exposedHeaders = listOf("*") }
+            .also { it.allowedHeaders = listOf("content-type") }
+            // .also { it.exposedHeaders = listOf("*") }
             // 현 상태에서는 오류 발생하지 않아 주석 처리, 최소한만 허용함
 
         return UrlBasedCorsConfigurationSource()
