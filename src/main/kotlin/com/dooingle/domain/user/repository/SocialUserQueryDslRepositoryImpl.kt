@@ -13,7 +13,7 @@ class SocialUserQueryDslRepositoryImpl(
 
     private val socialUser = QSocialUser.socialUser
 
-    override fun getNewDooinglers(): List<DooinglerResponse> {
+    override fun getNewDooinglers(size: Long): List<DooinglerResponse> {
         return queryFactory.select(
             Projections.constructor(
                 DooinglerResponse::class.java,
@@ -23,7 +23,7 @@ class SocialUserQueryDslRepositoryImpl(
         )
             .from(socialUser)
             .orderBy(socialUser.id.desc())
-            .limit(dooinglerListProperties.new.toLong())
+            .limit(size)
             .fetch()
     }
 

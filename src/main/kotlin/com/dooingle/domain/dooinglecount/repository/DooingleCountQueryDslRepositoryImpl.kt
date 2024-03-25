@@ -8,14 +8,13 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 
 class DooingleCountQueryDslRepositoryImpl(
-    private val queryFactory: JPAQueryFactory,
-    private val dooinglerListProperties: DooinglersProperties
+    private val queryFactory: JPAQueryFactory
 ) : DooingleCountQueryDslRepository {
 
     private val socialUser = QSocialUser.socialUser
     private val dooingleCount = QDooingleCount.dooingleCount
 
-    override fun getHighCountDooinglers(): List<DooinglerResponse> {
+    override fun getHighCountDooinglers(size: Long): List<DooinglerResponse> {
 
         return queryFactory.select(
             Projections.constructor(
@@ -27,7 +26,7 @@ class DooingleCountQueryDslRepositoryImpl(
             .from(dooingleCount)
             .leftJoin(dooingleCount.owner, socialUser)
             .orderBy(dooingleCount.count.desc(), dooingleCount.owner.id.asc())
-            .limit(dooinglerListProperties.hot.toLong())
+            .limit(size)
             .fetch()
     }
 

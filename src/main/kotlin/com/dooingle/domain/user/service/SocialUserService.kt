@@ -55,8 +55,8 @@ class SocialUserService(
 
     fun getDooinglerList(condition: String?): List<DooinglerResponse> {
         return when (condition) {
-            HOT_DOOINGLERS_KEYWORD -> dooingleCountService.getHotDooinglerList()
-            NEW_DOOINGLERS_KEYWORD -> socialUserRepository.getNewDooinglers()
+            HOT_DOOINGLERS_KEYWORD -> dooingleCountService.getHotDooinglerList(HOT_DOOINGLERS_SIZE)
+            NEW_DOOINGLERS_KEYWORD -> socialUserRepository.getNewDooinglers(NEW_DOOINGLERS_SIZE)
             else -> throw InvalidParameterException(null)
         }
     }
@@ -143,5 +143,8 @@ class SocialUserService(
     companion object {
         const val HOT_DOOINGLERS_KEYWORD = "hot"
         const val NEW_DOOINGLERS_KEYWORD = "new"
+        const val HOT_DOOINGLERS_SIZE: Long = 5
+        const val NEW_DOOINGLERS_SIZE: Long = 5
     }
+
 }
