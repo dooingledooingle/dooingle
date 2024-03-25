@@ -76,25 +76,25 @@ export default function PersonalDooinglePage() {
   const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const params = useParams();
-  const userLink = params?.userLink;
+  const pageOwnerUserLink = params?.userLink;
   const dooingleRef = useRef();
 
   useEffect(() => {
-    fetchDooinglesAndCatches(userLink).then(data => {
+    fetchDooinglesAndCatches(pageOwnerUserLink).then(data => {
       setDooinglesAndCatchesSlice(data)
     });
 
-    fetchIsFollowingUser(userLink).then(result => {
+    fetchIsFollowingUser(pageOwnerUserLink).then(result => {
       setIsFollowingUser(result)
     })
-  }, [userLink]);
+  }, [pageOwnerUserLink]);
 
   function handleAddFollowButton() {
-    fetchAddFollow(userLink).then(() => setIsFollowingUser(true))
+    fetchAddFollow(pageOwnerUserLink).then(() => setIsFollowingUser(true))
   }
 
   function handleCancelFollowButton() {
-    fetchCancelFollow(userLink).then(() => setIsFollowingUser(false))
+    fetchCancelFollow(pageOwnerUserLink).then(() => setIsFollowingUser(false))
   }
 
   function handleDooingleSubmit(event) {
@@ -103,7 +103,7 @@ export default function PersonalDooinglePage() {
     const dooingleContent = dooingleRef.current.value;
     console.log(dooingleContent)
 
-    fetchAddDooingle(userLink, dooingleContent)
+    fetchAddDooingle(pageOwnerUserLink, dooingleContent)
   }
 
   return (
@@ -114,7 +114,7 @@ export default function PersonalDooinglePage() {
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
         <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
           <div className="col-start-4 col-span-6 flex justify-start items-center">
-            <ProfileImageFrame/>
+            <ProfileImageFrame userLink={pageOwnerUserLink} />
             <div className="w-[3rem] h-[3rem] flex justify-center items-center">
               {isFollowingUser && <button onClick={handleCancelFollowButton}>★</button>}
               {!isFollowingUser && <button onClick={handleAddFollowButton}>☆</button>}
