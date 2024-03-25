@@ -7,7 +7,6 @@ import com.dooingle.domain.notice.repository.NoticeRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.NotPermittedException
-import com.dooingle.global.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -24,18 +23,18 @@ class NoticeService(
         const val NOTICE_PAGE_SIZE = 10
     }
 
-    fun addNotice(userPrincipal: UserPrincipal, request: AddNoticeRequest): Long {
-        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+    fun addNotice(userId: Long, request: AddNoticeRequest): Long {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
         val notice = noticeRepository.save(request.to(user = user))
 
         return notice.id!!
     }
 
     @Transactional
-    fun updateNotice(userPrincipal: UserPrincipal, noticeId: Long, request: AddNoticeRequest) {
-        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+    fun updateNotice(userId: Long, noticeId: Long, request: AddNoticeRequest) {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
 
         val notice = getNotice(noticeId)
 
@@ -49,9 +48,9 @@ class NoticeService(
     }
 
     @Transactional
-    fun deleteNotice(userPrincipal: UserPrincipal, noticeId: Long) {
-        val user = socialUserRepository.findByIdOrNull(userPrincipal.id)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userPrincipal.id)
+    fun deleteNotice(userId: Long, noticeId: Long) {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
 
         val notice = getNotice(noticeId)
 
