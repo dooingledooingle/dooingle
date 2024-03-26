@@ -23,7 +23,7 @@ import okhttp3.sse.EventSources.createFactory
 import okio.IOException
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
@@ -45,7 +45,7 @@ class NotificationSseTest(
     private val sseEmitters: SseEmitters
 ) {
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
         sseEmitters.completeAllEmitters()
         notificationRepository.deleteAll()

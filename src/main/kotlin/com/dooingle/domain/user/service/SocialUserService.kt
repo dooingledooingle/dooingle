@@ -32,21 +32,25 @@ class SocialUserService(
     @Transactional
     fun registerIfAbsent(oAuth2UserInfo: OAuth2UserInfo): SocialUser {
         return if (!socialUserRepository.existsByProviderAndProviderId(oAuth2UserInfo.provider, oAuth2UserInfo.id)) {
-            val socialUser = SocialUser(
-                provider = oAuth2UserInfo.provider,
-                providerId = oAuth2UserInfo.id,
-                nickname = oAuth2UserInfo.nickname
-            )
-
-            oAuth2UserInfo.profileImage?.let {
-                profileRepository.save(
-                    Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
-            }
-
-            socialUserRepository.save(socialUser)
+            registerUser(oAuth2UserInfo)
         } else {
             socialUserRepository.findByProviderAndProviderId(oAuth2UserInfo.provider, oAuth2UserInfo.id)
         }
+    }
+
+    fun registerUser(oAuth2UserInfo: OAuth2UserInfo): SocialUser {
+        val socialUser = SocialUser(
+            provider = oAuth2UserInfo.provider,
+            providerId = oAuth2UserInfo.id,
+            nickname = oAuth2UserInfo.nickname
+        )
+
+        oAuth2UserInfo.profileImage?.let {
+            profileRepository.save(
+                Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
+        }
+
+        return socialUserRepository.save(socialUser)
     }
 
     fun getDooinglerList(condition: String?): List<DooinglerResponse> {
