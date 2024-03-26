@@ -17,7 +17,7 @@ class SocialUserQueryDslRepositoryImpl(
         return queryFactory.select(
             Projections.constructor(
                 DooinglerResponse::class.java,
-                socialUser.id,
+                socialUser.userLink,
                 socialUser.nickname
             )
         )
@@ -27,4 +27,13 @@ class SocialUserQueryDslRepositoryImpl(
             .fetch()
     }
 
+    override fun getDooingler(userId: Long): DooinglerResponse {
+        return queryFactory.select(
+            Projections.constructor(
+                DooinglerResponse::class.java,
+                socialUser.userLink,
+                socialUser.nickname
+            )
+        ).from(socialUser).where(socialUser.id.eq(userId)).fetchFirst()
+    }
 }

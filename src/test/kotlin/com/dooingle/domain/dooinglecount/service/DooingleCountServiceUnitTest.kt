@@ -41,11 +41,11 @@ class DooingleCountServiceUnitTest : AnnotationSpec() {
 
     private fun getFixtureOfHotDooingler(): List<DooinglerResponse> {
         return listOf(
-            DooinglerResponse(1, "뜨거운1"),
-            DooinglerResponse(2, "뜨거운2"),
-            DooinglerResponse(3, "뜨거운3"),
-            DooinglerResponse(4, "뜨거운4"),
-            DooinglerResponse(5, "뜨거운5"),
+            DooinglerResponse("1111111111", "뜨거운1"),
+            DooinglerResponse("1111111111", "뜨거운2"),
+            DooinglerResponse("1111111111", "뜨거운3"),
+            DooinglerResponse("1111111111", "뜨거운4"),
+            DooinglerResponse("1111111111", "뜨거운5"),
         )
     }
 }

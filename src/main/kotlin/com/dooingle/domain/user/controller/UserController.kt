@@ -1,23 +1,18 @@
 package com.dooingle.domain.user.controller
 
 import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.dto.ProfileImageUrlResponse
 import com.dooingle.domain.user.dto.ProfileResponse
 import com.dooingle.domain.user.dto.UpdateProfileDto
-import org.springframework.http.HttpStatus
 import com.dooingle.domain.user.service.SocialUserService
 import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
@@ -44,5 +39,15 @@ class UserController(
     @GetMapping("/profile")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
+    }
+
+    @GetMapping("/{userLink}/profile-image")
+    fun getProfileImageByUserLink(@PathVariable userLink: String) : ResponseEntity<ProfileImageUrlResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfileImageUrlByUserLink(userLink))
+    }
+
+    @GetMapping("/current-dooingler")
+    fun getCurrentDooingler(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<DooinglerResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getCurrentDooingler(userPrincipal.id))
     }
 }

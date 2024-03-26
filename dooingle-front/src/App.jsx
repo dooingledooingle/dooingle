@@ -8,6 +8,7 @@ const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
   { path: '/feeds', element: <FeedPage /> },
   { path: '/personal-dooingles', element: <PersonalDooinglePage /> },
+  { path: '/personal-dooingles/:userLink', element: <PersonalDooinglePage /> },
   { path: '/admin', element: <AdminHomePage /> },
 ])
 
