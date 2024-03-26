@@ -58,7 +58,7 @@ async function fetchLoggedInUserLink() {
 export default function FeedPage() {
 
   const [sseNotification, setSseNotification] = useState(notificationInitialState);
-  const [feed, setFeed] = useState(null);
+  const [newFeedNotification, setNewFeedNotification] = useState(null);
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const [dooingles, setDooingles] = useState([]);
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
@@ -68,7 +68,48 @@ export default function FeedPage() {
     fetchLoggedInUserLink().then(loggedInUserLink => {
       setCurrentUserLink(loggedInUserLink)
     })
+
+    const eventSource = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
+      {withCredentials: true}
+    );
+
+    addSseConnectionEventListenerToEventSource(eventSource)
+    addNewFeedNotificationEventListenerToEventSource(eventSource);
+    addPersonalNotificationEventListenerToEventSource(eventSource);
+
+    return () => {
+      eventSource.close(); // 컴포넌트 unmount할 때 eventSource 닫기
+    }
   }, []);
+
+  function addSseConnectionEventListenerToEventSource(eventSource) {
+    eventSource.addEventListener("connect", (event) => {
+      const { data: receivedConnectData } = event;
+      console.log("connect event data: ", receivedConnectData);
+    });
+  }
+
+  function addNewFeedNotificationEventListenerToEventSource(eventSource) {
+    eventSource.addEventListener("feed", event => {
+      const receivedFeed = JSON.parse(event.data);
+      setNewFeedNotification(receivedFeed); // 전달받는 데이터는 DooingleResponse 형식
+      // TODO : 전달받는 데이터로 뒹글 컴포넌트 만들어서 뒹글 목록 위에 추가
+    });
+  }
+
+  function addPersonalNotificationEventListenerToEventSource(eventSource) {
+    eventSource.addEventListener("notification", event => {
+      const receivedNotification = JSON.parse(event.data);
+
+      switch (receivedNotification.notificationType) {
+        case "DOOINGLE": receivedNotification.message = "새 뒹글이 굴러왔어요!"; break;
+        case "CATCH": receivedNotification.message = "내 뒹글에 캐치가 달렸어요!"; break;
+      }
+      setSseNotification(receivedNotification); // 전달받는 데이터는 NotificationResponse 형식. 예시- {notificationType:'DOOINGLE', cursor:5}
+      // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+ 팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
+      //  알림 컴포넌트 클릭 시 PersonalDooingle 페이지로 이동(cursor 함께 보내기)
+    });
+  }
 
   function handleMoreFeedButton(isEntireFeed) {
     const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
@@ -100,6 +141,10 @@ export default function FeedPage() {
     setIsEntireFeed(false);
   }
 
+  function handleNewFeedNotificationButton() {
+    setNewFeedNotification(null);
+  }
+
   const handleConnect = () => {
 
     const sse = new EventSourcePolyfill(
@@ -128,7 +173,7 @@ export default function FeedPage() {
 
     sse.addEventListener('feed', e => {
       const receivedFeed = JSON.parse(e.data);
-      setFeed(receivedFeed);
+      setNewFeedNotification(receivedFeed);
       console.log(receivedFeed);
       // 전달받는 데이터는 DooingleResponse 형식
       // TODO : 전달받는 데이터로 뒹글 컴포넌트 만들어서 뒹글 목록 위에 추가
@@ -212,6 +257,12 @@ export default function FeedPage() {
               </button>
             </div>
           </div>
+
+          {newFeedNotification && (
+            <div className="border-2">
+              <button onClick={handleNewFeedNotificationButton}>새 피드가 있어요!</button>
+            </div>
+          )}
 
           <div className="py-[1rem]">
             {dooingles.map(dooingle => (
