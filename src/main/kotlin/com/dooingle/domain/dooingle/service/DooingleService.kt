@@ -8,8 +8,7 @@ import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.model.DooingleCount
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.InvalidParameterException
@@ -25,7 +24,7 @@ class DooingleService(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository,
+    private val dooingleCountService: DooingleCountService,
     private val notificationService: NotificationService
 ) {
     companion object {
@@ -49,9 +48,7 @@ class DooingleService(
 
         dooingleRepository.save(dooingle)
 
-        val dooingleCount = dooingleCountRepository.findByOwnerId(ownerId)
-            ?: dooingleCountRepository.save(DooingleCount(owner = owner))
-        dooingleCount.plus()
+        dooingleCountService.plusCount(owner)
 
         notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 
