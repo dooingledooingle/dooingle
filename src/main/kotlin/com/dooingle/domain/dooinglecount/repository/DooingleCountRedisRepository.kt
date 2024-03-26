@@ -1,6 +1,5 @@
 package com.dooingle.domain.dooinglecount.repository
 
-import com.dooingle.domain.user.dto.DooinglerResponse
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 
@@ -17,19 +16,16 @@ class DooingleCountRedisRepository(
         zSetOperations.incrementScore(KEY, member, 1.0)
     }
 
-    fun getHighCountDooinglers(size: Long): List<DooinglerResponse>? {
-        val rank: Set<String>? = zSetOperations.reverseRange(KEY, 0, size-1)
+    fun getHighCountDooinglers(size: Long): Set<String>? {
+        return zSetOperations.reverseRange(KEY, 0, size - 1)
+    }
 
-        return rank?.map {
-            DooinglerResponse(
-                userId = it.substringBefore(":").toLong(),
-                nickname = it.substringAfter(":")
-            )
-        }
+    fun getAllCounts(): Set<String>? {
+        return zSetOperations.reverseRange(KEY, 0, -1)
     }
 
     fun deleteAll() {
-        TODO("Not yet implemented")
+        zSetOperations.removeRange(KEY, 0, -1)
     }
 
     companion object {
