@@ -1,6 +1,6 @@
 package com.dooingle.domain.follow.controller
 
-import com.dooingle.domain.follow.dto.FollowResponse
+import com.dooingle.domain.follow.dto.FollowDetailResponse
 import com.dooingle.domain.follow.dto.IsFollowingUserResponse
 import com.dooingle.domain.follow.service.FollowService
 import com.dooingle.global.security.UserPrincipal
@@ -40,7 +40,7 @@ class FollowController(
     @GetMapping
     fun showFollowingList(
         @AuthenticationPrincipal userPrincipal: UserPrincipal
-    ) : ResponseEntity<List<FollowResponse>> {
+    ) : ResponseEntity<List<FollowDetailResponse>> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(followService.showFollowingList(userPrincipal.id))
