@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 export default function Header() {
   return (
     <header className="shadow-[inset_0_-0.0625rem_0_0_#d3d3d3]">
@@ -5,7 +7,7 @@ export default function Header() {
 
         <div className="col-start-4 col-span-6 flex justify-center items-center text-[#8692ff]">
           <div className="min-w-fit">
-            <a className="text-[2rem] font-bold">Dooingle</a>
+            <Link to="/feeds" className="text-[2rem] font-bold">Dooingle</Link>
           </div>
         </div>
 
