@@ -73,11 +73,14 @@ export default function FollowPage() {
             {followingList.map(following => (
               <Following
                 key={following.followingUserName} /*TODO 바꿔야 함*/
-                followingUserName={following.followingUserName}
+                userName={following.followingUserName}
+                userLink={following.followingUserLink}
+                userProfileImageUrl={following.followingUserProfileImageUrl}
+                userDescription={following.followingUserDescription}
               />
             ))}
             <Following
-              followingUserName="김관장"
+              userName="김관장"
             />
           </div>
         </section>
