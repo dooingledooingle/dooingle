@@ -61,6 +61,9 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     // 데이터 이력 관리
     implementation("org.springframework.data:spring-data-envers")
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.redisson:redisson-spring-boot-starter:3.26.0")
 
     // 모니터링(액추에이터)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
