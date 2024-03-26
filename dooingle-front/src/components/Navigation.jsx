@@ -26,7 +26,7 @@ export default function Navigation() {
         <Link to={`/personal-dooingles/${currentUserLink}`}>내 뒹글함</Link>
       </div>
       <div>
-        <a href="#">팔로우하는 뒹글러</a>
+        <Link to={`/follows`}>팔로우하는 뒹글러</Link>
       </div>
       <div>
         <a href="#">뒹글 탐색</a>

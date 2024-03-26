@@ -1,15 +1,17 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import WelcomePage from "./pages/Welcome.jsx";
 import AdminHomePage from "./pages/AdminHome.jsx";
 import FeedPage from "./pages/Feed.jsx";
 import PersonalDooinglePage from "./pages/PersonalDooingle.jsx";
 import MyProfilePage from "./pages/MyProfile.jsx";
+import FollowPage from "./pages/Follow.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
   { path: '/feeds', element: <FeedPage /> },
   { path: '/personal-dooingles/:userLink', element: <PersonalDooinglePage /> },
   { path: '/my-profile', element: <MyProfilePage /> },
+  { path: '/follows', element: <FollowPage /> },
   { path: '/admin', element: <AdminHomePage /> },
 ])
 
