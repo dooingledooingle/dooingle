@@ -12,7 +12,6 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeIn
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -41,9 +39,6 @@ class DooingleServiceDBTest(
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository
 ) {
-
-    @MockBean
-    lateinit var dooinglersProperties: DooinglersProperties
 
     private val mockNotificationService = mockk<NotificationService>()
 
