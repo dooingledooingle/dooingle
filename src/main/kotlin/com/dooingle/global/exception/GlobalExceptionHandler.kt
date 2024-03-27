@@ -20,6 +20,7 @@ class GlobalExceptionHandler(
 
     @ExceptionHandler(Exception::class)
     fun handleAllException(e: Exception): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
         return handleException(CommonErrorCode.INTERNAL_SERVER_ERROR, e.message)
     }
 
