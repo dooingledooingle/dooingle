@@ -9,21 +9,6 @@ import {EventSourcePolyfill} from 'event-source-polyfill';
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js"
 
-/*
-const sliceInitialState = {
-  // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
-  size: 0,
-  content: [],
-  number: 0,
-  sort: {},
-  first: true,
-  last: true,
-  numberOfElements: 0,
-  pageable: {},
-  empty: true,
-}
- */
-
 async function fetchDooinglesFeed(lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
@@ -189,7 +174,10 @@ export default function FeedPage() {
               <Dooingle
                 key={dooingle.dooingleId}
                 ownerName={dooingle.ownerName}
+                ownerUserLink={dooingle.ownerUserLink}
+                dooingleId={dooingle.dooingleId}
                 content={dooingle.content}
+                hasCatch={dooingle.hasCatch}
               />
             ))}
           </div>
