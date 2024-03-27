@@ -1,7 +1,7 @@
 package com.dooingle.domain.notification.service
 
+import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.notification.dto.NotificationResponse
-import com.dooingle.domain.notification.dto.NotificationSseResponse
 import com.dooingle.domain.notification.model.Notification
 import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.notification.repository.NotificationRepository
@@ -29,16 +29,16 @@ class NotificationService(
         return sseEmitters.addWith(userId)
     }
 
-    fun addDooingleNotification(user: SocialUser, dooingleId: Long) {
-        addAndSendNotification(user, NotificationType.DOOINGLE, dooingleId)
-            .also { sseEmitters.sendNewFeedNotification() }
+    fun addDooingleNotification(user: SocialUser, dooingleResponse: DooingleResponse) {
+        saveAndSendNotification(user, NotificationType.DOOINGLE, dooingleResponse.dooingleId)
+            .also { sseEmitters.sendNewFeedNotification(dooingleResponse) }
     }
 
     fun addCatchNotification(user: SocialUser, dooingleId: Long) {
-        addAndSendNotification(user, NotificationType.CATCH, dooingleId)
+        saveAndSendNotification(user, NotificationType.CATCH, dooingleId)
     }
 
-    fun addAndSendNotification(user: SocialUser, type: NotificationType, dooingleId: Long) {
+    fun saveAndSendNotification(user: SocialUser, type: NotificationType, dooingleId: Long) {
         notificationRepository.save(
             Notification(
                 user = user,
@@ -46,11 +46,9 @@ class NotificationService(
                 resourceId = dooingleId
             )
         ).let {
-            NotificationSseResponse.from(it)
-        }.let { response ->
             sseEmitters.sendUserNotification(
                 userId = user.id!!,
-                data = "${response.message}-${response.cursor}"
+                data = NotificationResponse.from(it)
             )
         }
     }

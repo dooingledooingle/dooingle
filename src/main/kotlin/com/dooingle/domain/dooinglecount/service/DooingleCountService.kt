@@ -10,8 +10,8 @@ class DooingleCountService(
     private val dooingleCountRepository: DooingleCountRepository
 ) {
 
-    fun getHotDooinglerList(): List<DooinglerResponse> {
-        return dooingleCountRepository.getHighCountDooinglers()
+    fun getHotDooinglerList(size: Long): List<DooinglerResponse> {
+        return dooingleCountRepository.getHighCountDooinglers(size)
     }
 
     // 매일 0시 0분 0초에 dooingle_count 모든 데이터 삭제

@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com"
-version = "0.0.1-SNAPSHOT"
+version = "0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -48,6 +48,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
+    // okhttp
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
+    implementation("com.squareup.okhttp3:okhttp-sse:5.0.0-alpha.12")
 
     // 데이터(JPA): spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

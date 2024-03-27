@@ -53,7 +53,7 @@ class DooingleService(
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
         dooingleCount.plus()
 
-        notificationService.addDooingleNotification(user = owner, dooingleId = dooingle.id!!)
+        notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 
         return DooingleResponse.from(dooingle)
     }
@@ -72,6 +72,9 @@ class DooingleService(
     }
 
     fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
+
         return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
     }
 
