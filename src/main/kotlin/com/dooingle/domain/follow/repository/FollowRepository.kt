@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface FollowRepository : JpaRepository<Follow, Long> {
+interface FollowRepository : JpaRepository<Follow, Long>, FollowQueryDslRepository {
     fun existsByFromUserAndToUser(fromUser: SocialUser, toUser: SocialUser): Boolean
     fun findAllByFromUser(fromUser: SocialUser): List<Follow>
     fun countByToUser(toUser: SocialUser): Int

@@ -1,6 +1,6 @@
 package com.dooingle.domain.follow.service
 
-import com.dooingle.domain.follow.dto.FollowResponse
+import com.dooingle.domain.follow.dto.FollowDetailResponse
 import com.dooingle.domain.follow.dto.IsFollowingUserResponse
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
@@ -47,11 +47,11 @@ class FollowService(
         return IsFollowingUserResponse(followRepository.existsByFromUserAndToUser(fromUser, toUser))
     }
 
-    fun showFollowingList(fromUserId: Long) : List<FollowResponse> {
+    fun showFollowingList(fromUserId: Long) : List<FollowDetailResponse> {
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 
-        return followRepository.findAllByFromUser(fromUser).map { FollowResponse.from(it) }
+        return followRepository.getFollowDetailListByFromUser(fromUser)
     }
 
     fun showFollowersNumber(userId: Long): Int {
