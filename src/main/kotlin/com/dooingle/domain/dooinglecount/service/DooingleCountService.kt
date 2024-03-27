@@ -1,5 +1,6 @@
 package com.dooingle.domain.dooinglecount.service
 
+import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRedisRepository
 import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.SocialUser
@@ -8,7 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class DooingleCountService(
-    private val dooingleCountRedisRepository: DooingleCountRedisRepository
+    private val dooingleCountRedisRepository: DooingleCountRedisRepository,
+    private val dooingleRepository: DooingleRepository
 ) {
 
     fun plusCount(owner: SocialUser) {
@@ -17,12 +19,16 @@ class DooingleCountService(
     }
 
     fun getHotDooinglerList(size: Long): List<DooinglerResponse> {
-        return dooingleCountRedisRepository.getHighCountDooinglers(size)?.map {
-            DooinglerResponse(
-                userId = it.substringBefore(":").toLong(),
-                nickname = it.substringAfter(":")
-            )
-        } ?: emptyList()
+        return runCatching {
+            dooingleCountRedisRepository.getHighCountDooinglers(size)?.map {
+                DooinglerResponse(
+                    userId = it.substringBefore(":").toLong(),
+                    nickname = it.substringAfter(":")
+                )
+            } ?: dooingleRepository.getHotDooinglerList(size)
+        }.getOrElse {
+            dooingleRepository.getHotDooinglerList(size)
+        }
     }
 
     // 매일 0시 0분 0초에 redis 모든 데이터 삭제
