@@ -14,7 +14,7 @@ export default function Header() {
         <div className="col-start-10 col-span-3 text-[#456bf5] font-medium max-h-full">
           <div className="flex justify-end gap-[15%] mr-[5%] min-h-full">
             <div className="flex flex-col justify-end">
-              <div className="mb-[0.5rem]">공지사항</div>
+              <Link to={"/notices"} className="mb-[0.5rem]" >공지사항</Link>
             </div>
             <div className="flex flex-col justify-end">
               <div className="mb-[0.5rem]">설정</div>
