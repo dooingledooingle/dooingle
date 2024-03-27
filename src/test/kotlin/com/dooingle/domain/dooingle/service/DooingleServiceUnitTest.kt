@@ -72,24 +72,6 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     fun clearMockingLogics() {
         clearAllMocks()
     }
-    
-    @Test
-    fun `뒹글이 정상적으로 등록 될 경우`() {
-        // given
-        val ownerId = 1L
-        val guestId = 2L
-        val addDooingleRequest = AddDooingleRequest("졸려요")
-
-        every { mockSocialUserRepository.findByIdOrNull(ownerId) } returns owner
-        every { mockSocialUserRepository.findByIdOrNull(guestId) } returns guest
-
-        // when
-        val result = dooingleService.addDooingle(guestId, ownerId, addDooingleRequest)
-
-        // then
-        result.ownerName shouldBe owner.nickname
-        result.content shouldBe addDooingleRequest.content
-    }
 
     @Test
     fun `뒹글 등록시 오너아이디와 게스트아이디가 같을 경우 예외 발생`(){
@@ -127,12 +109,22 @@ class DooingleServiceUnitTest : AnnotationSpec() {
 
     @Test
     fun `커서값이 전달 되었을 경우 커서 이전 뒹글 부터 개인 페이지 조회`(){
+        // given
+        val ownerId = 1L
+        val cursor = 20L
+        val pageRequest = PageRequest.ofSize(10)
 
-    }
+        every { mockSocialUserRepository.findByIdOrNull(ownerId) } returns owner
+        every { mockDooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest) } returns SliceImpl(getFixtureOfDooingleAndCatchResponseList().subList(2, 12))
 
-    @Test
-    fun `개인 뒹글 페이지에 오너 아이디가 존재하지 않을 경우 예외 발생 `(){
+        // when
+        val slice = dooingleService.getPage(ownerId, cursor)
 
+        // then
+        slice.content.size shouldBe 10
+        slice.content.first().dooingleId shouldBe cursor
+        slice.content.last().dooingleId shouldBe (cursor - 10) + 1
+        slice.isFirst shouldBe true
     }
 
 

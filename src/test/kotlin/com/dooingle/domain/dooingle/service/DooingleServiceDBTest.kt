@@ -2,6 +2,7 @@ package com.dooingle.domain.dooingle.service
 
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.controller.DooingleFeedController
+import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
@@ -14,10 +15,17 @@ import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.collections.haveLowerBound
 import io.kotest.matchers.collections.shouldBeIn
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -40,7 +48,7 @@ class DooingleServiceDBTest(
     private val followRepository: FollowRepository
 ) {
 
-    private val mockNotificationService = mockk<NotificationService>()
+    private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
     private val dooingleService = DooingleService(
         dooingleRepository,
@@ -135,6 +143,28 @@ class DooingleServiceDBTest(
         shouldThrow<ModelNotFoundException> {
             dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
         }
+    }
+
+    @Test
+    fun `뒹글이 정상적으로 등록 될 경우`() {
+        // given
+        socialUserRepository.saveAll(userList)
+        followRepository.saveAll(followingList)
+        dooingleRepository.saveAll(dooingleList)
+
+        val owner = userA
+        val guest = userB
+        val addDooingleRequest = AddDooingleRequest("졸려요")
+
+        every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
+
+        // when
+        val result = dooingleService.addDooingle(guest.id!!, owner.id!!, addDooingleRequest )
+
+        // then
+        result.dooingleId shouldBe dooingleList.size + 1
+        result.ownerName shouldBe owner.nickname
+        result.content shouldBe addDooingleRequest.content
     }
 
     private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
