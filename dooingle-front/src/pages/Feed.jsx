@@ -24,12 +24,6 @@ const sliceInitialState = {
 }
  */
 
-const notificationInitialState = {
-  notificationType: null,
-  message: null,
-  cursor: 0
-}
-
 async function fetchDooinglesFeed(lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
@@ -57,8 +51,8 @@ async function fetchLoggedInUserLink() {
 
 export default function FeedPage() {
 
-  const [sseNotification, setSseNotification] = useState(notificationInitialState);
   const [newFeedNotification, setNewFeedNotification] = useState(null);
+  const [personalNotification, setPersonalNotification] = useState(null);
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const [dooingles, setDooingles] = useState([]);
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
@@ -105,9 +99,9 @@ export default function FeedPage() {
         case "DOOINGLE": receivedNotification.message = "새 뒹글이 굴러왔어요!"; break;
         case "CATCH": receivedNotification.message = "내 뒹글에 캐치가 달렸어요!"; break;
       }
-      setSseNotification(receivedNotification); // 전달받는 데이터는 NotificationResponse 형식. 예시- {notificationType:'DOOINGLE', cursor:5}
+
       // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+ 팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
-      //  알림 컴포넌트 클릭 시 PersonalDooingle 페이지로 이동(cursor 함께 보내기)
+      setPersonalNotification(receivedNotification);
     });
   }
 
@@ -145,76 +139,8 @@ export default function FeedPage() {
     setNewFeedNotification(null);
   }
 
-  const handleConnect = () => {
-
-    const sse = new EventSourcePolyfill(
-        `${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
-        {withCredentials: true});
-
-    sse.addEventListener('connect', (e) => {
-      const { data: receivedConnectData } = e;
-
-      console.log('connect event data: ',receivedConnectData);
-    });
-
-    sse.addEventListener('notification', e => {
-      const receivedNotification = JSON.parse(e.data);
-
-      switch (receivedNotification.notificationType) {
-        case 'DOOINGLE': receivedNotification.message = "새 뒹글이 굴러왔어요!"; break;
-        case 'CATCH': receivedNotification.message = "내 뒹글에 캐치가 달렸어요!"; break;
-      }
-      setSseNotification(receivedNotification)
-
-      // 전달받는 데이터는 NotificationResponse 형식. 예시- {notificationType:'DOOINGLE', cursor:5}
-      // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+ 팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
-      //  알림 컴포넌트 클릭 시 PersonalDooingle 페이지로 이동(cursor 함께 보내기)
-    });
-
-    sse.addEventListener('feed', e => {
-      const receivedFeed = JSON.parse(e.data);
-      setNewFeedNotification(receivedFeed);
-      console.log(receivedFeed);
-      // 전달받는 데이터는 DooingleResponse 형식
-      // TODO : 전달받는 데이터로 뒹글 컴포넌트 만들어서 뒹글 목록 위에 추가
-    });
-  }
-
-  const [testData, setTestData] = useState(null);
-
-  const handleTestConnect = () => {
-
-    // SSE 연결 요청. EventSource 라는 인터페이스를 써야 하는데 헤더 전달을 지원하는 Event-Source-Polyfill 사용
-    const sse = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/connect`);
-
-    // test-connect 라는 이름의 이벤트가 발생할 때 콘솔에 데이터 출력하는 이벤트 리스너 등록
-    sse.addEventListener('test-connect', (e) => {
-      // 첫 연결 시 만료 시간까지 아무런 데이터도 보내지 않으면 에러 발생하기 때문에 더미 데이터 보냄
-      const { data: receivedConnectData } = e;
-
-      console.log('connect event data: ',receivedConnectData);
-    });
-
-    // test 라는 이름의 이벤트가 발생할 때 콘솔에 변경된 데이터 출력하고, testData 업데이트하는 이벤트 리스너 등록
-    // 다른 브라우저에서 test 호출 시 내 브라우저에 서버에서 변경된 testData가 찍히게 됨
-    sse.addEventListener('test', e => {
-
-      const { data: receivedTestData } = e;
-
-      console.log("test event data", receivedTestData);
-      setTestData(receivedTestData);
-    });
-  }
-
-  // test 요청 버튼 클릭 시 localhost/test 로 요청 보냄
-  const handleTestClick = async () => {
-    await axios.post(`${BACKEND_SERVER_ORIGIN}/test`)
-        .then(function (response) {
-          console.log('handleTestClick',response);
-        })
-        .catch(function (error) {
-          console.log('error',error);
-        });
+  function handlePersonalNotificationButton() {
+    setPersonalNotification(null);
   }
 
   return (
@@ -226,17 +152,6 @@ export default function FeedPage() {
           <div className="flex flex-col items-center py-[3.75rem] gap-[1.25rem]">
             <ProfileImageFrame userLink={currentUserLink} />
             <Navigation/>
-            <div className="flex flex-col items-center pt-10">
-              <div className="text-xl text-red-500">알림 관련 임시</div>
-              <button onClick={handleConnect}>connect 요청</button>
-              <div className="py-[1rem]">
-                {sseNotification.message}
-                {sseNotification.cursor}
-              </div>
-              <button onClick={handleTestConnect}>test connect 요청</button>
-              <button onClick={handleTestClick}>test 요청</button>
-              <div>{testData}</div>
-            </div>
           </div>
         </nav>
 
@@ -263,14 +178,19 @@ export default function FeedPage() {
               <button onClick={handleNewFeedNotificationButton}>새 피드가 있어요!</button>
             </div>
           )}
+          {personalNotification && (
+            <div className="border-2">
+              <button onClick={handlePersonalNotificationButton}>새로 뒹글을 받았거나 내가 쓴 뒹글에 캐치가 있어요!</button>
+            </div>
+          )}
 
           <div className="py-[1rem]">
             {dooingles.map(dooingle => (
-                <Dooingle
-                    key={dooingle.dooingleId}
-                    ownerName={dooingle.ownerName}
-                    content={dooingle.content}
-                />
+              <Dooingle
+                key={dooingle.dooingleId}
+                ownerName={dooingle.ownerName}
+                content={dooingle.content}
+              />
             ))}
           </div>
           <button onClick={() => handleMoreFeedButton(isEntireFeed)} className="bg-amber-50">뒹글 더 보기</button>
