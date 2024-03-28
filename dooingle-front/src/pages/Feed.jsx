@@ -8,6 +8,7 @@ import {useEffect, useState} from "react";
 import {EventSourcePolyfill} from 'event-source-polyfill';
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js"
+import MorePostButton from "../components/button/MorePostButton.jsx";
 
 async function fetchDooinglesFeed(lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
@@ -181,7 +182,9 @@ export default function FeedPage() {
               />
             ))}
           </div>
-          <button onClick={() => handleMoreFeedButton(isEntireFeed)} className="bg-amber-50">뒹글 더 보기</button>
+          <div className="flex justify-center">
+            <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)} />
+          </div>
         </section>
 
         <DooinglerListAside/>

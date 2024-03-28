@@ -10,15 +10,12 @@ export default function Dooingle({ownerName, ownerUserLink, dooingleId, content,
           hasCatch &&
           <Link
             to={`/personal-dooingles/${ownerUserLink}?lastDooingleId=${dooingleId + 1}`}
-            className="pl-[1rem] font-medium text-[#5f6368]">답변이 있는 뒹글입니다.
+            className="pl-[1rem] font-medium text-[#5f6368] hover:text-[#fa61bd]">답변이 있는 뒹글입니다.
           </Link>
         }
-        {/* TODO dooingleId 넣어서 개인 페이지 해당 글로 바로 갈 수 있도록 만들기 */}
       </div>
-      <div className="px-[1.25rem] py-[0.625rem] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem]">
-        <div className="text-[#5f6368]">
-          <p>{content}</p>
-        </div>
+      <div className="pl-[0.75rem] pr-[1rem] py-[0.5rem] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-fit">
+        <span>{content}</span>
       </div>
     </div>
   );
