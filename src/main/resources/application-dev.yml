@@ -1,9 +1,4 @@
 spring:
-  datasource: # TODO 추후 변경할 것
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test;MODE=MySQL
-    username: sa
-    password:
   jpa:
     hibernate:
       ddl-auto: update # TODO 추후 변경할 것
