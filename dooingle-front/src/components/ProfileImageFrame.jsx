@@ -14,10 +14,10 @@ export default function ProfileImageFrame({userLink}) {
 
   useEffect(() => {
     if (!userLink) {
-      setUserProfileImage("/public/no-image.png")
+      setUserProfileImage("/no-image-1.png")
     } else {
       fetchUserProfileImageUrl(userLink).then(imageUrl =>
-        imageUrl !== null ? setUserProfileImage(imageUrl) : setUserProfileImage("/public/no-image.png"))
+        imageUrl !== null ? setUserProfileImage(imageUrl) : setUserProfileImage("/no-image-1.png"))
     }
   }, [userLink]);
 
