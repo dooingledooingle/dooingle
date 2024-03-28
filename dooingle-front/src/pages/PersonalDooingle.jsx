@@ -3,23 +3,10 @@ import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooingleAndCatch from "../components/DooingleAndCatch.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useSearchParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import { BACKEND_SERVER_ORIGIN } from "../env.js"
-
-const sliceInitialState = {
-  // initial state를 안 정해주면 에러 발생해서 렌더링이 안 됨
-  size: 0,
-  content: [],
-  number: 0,
-  sort: {},
-  first: true,
-  last: true,
-  numberOfElements: 0,
-  pageable: {},
-  empty: true,
-}
+import {BACKEND_SERVER_ORIGIN} from "../env.js"
 
 async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
@@ -27,7 +14,7 @@ async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`.concat(queryParameter), {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
   });
-  return response.data;
+  return response.data?.content;
 }
 
 async function fetchIsFollowingUser(userLink) {
@@ -80,19 +67,29 @@ async function fetchLoggedInUserLink() { // TODO Feed에도 있는 함수, 추�
 
 export default function PersonalDooinglePage() {
 
-  const [dooinglesAndCatchesSlice, setDooinglesAndCatchesSlice] = useState(sliceInitialState);
+  const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
+  // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const params = useParams();
+  const [searchParams] = useSearchParams()
   const pageOwnerUserLink = params?.userLink;
   const isCurrentUserEqualToPageOwner = (currentUserLink === pageOwnerUserLink)
   const dooingleRef = useRef();
 
   useEffect(() => {
-    fetchDooinglesAndCatches(pageOwnerUserLink).then(data => {
-      setDooinglesAndCatchesSlice(data)
-    });
-
+    if (searchParams) {
+      fetchDooinglesAndCatches(pageOwnerUserLink, searchParams.get("lastDooingleId")).then(data => {
+        setDooinglesAndCatches(data)
+      });
+    } else {
+      fetchDooinglesAndCatches(pageOwnerUserLink).then(data => {
+        setDooinglesAndCatches(data)
+      });
+    }
+  }, [pageOwnerUserLink, searchParams]);
+  
+  useEffect(() => {
     fetchIsFollowingUser(pageOwnerUserLink).then(result => {
       setIsFollowingUser(result)
     })
@@ -118,6 +115,18 @@ export default function PersonalDooinglePage() {
     const dooingleContent = dooingleRef.current.value;
 
     fetchAddDooingle(pageOwnerUserLink, dooingleContent)
+  }
+
+  function handleMoreDooingleAndCatchButton() {
+    const lastDooingleId = dooinglesAndCatches.content.slice(-1)[0]?.["dooingleId"]
+
+    /* TODO 답변이 없는 나눠야 함 */
+    fetchDooinglesAndCatches(pageOwnerUserLink, lastDooingleId).then(newDooinglesAndCatches => {
+      setDooinglesAndCatches(prevDooinglesAndCatches => {
+        const uniqueNewDooinglesAndCatches = newDooinglesAndCatches?.filter(newDooingleAndCatche => prevDooinglesAndCatches.every(prevDooingleAndCatch => prevDooingleAndCatch?.dooingleId !== newDooingleAndCatche?.dooingleId))
+        return [...prevDooinglesAndCatches, ...uniqueNewDooinglesAndCatches]
+      })
+    })
   }
 
   return (
@@ -182,7 +191,7 @@ export default function PersonalDooinglePage() {
             </button>
           </form>}
           <div className="py-[1rem]">
-            {dooinglesAndCatchesSlice.content.map(dooingleAndCatch => (
+            {dooinglesAndCatches.map(dooingleAndCatch => (
               <DooingleAndCatch
                 key={dooingleAndCatch.dooingleId}
                 dooingleId={dooingleAndCatch.dooingleId}
@@ -193,6 +202,7 @@ export default function PersonalDooinglePage() {
               />
             ))}
           </div>
+          <button onClick={() => handleMoreDooingleAndCatchButton()} className="bg-amber-50">더 보기</button>
         </section>
 
         {/* aside */}
