@@ -61,7 +61,7 @@ class SseEmitters {
         }
     }
 
-    fun sendNewFeedNotification(userId: Long, data: Any) {
+    fun sendNewFeedNotification(data: Any) {
         notificationEmitters.forEach { (key, queue) ->
             queue.forEach { emitter ->
                 emitter.sendData(eventName = "feed", data = data)
