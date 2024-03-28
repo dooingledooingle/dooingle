@@ -1,4 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
+import {BACKEND_SERVER_ORIGIN} from "../env.js";
 
 export default function WelcomePage() {
   // 페이지 이동 임시 작성
@@ -6,7 +7,7 @@ export default function WelcomePage() {
   const navigateToFeedPage = () => navigate("/feeds")
 
   const handleStartButton = () => {
-    window.location.href = "http://localhost:8080/oauth2/login/kakao"
+    window.location.href = `${BACKEND_SERVER_ORIGIN}/oauth2/login/kakao`
   }
 
   return (
@@ -32,7 +33,7 @@ export default function WelcomePage() {
                 로그인
               </div>
             </button>
-            <Link to="http://localhost:8080/oauth2/login/kakao"
+            <Link to={`${BACKEND_SERVER_ORIGIN}/oauth2/login/kakao`}
                   className="cursor-pointer p-3 bg-[#8692ff] self-stretch rounded-xl flex flex-col items-center justify-center hover:bg-blue-600">
               <div
                 className="relative text-[1.375rem] font-medium text-white inline-block">

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/users/{userId}/dooingles")
+@RequestMapping("/api/users/{userLink}/dooingles")
 class DooingleController(
     private val dooingleService: DooingleService
 ) {
@@ -29,10 +29,10 @@ class DooingleController(
     @PostMapping
     fun addDooingle(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
-        @PathVariable userId: Long,
+        @PathVariable userLink: String,
         @RequestBody addDooingleRequest: AddDooingleRequest
     ): ResponseEntity<DooingleResponse>{
-        val response: DooingleResponse = dooingleService.addDooingle(userPrincipal.id, userId, addDooingleRequest)
+        val response: DooingleResponse = dooingleService.addDooingle(userPrincipal.id, userLink, addDooingleRequest)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response)
@@ -42,12 +42,12 @@ class DooingleController(
     @Operation(summary = "개인 뒹글 페이지 조회")
     @GetMapping
     fun dooinglePage (
-        @PathVariable userId: Long,
+        @PathVariable userLink: String,
         cursor: Long?
     ) : ResponseEntity<Slice<DooingleAndCatchResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(dooingleService.getPage(userId, cursor))
+            .body(dooingleService.getPage(userLink, cursor))
     }
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)
@@ -55,10 +55,10 @@ class DooingleController(
     @Operation(summary = "미사용 API")
     @GetMapping("/{dooingleId}")
     fun getDooingle(
-        @PathVariable userId: Long,
+        @PathVariable userLink: Long,
         @PathVariable dooingleId: Long
     ) : ResponseEntity<DooingleResponse> {
-        val response: DooingleResponse = dooingleService.getDooingle(userId, dooingleId)
+        val response: DooingleResponse = dooingleService.getDooingle(userLink, dooingleId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(response)
