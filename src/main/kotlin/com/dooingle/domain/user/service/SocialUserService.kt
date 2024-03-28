@@ -31,40 +31,31 @@ class SocialUserService(
     @Transactional
     fun registerIfAbsent(oAuth2UserInfo: OAuth2UserInfo): SocialUser {
         return if (!socialUserRepository.existsByProviderAndProviderId(oAuth2UserInfo.provider, oAuth2UserInfo.id)) {
-            val userLink = createUniqueRandomUserLink()
-
-            val socialUser = SocialUser(
-                provider = oAuth2UserInfo.provider,
-                providerId = oAuth2UserInfo.id,
-                nickname = oAuth2UserInfo.nickname,
-                userLink = userLink
-            )
-
-            oAuth2UserInfo.profileImage?.let {
-                profileRepository.save(
-                    Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
-            }
-
-            socialUserRepository.save(socialUser)
+            registerUser(oAuth2UserInfo)
         } else {
             socialUserRepository.findByProviderAndProviderId(oAuth2UserInfo.provider, oAuth2UserInfo.id)
         }
     }
 
-    private fun createUniqueRandomUserLink(): String {
-        lateinit var randomUserLink: String
-        do {
-            randomUserLink = createRandomUserLink()
-        } while (socialUserRepository.existsByUserLink(randomUserLink)) // 난수 문자열로 생성했는데 존재한다면 다시 생성
-        return randomUserLink
-    }
+    fun registerUser(oAuth2UserInfo: OAuth2UserInfo): SocialUser {
+        val socialUser = SocialUser(
+            provider = oAuth2UserInfo.provider,
+            providerId = oAuth2UserInfo.id,
+            nickname = oAuth2UserInfo.nickname
+        )
 
-    private fun createRandomUserLink() = RandomStringUtils.randomAlphanumeric(10, 20)
+        oAuth2UserInfo.profileImage?.let {
+            profileRepository.save(
+                Profile(user = socialUser, imageUrl = oAuth2UserInfo.profileImage))
+        }
+
+        return socialUserRepository.save(socialUser)
+    }
 
     fun getDooinglerList(condition: String?): List<DooinglerResponse> {
         return when (condition) {
-            "hot" -> dooingleCountService.getHotDooinglerList()
-            "new" -> socialUserRepository.getNewDooinglers()
+            HOT_DOOINGLERS_KEYWORD -> dooingleCountService.getHotDooinglerList(HOT_DOOINGLERS_SIZE)
+            NEW_DOOINGLERS_KEYWORD -> socialUserRepository.getNewDooinglers(NEW_DOOINGLERS_SIZE)
             else -> throw InvalidParameterException(null)
         }
     }
@@ -158,4 +149,12 @@ class SocialUserService(
     fun getCurrentDooingler(userId: Long): DooinglerResponse {
         return socialUserRepository.getDooingler(userId)
     }
+
+    companion object {
+        const val HOT_DOOINGLERS_KEYWORD = "hot"
+        const val NEW_DOOINGLERS_KEYWORD = "new"
+        const val HOT_DOOINGLERS_SIZE: Long = 5
+        const val NEW_DOOINGLERS_SIZE: Long = 5
+    }
+
 }

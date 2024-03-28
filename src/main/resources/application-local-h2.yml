@@ -29,9 +29,3 @@ logging:
     'org.hibernate.SQL': debug
     'org.hibernate.orm.jdbc.bind': trace
     'org.springframework.securitweb': debug
-
-dooingler:
-  list:
-    size:
-      hot: 5
-      new: 5

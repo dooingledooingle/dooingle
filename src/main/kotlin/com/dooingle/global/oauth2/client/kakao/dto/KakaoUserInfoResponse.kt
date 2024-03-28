@@ -8,11 +8,28 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 class KakaoUserInfoResponse(
     id: Long,
-    properties: KakaoUserPropertiesResponse
+    properties: KakaoUserPropertiesResponse,
+    kakaoAccount: KakaoUserAccountResponse
 ) : OAuth2UserInfo(
     provider = OAuth2Provider.KAKAO,
     id = id.toString(),
     nickname = properties.nickname,
-    profileImage = properties.profileImage
+    profileImage = if (!kakaoAccount.profile.isDefaultImage) properties.profileImage else null
 ) {
 }
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+class KakaoUserPropertiesResponse (
+    val nickname: String,
+    val profileImage: String?
+)
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+class KakaoUserAccountResponse(
+    val profile: KakaoUserProfileResponse
+)
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+class KakaoUserProfileResponse(
+    val isDefaultImage: Boolean
+)

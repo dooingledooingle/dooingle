@@ -9,16 +9,14 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import java.time.ZonedDateTime
@@ -34,12 +32,9 @@ class BadReportServiceDBTest @Autowired constructor(
     private val catchRepository: CatchRepository
 ) {
 
-    @MockBean
-    lateinit var dooinglersProperties:DooinglersProperties
-
     private val badReportService = BadReportService(socialUserRepository, badReportRepository)
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
         socialUserRepository.deleteAll()

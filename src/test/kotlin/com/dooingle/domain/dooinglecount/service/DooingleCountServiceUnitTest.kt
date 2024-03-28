@@ -2,6 +2,7 @@ package com.dooingle.domain.dooinglecount.service
 
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.service.SocialUserService
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
@@ -18,10 +19,11 @@ class DooingleCountServiceUnitTest : AnnotationSpec() {
     fun `뜨거운 뒹글러 목록을 조회하고자 하면 뜨거운 뒹글러 목록을 조회할 수 있다`() {
         // given
         val hotDooinglerList = getFixtureOfHotDooingler()
-        every { dooingleCountRepository.getHighCountDooinglers() } returns hotDooinglerList
+        val size = SocialUserService.HOT_DOOINGLERS_SIZE
+        every { dooingleCountRepository.getHighCountDooinglers(size) } returns hotDooinglerList
 
         // when
-        val returnHotDooinglerList = dooingleCountService.getHotDooinglerList()
+        val returnHotDooinglerList = dooingleCountService.getHotDooinglerList(size)
 
         // then
         returnHotDooinglerList shouldBe hotDooinglerList

@@ -12,17 +12,15 @@ import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.property.DooinglersProperties
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -42,9 +40,6 @@ class DooingleServiceDBTest(
     private val followRepository: FollowRepository
 ) {
 
-    @MockBean
-    lateinit var dooinglersProperties: DooinglersProperties
-
     private val mockNotificationService = mockk<NotificationService>()
 
     private val dooingleService = DooingleService(
@@ -55,7 +50,7 @@ class DooingleServiceDBTest(
         mockNotificationService
     )
 
-    @BeforeEach
+    @AfterEach
     fun clearData() {
         dooingleRepository.deleteAll()
         followRepository.deleteAll()
@@ -132,7 +127,7 @@ class DooingleServiceDBTest(
     @Test
     fun `존재하지 않는 유저의 팔로우 피드 조회 시 예외 발생`() {
         // GIVEN
-        val userId: Long = 100
+        val userId: Long = 1000000
 
         // WHEN & THEN
         socialUserRepository.findByIdOrNull(userId) shouldBe null
@@ -201,4 +196,5 @@ class DooingleServiceDBTest(
     )
 
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
+
 }
