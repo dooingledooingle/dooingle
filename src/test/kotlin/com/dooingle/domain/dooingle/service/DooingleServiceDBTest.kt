@@ -159,10 +159,10 @@ class DooingleServiceDBTest(
         every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
 
         // when
-        val result = dooingleService.addDooingle(guest.id!!, owner.id!!, addDooingleRequest )
+        val result = dooingleService.addDooingle(guest.id!!, owner.id!!, addDooingleRequest)
 
         // then
-        result.dooingleId shouldBe dooingleList.size + 1
+        dooingleRepository.count() shouldBe dooingleList.size + 1
         result.ownerName shouldBe owner.nickname
         result.content shouldBe addDooingleRequest.content
     }
