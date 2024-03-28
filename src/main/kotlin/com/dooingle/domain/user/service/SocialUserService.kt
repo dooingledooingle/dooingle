@@ -41,7 +41,8 @@ class SocialUserService(
         val socialUser = SocialUser(
             provider = oAuth2UserInfo.provider,
             providerId = oAuth2UserInfo.id,
-            nickname = oAuth2UserInfo.nickname
+            nickname = oAuth2UserInfo.nickname,
+            userLink = createRandomUserLink(),
         )
 
         oAuth2UserInfo.profileImage?.let {
@@ -51,6 +52,16 @@ class SocialUserService(
 
         return socialUserRepository.save(socialUser)
     }
+
+    private fun createUniqueRandomUserLink(): String {
+        lateinit var randomUserLink: String
+        do {
+            randomUserLink = createRandomUserLink()
+        } while (socialUserRepository.existsByUserLink(randomUserLink)) // 난수 문자열로 생성했는데 존재한다면 다시 생성
+        return randomUserLink
+    }
+
+    private fun createRandomUserLink() = RandomStringUtils.randomAlphanumeric(10, 20)
 
     fun getDooinglerList(condition: String?): List<DooinglerResponse> {
         return when (condition) {
