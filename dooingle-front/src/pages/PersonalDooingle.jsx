@@ -8,6 +8,7 @@ import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN, FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
+import PostSubmitButton from "../components/button/PostSubmitButton.jsx";
 
 async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
@@ -210,16 +211,11 @@ export default function PersonalDooinglePage() {
             className="flex justify-center items-center my-[2rem] gap-[4%]"
             onSubmit={handleDooingleSubmit}
           >
-            <input
-              type="text"
-              ref={dooingleRef}
-              placeholder="뒹글은 당신의 얼굴입니다."
-              className="w-[70%] h-[5rem] border-[0.125rem] border-[#5f6368] rounded-[0.625rem] p-[1rem] focus:border-[0.2rem]"
-            />
-            <button type="submit"
-                    className="max-w-fit bg-[#ef7ec2] p-[0.5rem] rounded-[0.625rem] text-white font-bold">
-              굴려라~
-            </button>
+            <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
+                      className="w-[70%] p-[1rem] overflow-y-hidden resize-none
+                    border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
+                    focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
+            <PostSubmitButton type="submit">굴릴래요</PostSubmitButton>
           </form>}
           <div className="py-[1rem]">
             {dooinglesAndCatches.map(dooingleAndCatch => (
