@@ -6,7 +6,8 @@ import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {Link, useParams, useSearchParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js"
+import {BACKEND_SERVER_ORIGIN, FRONTEND_SERVER_ORIGIN} from "../env.js"
+import MorePostButton from "../components/button/MorePostButton.jsx";
 
 async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
@@ -118,7 +119,7 @@ export default function PersonalDooinglePage() {
   }
 
   function handleMoreDooingleAndCatchButton() {
-    const lastDooingleId = dooinglesAndCatches.content.slice(-1)[0]?.["dooingleId"]
+    const lastDooingleId = dooinglesAndCatches.slice(-1)[0]?.["dooingleId"]
 
     /* TODO 답변이 없는 나눠야 함 */
     fetchDooinglesAndCatches(pageOwnerUserLink, lastDooingleId).then(newDooinglesAndCatches => {
@@ -129,6 +130,17 @@ export default function PersonalDooinglePage() {
     })
   }
 
+  function handleCopyUserLinkButton() {
+    navigator.clipboard.writeText(`${FRONTEND_SERVER_ORIGIN}/personal-dooingles/${pageOwnerUserLink}`)
+      .then(() => {
+        alert("페이지 링크를 복사했어요.")
+      })
+      .catch(reason => {
+        alert("링크 복사에 실패했어요.")
+        console.log("링크 복사 실패", reason)
+      })
+  }
+
   return (
     <>
       <Header />
@@ -136,11 +148,22 @@ export default function PersonalDooinglePage() {
       {/* 소개 섹션 반투명 */}
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
         <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
-          <div className="col-start-4 col-span-6 flex justify-start items-center">
+          <div className="col-start-4 col-span-6 flex justify-start items-center gap-[5%]">
             <ProfileImageFrame userLink={pageOwnerUserLink} />
+            <div className="flex flex-col gap-[0.375rem]">
+              <div className="flex items-center gap-[1rem]">
+                <span className="text-[1.5rem] font-bold text-white">깜이</span>
+                {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition">☆</button>}
+              </div>
+              <div><span className="text-[1rem] ">자기소개 맴맴맴맴</span></div>
+              <button onClick={handleCopyUserLinkButton} className="flex items-center">
+                <div className="w-[1.25rem] h-[1.25rem] mr-[0.25rem]"><img src="/copy-button-image.svg" alt="뒹글러 페이지 링크 복사 버튼" /></div>
+                <span className="text-[0.875rem] font-light">페이지 링크 복사</span>
+              </button>
+            </div>
             <div className="w-[3rem] h-[3rem] flex justify-center items-center">
-              {isFollowingUser && <button onClick={handleCancelFollowButton}>★</button>}
-              {!isFollowingUser && <button onClick={handleAddFollowButton}>☆</button>}
+
             </div>
           </div>
         </div>
@@ -202,14 +225,16 @@ export default function PersonalDooinglePage() {
               />
             ))}
           </div>
-          <button onClick={() => handleMoreDooingleAndCatchButton()} className="bg-amber-50">더 보기</button>
+          <div className="flex justify-center">
+            <MorePostButton onClick={() => handleMoreDooingleAndCatchButton()}/>
+          </div>
         </section>
 
         {/* aside */}
         <DooinglerListAside/>
 
         <div className="col-start-1 col-span-12 mt-10">
-          <Link to={"/"}>웰컴 페이지로</Link>
+        <Link to={"/"}>웰컴 페이지로</Link>
         </div>
       </div>
     </>
