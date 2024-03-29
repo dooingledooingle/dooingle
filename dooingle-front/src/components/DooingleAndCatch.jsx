@@ -21,7 +21,7 @@ async function fetchAddCatch(dooingleId, catchContent) {
   return response.data;
 }
 
-export default function DooingleAndCatch({ dooingleId, ownerName, dooingleContent, catchContent, isCurrentUserEqualToPageOwner }) {
+export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAndCatches, dooingleContent, catchContent, isCurrentUserEqualToPageOwner }) {
 
   const [isCatchFormVisible, setIsCatchFormVisible] = useState(false);
   const catchRef = useRef();
@@ -38,8 +38,15 @@ export default function DooingleAndCatch({ dooingleId, ownerName, dooingleConten
     event.preventDefault();
 
     const catchContent = catchRef.current.value;
-
-    fetchAddCatch(dooingleId, catchContent);
+    fetchAddCatch(dooingleId, catchContent).then(addedCatch => {
+      setDooinglesAndCatches(prevDooinglesAndCatches => {
+        /* 새로운 리스트 만들어서 원래 내용 복사 후 그 리스트를 반환하게 해야함 */
+        const catchAddedDooinglesAndCatches = [...prevDooinglesAndCatches];
+        catchAddedDooinglesAndCatches.filter(dooingleAndCatch => dooingleAndCatch.dooingleId === dooingleId)[0].catch.content = addedCatch.content;
+        return catchAddedDooinglesAndCatches
+      })
+    })
+    catchRef.current.value = "";
   }
 
   return (
