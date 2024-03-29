@@ -66,6 +66,8 @@ dependencies {
     // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.redisson:redisson-spring-boot-starter:3.26.0")
+    // Embedded Redis: local-memory-h2, test 프로파일 용도
+    implementation("com.github.codemonstur:embedded-redis:1.4.3")
 
     // 모니터링(액추에이터)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
