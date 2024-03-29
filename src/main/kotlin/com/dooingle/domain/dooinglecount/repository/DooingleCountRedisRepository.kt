@@ -10,8 +10,8 @@ class DooingleCountRedisRepository(
 
     val zSetOperations = redisTemplate.opsForZSet()
 
-    fun plusCount(userId: String, nickname: String) {
-        val member = "$userId:$nickname"
+    fun plusCount(userLink: String, nickname: String) {
+        val member = "$userLink:$nickname"
         zSetOperations.addIfAbsent(KEY, member, 0.0)
         zSetOperations.incrementScore(KEY, member, 1.0)
     }

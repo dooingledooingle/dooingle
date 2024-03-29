@@ -14,15 +14,14 @@ class DooingleCountService(
 ) {
 
     fun plusCount(owner: SocialUser) {
-        dooingleCountRedisRepository.plusCount(owner.id.toString(), owner.nickname)
-        // TODO : userLink로 바꾼다면 owner.id -> owner.userLink로 바꿔야 함
+        dooingleCountRedisRepository.plusCount(owner.userLink, owner.nickname)
     }
 
     fun getHotDooinglerList(size: Long): List<DooinglerResponse> {
         return runCatching {
             dooingleCountRedisRepository.getHighCountDooinglers(size)?.map {
                 DooinglerResponse(
-                    userId = it.substringBefore(":").toLong(),
+                    userLink = it.substringBefore(":"),
                     nickname = it.substringAfter(":")
                 )
             } ?: dooingleRepository.getHotDooinglerList(size)
