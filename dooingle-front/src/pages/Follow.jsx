@@ -6,8 +6,7 @@ import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
-import Dooingle from "../components/Dooingle.jsx";
-import Following from "../components/Following.jsx";
+import FollowingUser from "../components/FollowingUser.jsx";
 
 async function fetchLoggedInUserLink() { // TODO 중복 함수 - 추후 정리해야 함
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
@@ -71,7 +70,7 @@ export default function FollowPage() {
 
           <div className="flex flex-col gap-[1.75rem] px-[0.625rem] py-[1.25rem]">
             {followingList.map(following => (
-              <Following
+              <FollowingUser
                 key={following.followingUserName} /*TODO 바꿔야 함*/
                 userName={following.followingUserName}
                 userLink={following.followingUserLink}
@@ -79,9 +78,6 @@ export default function FollowPage() {
                 userDescription={following.followingUserDescription}
               />
             ))}
-            <Following
-              userName="김관장"
-            />
           </div>
         </section>
 
