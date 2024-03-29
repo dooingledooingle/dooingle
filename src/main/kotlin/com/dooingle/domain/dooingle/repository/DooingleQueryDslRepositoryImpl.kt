@@ -32,7 +32,7 @@ class DooingleQueryDslRepositoryImpl(
                 Projections.constructor(
                     DooingleFeedResponse::class.java,
                     owner.nickname,
-                    owner.id,
+                    owner.userLink,
                     dooingle.id,
                     dooingle.content,
                     catch.isNotNull,
@@ -63,7 +63,7 @@ class DooingleQueryDslRepositoryImpl(
                 Projections.constructor(
                     DooingleFeedResponse::class.java,
                     owner.nickname,
-                    owner.id,
+                    owner.userLink,
                     dooingle.id,
                     dooingle.content,
                     catch.isNotNull,
@@ -110,6 +110,7 @@ class DooingleQueryDslRepositoryImpl(
                 Projections.constructor(
                     DooingleAndCatchResponse::class.java,
                     owner.nickname,
+                    owner.userLink,
                     dooingle.id,
                     dooingle.content,
                     Projections.constructor(
