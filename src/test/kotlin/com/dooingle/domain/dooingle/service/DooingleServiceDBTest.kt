@@ -10,6 +10,7 @@ import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
@@ -37,7 +38,9 @@ class DooingleServiceDBTest(
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
+    private val distributedLock: DistributedLock,
+
 ) {
 
     private val mockNotificationService = mockk<NotificationService>()
@@ -47,7 +50,8 @@ class DooingleServiceDBTest(
         socialUserRepository,
         catchRepository,
         dooingleCountRepository,
-        mockNotificationService
+        mockNotificationService,
+        distributedLock
     )
 
     @AfterEach

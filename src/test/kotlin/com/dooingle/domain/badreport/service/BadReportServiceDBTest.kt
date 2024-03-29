@@ -8,6 +8,7 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.matchers.equals.shouldBeEqual
@@ -29,10 +30,11 @@ class BadReportServiceDBTest @Autowired constructor(
     private val badReportRepository: BadReportRepository,
     private val socialUserRepository: SocialUserRepository,
     private val dooingleRepository: DooingleRepository,
-    private val catchRepository: CatchRepository
+    private val catchRepository: CatchRepository,
+    private val distributedLock: DistributedLock,
 ) {
 
-    private val badReportService = BadReportService(socialUserRepository, badReportRepository)
+    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock)
 
     @AfterEach
     fun clearData() {

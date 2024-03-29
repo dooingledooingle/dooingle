@@ -10,6 +10,7 @@ import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.DisplayName
@@ -19,6 +20,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import org.mockito.ArgumentMatchers.any
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -27,7 +29,9 @@ import java.time.ZonedDateTime
 import kotlin.math.min
 
 @DisplayName("DooingleService 단위 테스트")
-class DooingleServiceUnitTest : AnnotationSpec() {
+class DooingleServiceUnitTest(
+    private val distributedLock: DistributedLock
+) : AnnotationSpec() {
 
     private val mockDooingleRepository = mockk<DooingleRepository>()
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
@@ -39,7 +43,8 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
         dooingleCountRepository = mockDooingleCountRepository,
-        notificationService = mockNotificationService
+        notificationService = mockNotificationService,
+        distributedLock = distributedLock
     )
 
     lateinit var owner: SocialUser

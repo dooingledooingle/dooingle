@@ -20,7 +20,7 @@ class FollowService(
     private val socialUserRepository: SocialUserRepository,
     private val distributedLock: DistributedLock
 ) {
-    fun follow(toUserLink: String, fromUserId: Long) {
+    fun follow(toUserLink: String, fromUserId: Long) : Unit = distributedLock("FOLLOW:$fromUserId")  {
         val toUser = socialUserRepository.findByUserLink(toUserLink)
             ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
