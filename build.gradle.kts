@@ -59,6 +59,8 @@ dependencies {
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     // 데이터베이스: h2
     runtimeOnly("com.h2database:h2")
+    // 데이터베이스: MySQL
+    runtimeOnly("com.mysql:mysql-connector-j")
     // 데이터 이력 관리
     implementation("org.springframework.data:spring-data-envers")
     // Redis

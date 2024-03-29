@@ -41,16 +41,16 @@ class SocialUserRepositoryTest(
 
         val usersSorted = userList.sortedByDescending { it.id }
         result.zip(usersSorted) { response, entity ->
-            response.userId == entity.id && response.nickname == entity.nickname
+            response.userLink == entity.userLink && response.nickname == entity.nickname
         }
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
-    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3")
-    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4")
-    private val userE = SocialUser(nickname = "E", provider = OAuth2Provider.KAKAO, providerId = "5")
-    private val userF = SocialUser(nickname = "F", provider = OAuth2Provider.KAKAO, providerId = "6")
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
+    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3", userLink = "3333333333")
+    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4", userLink = "4444444444")
+    private val userE = SocialUser(nickname = "E", provider = OAuth2Provider.KAKAO, providerId = "5", userLink = "5555555555")
+    private val userF = SocialUser(nickname = "F", provider = OAuth2Provider.KAKAO, providerId = "6", userLink = "6666666666")
     private val userList = listOf(userA, userB, userC, userD, userE, userF)
 
 }
