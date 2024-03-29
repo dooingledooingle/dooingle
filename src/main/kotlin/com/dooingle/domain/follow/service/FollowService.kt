@@ -1,6 +1,7 @@
 package com.dooingle.domain.follow.service
 
-import com.dooingle.domain.follow.dto.FollowResponse
+import com.dooingle.domain.follow.dto.FollowDetailResponse
+import com.dooingle.domain.follow.dto.IsFollowingUserResponse
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
@@ -8,6 +9,7 @@ import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
+import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,15 +20,14 @@ class FollowService(
     private val socialUserRepository: SocialUserRepository,
     private val distributedLock: DistributedLock
 ) {
-
-    fun follow(toUserId: Long, fromUserId: Long): Unit = distributedLock("FOLLOW:$fromUserId") {
-        val toUser = socialUserRepository.findByIdOrNull(toUserId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = toUserId)
+    fun follow(toUserLink: String, fromUserId: Long) {
+        val toUser = socialUserRepository.findByUserLink(toUserLink)
+            ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 
         // 정책 1) 자기 자신을 follow할 수 없다
-        if (toUserId == fromUserId) throw InvalidParameterException("자기 자신을 팔로우할 수 없습니다.")
+        if (toUser.id == fromUserId) throw InvalidParameterException("자기 자신을 팔로우할 수 없습니다.")
 
         // 정책 2) 중복 follow 불가능
         if (followRepository.existsByFromUserAndToUser(fromUser, toUser)) throw ConflictStateException("이미 팔로우 중입니다.")
@@ -39,11 +40,20 @@ class FollowService(
         )
     }
 
-    fun showFollowingList(fromUserId: Long) : List<FollowResponse> {
+    fun isFollowingUser(toUserLink: String, fromUserId: Long): IsFollowingUserResponse {
+        val toUser = socialUserRepository.findByUserLink(toUserLink)
+            ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 
-        return followRepository.findAllByFromUser(fromUser).map { FollowResponse.from(it) }
+        return IsFollowingUserResponse(followRepository.existsByFromUserAndToUser(fromUser, toUser))
+    }
+
+    fun showFollowingList(fromUserId: Long) : List<FollowDetailResponse> {
+        val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
+
+        return followRepository.getFollowDetailListByFromUser(fromUser)
     }
 
     fun showFollowersNumber(userId: Long): Int {
@@ -55,9 +65,9 @@ class FollowService(
     }
 
     @Transactional
-    fun cancelFollowing(toUserId: Long, fromUserId: Long) {
-        val toUser = socialUserRepository.findByIdOrNull(toUserId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = toUserId)
+    fun cancelFollowing(toUserLink: String, fromUserId: Long) {
+        val toUser = socialUserRepository.findByUserLink(toUserLink)
+            ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 

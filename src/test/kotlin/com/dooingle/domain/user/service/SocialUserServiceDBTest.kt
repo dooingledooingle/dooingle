@@ -97,7 +97,8 @@ class SocialUserServiceDBTest(
         val user2 = socialUserRepository.save(
             SocialUser(
                 provider = kakao, providerId = oauth2UserInfo2.id,
-                nickname = oauth2UserInfo2.nickname
+                nickname = oauth2UserInfo2.nickname,
+                userLink = "1111111111"
             )
         )
         profileRepository.save(Profile(user = user2, imageUrl = oauth2UserInfo2.profileImage))
