@@ -1,7 +1,7 @@
 import {useRef, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
-import PostSubmitButton from "./button/PostSubmitButton.jsx";
+import SmallSubmitButton from "./button/SmallSubmitButton.jsx";
 
 async function fetchAddCatch(dooingleId, catchContent) {
   const addCatchRequestBody = {
@@ -73,12 +73,12 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
                     className="w-[50%] m-4 px-[0.5rem] py-[0.25rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
-          <PostSubmitButton type="submit">제출</PostSubmitButton>
-          <PostSubmitButton type="button" onClick={handleHideCatchFormButton}>제출하지 않고 닫기</PostSubmitButton>
+          <SmallSubmitButton type="submit">제출</SmallSubmitButton>
+          <SmallSubmitButton type="button" onClick={handleHideCatchFormButton}>제출하지 않고 닫기</SmallSubmitButton>
         </form>
       </div>) : (<div> {/* TODO 감싸는 div 필요 없는 경우 하나 없애기 */}
         <div className="flex mt-[1rem] ml-[0.75rem]">
-          <PostSubmitButton onClick={handleShowCatchFormButton}>받을래요</PostSubmitButton>
+          <SmallSubmitButton onClick={handleShowCatchFormButton}>받을래요</SmallSubmitButton>
           <img src="/post-button.svg" alt="캐치 버튼" className="w-[2rem] h-[2rem] -scale-x-100 peer-hover:rotate-[-360deg] transition-transform duration-1000"/>
         </div>
       </div>))}

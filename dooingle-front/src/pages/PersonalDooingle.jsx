@@ -8,7 +8,7 @@ import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN, FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
-import PostSubmitButton from "../components/button/PostSubmitButton.jsx";
+import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 
 async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
@@ -225,7 +225,7 @@ export default function PersonalDooinglePage() {
                       className="w-[70%] p-[1rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
-            <PostSubmitButton type="submit">굴릴래요</PostSubmitButton>
+            <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
           </form>}
           <div className="py-[1rem]">
             {dooinglesAndCatches.map(dooingleAndCatch => (

@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
 import {Link} from "react-router-dom";
-import PostSubmitButton from "../components/button/PostSubmitButton.jsx";
+import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 
 const profileInitialState = {
   nickname: "",
@@ -104,7 +104,7 @@ export default function MyProfilePage() {
                src={updateImageUrlPreview || prevProfile.imageUrl || "/no-image-1.png"}
                alt="사용자 프로필 이미지 미리보기"/>
           <div className="flex items-center gap-[2.75rem]">
-            <PostSubmitButton type="button" onClick={handleRestoreProfileImageButton} className="mr-0">선택 취소</PostSubmitButton>
+            <SmallSubmitButton type="button" onClick={handleRestoreProfileImageButton} className="mr-0">선택 취소</SmallSubmitButton>
             <input id="profileImageFileInput" type="file" ref={imageFileInputRef} onChange={handleImageInput} className="hidden"/>
             <label htmlFor="profileImageFileInput" className="cursor-pointer px-[0.5rem] py-[0.25rem]
                  text-[0.75rem] text-[#5f6368] text-center font-bold

@@ -1,4 +1,4 @@
-export default function PostSubmitButton({children, type, onClick, className}) {
+export default function SmallSubmitButton({children, type, onClick, className}) {
   // TODO onClick이 안 넘어오는 경우에 대해서 깔끔하게 정리해야 함
   return <button type={type} onClick={onClick}
                  className={`peer
