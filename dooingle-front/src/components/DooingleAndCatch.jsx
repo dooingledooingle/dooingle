@@ -61,15 +61,17 @@ export default function DooingleAndCatch({ dooingleId, ownerName, dooingleConten
         </div>
       </div> : null}
       {(catchContent === null && isCurrentUserEqualToPageOwner) && (isCatchFormVisible ? (<div>
-        <form onSubmit={handleCatchSubmit}>
-          <input ref={catchRef} type="text" placeholder="엎질러진 물처럼 캐치는 수정할 수 없어요."
-                 className="focus:outline-none focus:outline-amber-300 focus:outline-[0.0625rem] m-4"/>
-          <button type="submit">제출</button>
-          <button type="button" onClick={handleHideCatchFormButton}>제출하지 않고 닫기</button>
+        <form onSubmit={handleCatchSubmit} className="flex items-center">
+          <textarea ref={catchRef} placeholder="엎질러진 물처럼 캐치는 수정할 수 없어요."
+                    className="w-[50%] m-4 px-[0.5rem] py-[0.25rem] overflow-y-hidden resize-none
+                    border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
+                    focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
+          <PostSubmitButton type="submit">제출</PostSubmitButton>
+          <PostSubmitButton type="button" onClick={handleHideCatchFormButton}>제출하지 않고 닫기</PostSubmitButton>
         </form>
-      </div>) : (<div>
+      </div>) : (<div> {/* TODO 감싸는 div 필요 없는 경우 하나 없애기 */}
         <div className="flex mt-[1rem] ml-[0.75rem]">
-          <PostSubmitButton onClick={handleShowCatchFormButton} className="peer mr-[0.5rem] px-[0.5rem] py-[0.25rem] border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] hover:bg-[#fa61bd] hover:text-white transition-colors duration-1000">받을래요</PostSubmitButton>
+          <PostSubmitButton onClick={handleShowCatchFormButton}>받을래요</PostSubmitButton>
           <img src="/post-button.svg" alt="캐치 버튼" className="w-[2rem] h-[2rem] -scale-x-100 peer-hover:rotate-[-360deg] transition-transform duration-1000"/>
         </div>
       </div>))}
