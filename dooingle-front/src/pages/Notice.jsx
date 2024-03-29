@@ -83,16 +83,6 @@ export default function NoticePage() {
                 createdAt={notice.createdAt}
               />
             ))}
-            <NoticeItem
-              id="2"
-              title="공지2"
-              createdAt="2024-03-27"
-            />
-            <NoticeItem
-              id="2"
-              title="공지1"
-              createdAt="2024-03-27"
-            />
           </div>
 
           <div className="py-[0.75rem] border-t-[0.03125rem] border-t-[#9aa1aa]">

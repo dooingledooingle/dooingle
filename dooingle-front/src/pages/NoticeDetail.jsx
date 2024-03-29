@@ -75,11 +75,11 @@ export default function NoticeDetailPage() {
 
           <div className="flex flex-col gap-[1.5rem] px-[0.625rem] py-[1.25rem] text-[#5f6368]">
             <div className="flex justify-between">
-              <div className="font-bold text-[1rem]">{noticeResponse?.title || "업데이트 공지사항!"}</div>
-              <div className="font-bold text-[0.875rem]">{noticeResponse?.createdAt || "2024.03.27"}</div>
+              <div className="font-bold text-[1rem]">{noticeResponse?.title}</div>
+              <div className="font-bold text-[0.875rem]">{noticeResponse?.createdAt.toString().substring(0, 10)}</div>
             </div>
             <div>
-              <div className="text-[0.875rem]">{noticeResponse?.content || "공지사항 내용"}</div>
+              <div className="text-[0.875rem]">{noticeResponse?.content}</div>
             </div>
           </div>
 
