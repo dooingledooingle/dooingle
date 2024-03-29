@@ -14,6 +14,7 @@ import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
+import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
@@ -36,20 +37,20 @@ class DooingleService(
     @Transactional
     fun addDooingle(
         fromUserId: Long,
-        ownerId: Long,
+        ownerUserLink: String,
         addDooingleRequest: AddDooingleRequest
     ): DooingleResponse {
         val guest = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
-        val owner = socialUserRepository.findByIdOrNull(ownerId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = ownerId)
+        val owner = socialUserRepository.findByUserLink(ownerUserLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink = ownerUserLink)
         val dooingle = addDooingleRequest.to(guest, owner)
 
         if (guest.id == owner.id) throw InvalidParameterException("내 뒹글 페이지에 뒹글을 남길 수 없습니다.")
 
         dooingleRepository.save(dooingle)
 
-        val dooingleCount = dooingleCountRepository.findByOwnerId(ownerId)
+        val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
         dooingleCount.plus()
 
@@ -59,9 +60,9 @@ class DooingleService(
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)
-    fun getPage(ownerId: Long, cursor: Long?): Slice<DooingleAndCatchResponse> {
-        val owner = socialUserRepository.findByIdOrNull(ownerId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = ownerId)
+    fun getPage(ownerUserLink: String, cursor: Long?): Slice<DooingleAndCatchResponse> {
+        val owner = socialUserRepository.findByUserLink(ownerUserLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink = ownerUserLink)
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
         return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)

@@ -257,6 +257,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         provider = ownerOAuthProvider,
         providerId = ownerIdFromOAuthProvider,
         nickname = ownerNickname,
+        userLink = "0000000000",
     )
 
     private fun getFixtureOfGuest() = SocialUser(
@@ -264,6 +265,7 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         provider = guestOAuthProvider,
         providerId = guestIdFromOAuthProvider,
         nickname = guestNickname,
+        userLink = "1111111111",
     )
 
     private fun getFixtureOfDooingleAndCatchResponseList() = listOf<DooingleAndCatchResponse>(
@@ -307,27 +309,27 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     ).sortedByDescending { it.dooingleId }
 
     private fun getFixtureOfDooingleResponseList(): List<DooingleFeedResponse> = listOf<DooingleFeedResponse>(
-        DooingleFeedResponse(owner.nickname, 1, 1, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 2, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 3, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 4, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 5, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 6, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 7, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 8, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 9, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 10, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 11, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 12, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 13, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 14, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 15, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 16, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 17, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 18, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 19, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 20, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, 1, 21, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 1, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 2, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 3, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 4, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 5, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 6, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 7, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 8, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 9, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 10, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 11, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 12, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 13, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 14, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 15, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 16, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 17, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 18, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 19, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 20, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 21, "뒹글 내용", false, ZonedDateTime.now()),
     ).sortedBy { it.dooingleId }
 
     companion object {
