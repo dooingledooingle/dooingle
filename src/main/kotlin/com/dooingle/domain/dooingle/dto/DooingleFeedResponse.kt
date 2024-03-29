@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 data class DooingleFeedResponse(
     val ownerName: String,
-    val ownerId: Long,
+    val ownerUserLink: String,
     val dooingleId: Long,
     val content: String,
     val hasCatch: Boolean,

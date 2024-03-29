@@ -235,7 +235,8 @@ class SocialUserServiceTest : AnnotationSpec() {
             id = id,
             provider = provider,
             providerId = providerId,
-            nickname = nickname
+            nickname = nickname,
+            userLink = "1111111111"
         )
 
         private fun createProfile(user:SocialUser, description: String?, imageUrl:String?) = Profile(
@@ -268,19 +269,19 @@ class SocialUserServiceTest : AnnotationSpec() {
         private val newProfile6 = createProfile(user = socialUser2, description = "updatedDescription", imageUrl = "https://updated.com")
 
         private val hotDooinglerList = listOf(
-            DooinglerResponse(1, "A"),
-            DooinglerResponse(2, "B"),
-            DooinglerResponse(3, "C"),
-            DooinglerResponse(4, "D"),
-            DooinglerResponse(5, "E")
+            DooinglerResponse("1111111111", "A"),
+            DooinglerResponse("2222222222", "B"),
+            DooinglerResponse("3333333333", "C"),
+            DooinglerResponse("4444444444", "D"),
+            DooinglerResponse("5555555555", "E")
         )
 
         private val newDooinglerList = listOf(
-            DooinglerResponse(10, "가"),
-            DooinglerResponse(9, "나"),
-            DooinglerResponse(8, "다"),
-            DooinglerResponse(7, "라"),
-            DooinglerResponse(6, "마")
+            DooinglerResponse("aaaaaaaaaa", "가"),
+            DooinglerResponse("bbbbbbbbbb", "나"),
+            DooinglerResponse("cccccccccc", "다"),
+            DooinglerResponse("dddddddddd", "라"),
+            DooinglerResponse("eeeeeeeeee", "마")
         )
     }
 }

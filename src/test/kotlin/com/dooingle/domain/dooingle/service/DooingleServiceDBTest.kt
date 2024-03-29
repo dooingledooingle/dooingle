@@ -78,11 +78,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) }
+            .filter { followingUserLinkList.contains(it.owner.userLink) }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
@@ -104,11 +104,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, cursor, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
+            .filter { followingUserLinkList.contains(it.owner.userLink) && it.id!! < cursor }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
@@ -145,6 +145,7 @@ class DooingleServiceDBTest(
         }
     }
 
+
     @Test
     fun `뒹글이 정상적으로 등록 될 경우`() {
         // given
@@ -167,10 +168,11 @@ class DooingleServiceDBTest(
         result.content shouldBe addDooingleRequest.content
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
-    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3")
-    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4")
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
+    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3", userLink = "3333333333")
+    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4", userLink = "4444444444")
+
     private val userList = listOf(userA, userB, userC, userD)
 
     private val followingList = listOf(
