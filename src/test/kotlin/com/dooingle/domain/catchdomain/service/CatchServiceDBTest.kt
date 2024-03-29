@@ -136,9 +136,9 @@ class CatchServiceDBTest @Autowired constructor(
         shouldThrow<NotPermittedException> { catchService.deleteCatch(dooingle.id!!, catchResponse.catchId!!, guest.id!!) }
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
-    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3")
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
+    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3", userLink = "3333333333")
     private val userList = listOf(userA, userB, userC)
 
     private val dooingle = Dooingle(owner = userA, guest = userB, content = "A에게 질문", catch = null)
