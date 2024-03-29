@@ -29,8 +29,10 @@ async function fetchUpdateProfile(formData) {
       withCredentials: true,
     }
   );
-  console.log(response.status);
   /* TODO 에러 처리 */
+  console.log(response.status);
+
+  return response.data;
 }
 
 export default function MyProfilePage() {
@@ -91,7 +93,13 @@ export default function MyProfilePage() {
     formData.append("request", JSON.stringify(requestObject))
     formData.append("img", imageFileInputRef.current.files[0])
 
-    fetchUpdateProfile(formData)
+    fetchUpdateProfile(formData).then(profileAfterUpdate => {
+      setPrevProfile(prev => {
+        return {...prev, description: profileAfterUpdate.description, imageUrl: profileAfterUpdate.imageUrl};
+      })
+
+      alert("프로필이 성공적으로 수정됐습니다.")
+    })
   }
 
   return (
