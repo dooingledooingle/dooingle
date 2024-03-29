@@ -7,6 +7,21 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
 import NoticeItem from "../components/NoticeItem.jsx";
+import Pagination from "../components/Pagination.jsx";
+
+const noticePageInitialState = {
+  totalElements: 0,
+  totalPages: 0,
+  size: 0,
+  content: [],
+  number: 0,
+  sort: {},
+  first: true,
+  last: true,
+  numberOfElements: 0,
+  pageable: {},
+  empty: true
+}
 
 async function fetchLoggedInUserLink() { // TODO 중복 함수 - 추후 정리해야 함
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
@@ -15,20 +30,20 @@ async function fetchLoggedInUserLink() { // TODO 중복 함수 - 추후 정리�
   return response.data.userLink;
 }
 
-async function fetchNoticeList(page) {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/notices?page=${page}`, {
+async function fetchNoticePage(pageNumber) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/notices?page=${pageNumber}`, {
     withCredentials: true,
   });
-  return response.data.content;
+  return response.data;
 }
 
 export default function NoticePage() {
 
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
-  const [noticeList, setNoticeList]= useState([]);
+  const [currentNoticePage, setCurrentNoticePage]= useState(noticePageInitialState);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const page = searchParams.get("page") || "1";
+  const pageNumber = searchParams.get("page") || "1";
 
   useEffect(() => {
     fetchLoggedInUserLink().then(loggedInUserLink => {
@@ -37,10 +52,14 @@ export default function NoticePage() {
   }, []);
 
   useEffect(() => {
-    fetchNoticeList(page).then(list => {
-      setNoticeList(list)
+    fetchNoticePage(pageNumber).then(fetchedPage => {
+      setCurrentNoticePage(fetchedPage)
     })
-  }, [page])
+  }, [pageNumber])
+
+  function handlePageChange(pageNumber) {
+    setSearchParams(`page=${pageNumber}`);
+  }
 
   return (
     <>
@@ -75,7 +94,7 @@ export default function NoticePage() {
           </div>
 
           <div className="flex flex-col gap-[1.5rem] px-[0.625rem] py-[1.25rem] text-[#5f6368]">
-            {noticeList.map(notice => (
+            {currentNoticePage.content.map(notice => (
               <NoticeItem
                 key={notice.id}
                 id={notice.id}
@@ -85,12 +104,9 @@ export default function NoticePage() {
             ))}
           </div>
 
+          {/* callback, memo 같은 것을 사용해주면 괜찮을 듯 */}
           <div className="py-[0.75rem] border-t-[0.03125rem] border-t-[#9aa1aa]">
-            {/* TODO total page 비교하여 10 단위로 끊어주는 식으로 수정 필요 */}
-            <div className="font-bold text-[#8692ff] flex justify-center gap-[1.25rem]">
-              <button onClick={() => setSearchParams({page: "1"})}>1</button>
-              <button onClick={() => setSearchParams({page: "2"})}>2</button>
-            </div>
+            <Pagination currentPage={currentNoticePage} currentPageNumber={pageNumber} onPageChange={handlePageChange}/>
           </div>
         </section>
 
