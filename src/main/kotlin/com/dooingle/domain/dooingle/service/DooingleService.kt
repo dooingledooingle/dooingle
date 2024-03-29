@@ -12,6 +12,7 @@ import com.dooingle.domain.dooinglecount.model.DooingleCount
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import org.springframework.data.domain.PageRequest
@@ -26,7 +27,8 @@ class DooingleService(
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val distributedLock: DistributedLock
 ) {
     companion object {
         const val USER_FEED_PAGE_SIZE = 10
@@ -38,7 +40,7 @@ class DooingleService(
         fromUserId: Long,
         ownerId: Long,
         addDooingleRequest: AddDooingleRequest
-    ): DooingleResponse {
+    ): DooingleResponse = distributedLock("DOOINGLE:$ownerId") {
         val guest = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
         val owner = socialUserRepository.findByIdOrNull(ownerId)
@@ -55,7 +57,7 @@ class DooingleService(
 
         notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 
-        return DooingleResponse.from(dooingle)
+        return@distributedLock DooingleResponse.from(dooingle)
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)

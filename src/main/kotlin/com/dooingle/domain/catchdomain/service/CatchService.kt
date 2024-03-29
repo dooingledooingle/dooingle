@@ -5,6 +5,7 @@ import com.dooingle.domain.catchdomain.dto.CatchResponse
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.NotPermittedException
@@ -16,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional
 class CatchService(
     private val dooingleRepository: DooingleRepository,
     private val catchRepository: CatchRepository,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val distributedLock: DistributedLock
 ) {
     // 캐치 생성
-    fun addCatch(dooingleId: Long, ownerId: Long, addCatchRequest: AddCatchRequest): CatchResponse {
+    fun addCatch(dooingleId: Long, ownerId: Long, addCatchRequest: AddCatchRequest): CatchResponse = distributedLock("CATCH:$dooingleId") {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
             ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 
@@ -42,7 +44,7 @@ class CatchService(
 
         notificationService.addCatchNotification(user = dooingle.guest, dooingleId = dooingleId)
 
-        return CatchResponse.from(catch)
+        return@distributedLock CatchResponse.from(catch)
     }
 
     // 캐치 삭제

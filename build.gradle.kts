@@ -75,6 +75,9 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     // 테스트(MockK): mockk
     testImplementation("io.mockk:mockk:1.13.8")
+
+    // 동시성 제어: redisson
+    implementation("org.redisson:redisson-spring-boot-starter:3.21.0")
 }
 
 tasks.withType<KotlinCompile> {
