@@ -115,7 +115,15 @@ export default function PersonalDooinglePage() {
 
     const dooingleContent = dooingleRef.current.value;
 
-    fetchAddDooingle(pageOwnerUserLink, dooingleContent)
+    fetchAddDooingle(pageOwnerUserLink, dooingleContent).then(addedDooingle => {
+      /* DooingleResponse와 DooingleAndCatchResponse의 차이 때문에 억지로 catch, catch 내의 content 필드를 넣어줌 */
+      addedDooingle = {...addedDooingle, catch: {content: null}}
+      dooingleRef.current.value = ""
+
+      setDooinglesAndCatches((prevDooinglesAndCatches => {
+        return [addedDooingle, ...prevDooinglesAndCatches];
+      }))
+    })
   }
 
   function handleMoreDooingleAndCatchButton() {
