@@ -4,7 +4,7 @@ import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.notification.service.NotificationService
@@ -36,17 +36,17 @@ class DooingleServiceDBTest(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository
 ) {
 
+    private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>()
 
     private val dooingleService = DooingleService(
         dooingleRepository,
         socialUserRepository,
         catchRepository,
-        dooingleCountRepository,
+        mockDooingleCountService,
         mockNotificationService
     )
 
