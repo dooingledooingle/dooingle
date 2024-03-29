@@ -67,9 +67,17 @@ async function fetchLoggedInUserLink() { // TODO Feed에도 있는 함수, 추�
   return response.data.userLink;
 }
 
+async function fetchPageOwnerUserProfile(userLink) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/profile`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
 export default function PersonalDooinglePage() {
 
   const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
+  const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
   // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
@@ -94,6 +102,10 @@ export default function PersonalDooinglePage() {
   useEffect(() => {
     fetchIsFollowingUser(pageOwnerUserLink).then(result => {
       setIsFollowingUser(result)
+    })
+
+    fetchPageOwnerUserProfile(pageOwnerUserLink).then(result => {
+      setPageOwnerUserProfile(result)
     })
   }, [pageOwnerUserLink]);
 
@@ -161,18 +173,15 @@ export default function PersonalDooinglePage() {
             <ProfileImageFrame userLink={pageOwnerUserLink} />
             <div className="flex flex-col gap-[0.375rem]">
               <div className="flex items-center gap-[1rem]">
-                <span className="text-[1.5rem] font-bold text-white">깜이</span>
+                <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
                 {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
                 {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition">☆</button>}
               </div>
-              <div><span className="text-[1rem] ">자기소개 맴맴맴맴</span></div>
+              <div><span className="text-[1rem] ">{pageOwnerUserProfile.description}</span></div>
               <button onClick={handleCopyUserLinkButton} className="flex items-center">
                 <div className="w-[1.25rem] h-[1.25rem] mr-[0.25rem]"><img src="/copy-button-image.svg" alt="뒹글러 페이지 링크 복사 버튼" /></div>
                 <span className="text-[0.875rem] font-light">페이지 링크 복사</span>
               </button>
-            </div>
-            <div className="w-[3rem] h-[3rem] flex justify-center items-center">
-
             </div>
           </div>
         </div>
@@ -198,13 +207,14 @@ export default function PersonalDooinglePage() {
                 </div>
               </button>
             </div>
-            <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button className="py-[0.5rem]">
-                <div>
-                  아직 답변이 없는 뒹글
-                </div>
-              </button>
-            </div>
+            {/* TODO 아직 답변이 없는 뒹글 기능 추가해야 함 */}
+            {/*<div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">*/}
+            {/*  <button className="py-[0.5rem]">*/}
+            {/*    <div>*/}
+            {/*      아직 답변이 없는 뒹글*/}
+            {/*    </div>*/}
+            {/*  </button>*/}
+            {/*</div>*/}
           </div>
 
           {isCurrentUserEqualToPageOwner || <form
