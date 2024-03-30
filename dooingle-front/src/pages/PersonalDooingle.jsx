@@ -10,13 +10,13 @@ import {BACKEND_SERVER_ORIGIN, FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 
-async function fetchDooinglesAndCatches(userLink, lastDooingleId = null) {
+async function fetchDooinglesAndCatchesSlice(userLink, lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`.concat(queryParameter), {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
   });
-  return response.data?.content;
+  return response.data;
 }
 
 async function fetchIsFollowingUser(userLink) {
@@ -84,17 +84,20 @@ export default function PersonalDooinglePage() {
   const params = useParams();
   const [searchParams] = useSearchParams()
   const pageOwnerUserLink = params?.userLink;
-  const isCurrentUserEqualToPageOwner = (currentUserLink === pageOwnerUserLink)
   const dooingleRef = useRef();
+  const hasNextSlice = useRef(false);
+  const isCurrentUserEqualToPageOwner = (currentUserLink === pageOwnerUserLink)
 
   useEffect(() => {
     if (searchParams) {
-      fetchDooinglesAndCatches(pageOwnerUserLink, searchParams.get("lastDooingleId")).then(data => {
-        setDooinglesAndCatches(data)
+      fetchDooinglesAndCatchesSlice(pageOwnerUserLink, searchParams.get("lastDooingleId")).then(newDooinglesAndCatchesSlice => {
+        setDooinglesAndCatches(newDooinglesAndCatchesSlice.content)
+        hasNextSlice.current = !newDooinglesAndCatchesSlice.last
       });
     } else {
-      fetchDooinglesAndCatches(pageOwnerUserLink).then(data => {
-        setDooinglesAndCatches(data)
+      fetchDooinglesAndCatchesSlice(pageOwnerUserLink).then(newDooinglesAndCatchesSlice => {
+        setDooinglesAndCatches(newDooinglesAndCatchesSlice.content)
+        hasNextSlice.current = !newDooinglesAndCatchesSlice.last
       });
     }
   }, [pageOwnerUserLink, searchParams]);
@@ -143,11 +146,12 @@ export default function PersonalDooinglePage() {
     const lastDooingleId = dooinglesAndCatches.slice(-1)[0]?.["dooingleId"]
 
     /* TODO 답변이 없는 나눠야 함 */
-    fetchDooinglesAndCatches(pageOwnerUserLink, lastDooingleId).then(newDooinglesAndCatches => {
+    fetchDooinglesAndCatchesSlice(pageOwnerUserLink, lastDooingleId).then(newDooinglesAndCatchesSlice => {
       setDooinglesAndCatches(prevDooinglesAndCatches => {
-        const uniqueNewDooinglesAndCatches = newDooinglesAndCatches?.filter(newDooingleAndCatche => prevDooinglesAndCatches.every(prevDooingleAndCatch => prevDooingleAndCatch?.dooingleId !== newDooingleAndCatche?.dooingleId))
+        const uniqueNewDooinglesAndCatches = newDooinglesAndCatchesSlice.content.filter(newDooingleAndCatche => prevDooinglesAndCatches.every(prevDooingleAndCatch => prevDooingleAndCatch?.dooingleId !== newDooingleAndCatche?.dooingleId))
         return [...prevDooinglesAndCatches, ...uniqueNewDooinglesAndCatches]
       })
+      hasNextSlice.current = !newDooinglesAndCatchesSlice.last
     })
   }
 
@@ -228,7 +232,7 @@ export default function PersonalDooinglePage() {
             <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
           </form>}
           <div className="py-[1rem]">
-            {dooinglesAndCatches.map(dooingleAndCatch => (
+            {dooinglesAndCatches?.map(dooingleAndCatch => (
               <DooingleAndCatch
                 key={dooingleAndCatch.dooingleId}
                 dooingleId={dooingleAndCatch.dooingleId}
@@ -241,7 +245,7 @@ export default function PersonalDooinglePage() {
             ))}
           </div>
           <div className="flex justify-center">
-            <MorePostButton onClick={() => handleMoreDooingleAndCatchButton()}/>
+            {hasNextSlice.current && <MorePostButton onClick={() => handleMoreDooingleAndCatchButton()} />}
           </div>
         </section>
 

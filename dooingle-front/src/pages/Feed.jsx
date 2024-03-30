@@ -4,28 +4,28 @@ import Dooingle from "../components/Dooingle.jsx";
 import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {EventSourcePolyfill} from 'event-source-polyfill';
 import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 
-async function fetchDooinglesFeed(lastDooingleId = null) {
+async function fetchDooinglesFeedSlice(lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`.concat(queryParameter), {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
   });
-  return response.data?.content;
+  return response.data;
 }
 
-async function fetchDooinglesFeedOfFollowing(lastDooingleId = null) {
+async function fetchDooinglesFeedSliceOfFollowing(lastDooingleId = null) {
   const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
 
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles/follow`.concat(queryParameter), {
     withCredentials: true,
   });
-  return response.data?.content;
+  return response.data;
 }
 
 async function fetchLoggedInUserLink() {
@@ -38,13 +38,17 @@ async function fetchLoggedInUserLink() {
 export default function FeedPage() {
 
   const [newFeedNotification, setNewFeedNotification] = useState(null);
-  const [personalNotification, setPersonalNotification] = useState(null);
+  // const [personalNotification, setPersonalNotification] = useState(null); TODO 개인 알림 관련 별도 작업 필요
   const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const [dooingles, setDooingles] = useState([]);
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
+  const hasNextSlice = useRef(false);
 
   useEffect(() => {
-    fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
+    fetchDooinglesFeedSlice().then(newDooinglesSlice => {
+      setDooingles(newDooinglesSlice.content)
+      hasNextSlice.current = !newDooinglesSlice.last
+    });
     fetchLoggedInUserLink().then(loggedInUserLink => {
       setCurrentUserLink(loggedInUserLink)
     })
@@ -55,7 +59,7 @@ export default function FeedPage() {
 
     addSseConnectionEventListenerToEventSource(eventSource)
     addNewFeedNotificationEventListenerToEventSource(eventSource);
-    addPersonalNotificationEventListenerToEventSource(eventSource);
+    // addPersonalNotificationEventListenerToEventSource(eventSource); TODO 개인 알림 관련 별도 작업 필요
 
     return () => {
       eventSource.close(); // 컴포넌트 unmount할 때 eventSource 닫기
@@ -77,6 +81,7 @@ export default function FeedPage() {
     });
   }
 
+/*  TODO 개인 알림 관련 별도 작업 필요
   function addPersonalNotificationEventListenerToEventSource(eventSource) {
     eventSource.addEventListener("notification", event => {
       const receivedNotification = JSON.parse(event.data);
@@ -89,35 +94,43 @@ export default function FeedPage() {
       // TODO : 전달받는 데이터로 알림 컴포넌트 만들어서 알림 목록에 추가 (+ 팝업 띄우기 또는 알림 버튼 빨간색으로 바꾸기)
       setPersonalNotification(receivedNotification);
     });
-  }
+  }*/
 
   function handleMoreFeedButton(isEntireFeed) {
     const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
 
     if (isEntireFeed === true) {
-      fetchDooinglesFeed(lastDooingleId).then(newDooingles => {
+      fetchDooinglesFeedSlice(lastDooingleId).then(newDooinglesSlice => {
         setDooingles(prevDooingles => {
-          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          const uniqueNewDooingles = newDooinglesSlice.content.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
           return [...prevDooingles, ...uniqueNewDooingles]
         })
+        hasNextSlice.current = !newDooinglesSlice.last
       })
     } else {
-      fetchDooinglesFeedOfFollowing(lastDooingleId).then(newDooingles => {
+      fetchDooinglesFeedSliceOfFollowing(lastDooingleId).then(newDooinglesSlice => {
         setDooingles(prevDooingles => {
-          const uniqueNewDooingles = newDooingles?.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
+          const uniqueNewDooingles = newDooinglesSlice.content.filter(newDooingle => prevDooingles.every(prevDooingle => prevDooingle?.dooingleId !== newDooingle?.dooingleId))
           return [...prevDooingles, ...uniqueNewDooingles]
         })
+        hasNextSlice.current = !newDooinglesSlice.last
       })
     }
   }
 
   function handleEntireFeedButton() {
-    fetchDooinglesFeed().then(newDooingles => setDooingles(newDooingles));
+    fetchDooinglesFeedSlice().then(newDooinglesSlice => {
+      setDooingles(newDooinglesSlice.content)
+      hasNextSlice.current = !newDooinglesSlice.last
+    });
     setIsEntireFeed(true);
   }
 
   function handleFollowingFeedButton() {
-    fetchDooinglesFeedOfFollowing().then(newDooingles => setDooingles(newDooingles));
+    fetchDooinglesFeedSliceOfFollowing().then(newDooinglesSlice => {
+      setDooingles(newDooinglesSlice.content)
+      hasNextSlice.current = !newDooinglesSlice.last
+    });
     setIsEntireFeed(false);
   }
 
@@ -130,9 +143,9 @@ export default function FeedPage() {
     });
   }
 
-  function handlePersonalNotificationButton() {
+/*  function handlePersonalNotificationButton() {
     setPersonalNotification(null);
-  }
+  }*/
 
   return (
     <>
@@ -191,9 +204,8 @@ export default function FeedPage() {
               />
             ))}
           </div>
-          {/* TODO 맨 마지막 글에서는 ...이 보이지 않도록 만들기 */}
           <div className="flex justify-center mt-[1rem]">
-            <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)} />
+            {hasNextSlice.current && <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)} />}
           </div>
         </section>
 
