@@ -10,6 +10,7 @@ import NoticeDetailPage from "./pages/NoticeDetail.jsx";
 import RootLayout from "./layouts/RootLayout.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import AuthProvider from "./contexts/AuthContext.jsx";
+import LogoutPage from "./pages/Logout.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
@@ -33,7 +34,15 @@ const router = createBrowserRouter([
         ]
       }
     ]
-  }
+  },
+  {
+    path: '/logout',
+    element: (
+      <AuthProvider>
+        <LogoutPage />
+      </AuthProvider>
+    ),
+  },
 ])
 
 export default function App() {

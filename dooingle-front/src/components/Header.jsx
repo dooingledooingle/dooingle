@@ -59,7 +59,7 @@ export default function Header() {
                   <Link to={"/my-profile"}>프로필 설정</Link>
                 </li>
                 <li className="px-[1.25rem] py-[0.375rem] hover:bg-[#eaecf9]">
-                  <Link to={"#"}>로그아웃</Link>
+                  <Link to={"/logout"}>로그아웃</Link>
                 </li>
               </ul>
             )}
