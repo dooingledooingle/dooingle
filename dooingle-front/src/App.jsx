@@ -11,6 +11,7 @@ import RootLayout from "./layouts/RootLayout.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import AuthProvider from "./contexts/AuthContext.jsx";
 import LogoutPage from "./pages/Logout.jsx";
+import NotificationProvider from "./contexts/NotificationContext.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
@@ -18,7 +19,9 @@ const router = createBrowserRouter([
   {
     element: (
       <AuthProvider>
-        <RootLayout/>
+        <NotificationProvider>
+          <RootLayout/>
+        </NotificationProvider>
       </AuthProvider>
     ),
     children: [
