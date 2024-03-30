@@ -136,6 +136,13 @@ export default function FeedPage() {
 
   function handleNewFeedNotificationButton() {
     setNewFeedNotification(null);
+    setIsEntireFeed(true);
+
+    /* TODO 일단 직전 dooingles의 크기와 상관 없이 새로운 slice 가져와서 교체함 */
+    fetchDooinglesFeedSlice().then(newDooinglesSlice => {
+      setDooingles(newDooinglesSlice.content)
+      hasNextSlice.current = !newDooinglesSlice.last
+    });
 
     window.scrollTo({
       top: 0,
