@@ -13,6 +13,7 @@ import AuthProvider from "./contexts/AuthContext.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
+  { path: '/admin', element: <AdminHomePage /> },
   {
     element: (
       <AuthProvider>
@@ -29,7 +30,6 @@ const router = createBrowserRouter([
           { path: '/follows', element: <FollowPage /> },
           { path: '/notices', element: <NoticePage /> },
           { path: '/notices/:noticeId', element: <NoticeDetailPage /> },
-          { path: '/admin', element: <AdminHomePage /> },
         ]
       }
     ]

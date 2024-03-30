@@ -1,13 +1,5 @@
 import {useEffect, useState} from "react";
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js";
-
-async function fetchUserProfileImageUrl(userLink) {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/profile-image`, {
-    withCredentials: true,
-  });
-  return response.data.imageUrl;
-}
+import {fetchUserProfileImageUrl} from "../fetch.js";
 
 export default function ProfileImageFrame({userLink}) {
   const [userProfileImage, setUserProfileImage] = useState()

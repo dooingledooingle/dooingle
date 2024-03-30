@@ -1,38 +1,11 @@
-import Header from "../components/Header.jsx";
 import {useEffect, useRef, useState} from "react";
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js";
-import {Link} from "react-router-dom";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
+import {fetchCurrentProfile, fetchUpdateProfile} from "../fetch.js";
 
 const profileInitialState = {
   nickname: "",
   description: "",
   imageUrl: "",
-}
-
-async function fetchCurrentProfile() { // TODO Feed에도 있는 함수, 추후 반드시 정리 필요
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/profile`, {
-    withCredentials: true,
-  });
-  return response.data;
-}
-
-async function fetchUpdateProfile(formData) {
-  const response = await axios.patch(
-    `${BACKEND_SERVER_ORIGIN}/api/users/profile`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
-    }
-  );
-  /* TODO 에러 처리 */
-  console.log(response.status);
-
-  return response.data;
 }
 
 export default function MyProfilePage() {
@@ -98,14 +71,13 @@ export default function MyProfilePage() {
         return {...prev, description: profileAfterUpdate.description, imageUrl: profileAfterUpdate.imageUrl};
       })
 
+      /* TODO 에러 처리 */
       alert("프로필이 성공적으로 수정됐습니다.")
     })
   }
 
   return (
     <>
-      <Header />
-
       <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
         <section className="col-start-4 col-span-6 flex flex-col items-center py-[2.75rem] text-[#5f6368] gap-[2rem]"> {/* TODO UI 정리 시 py-[2.75rem] gap-8 지우고 정리작업 하기 */}
           <img className="border-[0.125rem] rounded-full w-[15rem] h-[15rem] object-cover"

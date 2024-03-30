@@ -1,25 +1,6 @@
 import {useRef, useState} from "react";
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js";
 import SmallSubmitButton from "./button/SmallSubmitButton.jsx";
-
-async function fetchAddCatch(dooingleId, catchContent) {
-  const addCatchRequestBody = {
-    content: catchContent
-  }
-
-  const response = await axios.post(
-    `${BACKEND_SERVER_ORIGIN}/api/dooingles/${dooingleId}/catches`,
-    addCatchRequestBody,
-    {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  return response.data;
-}
+import {fetchAddCatch} from "../fetch.js";
 
 export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAndCatches, dooingleContent, catchContent, isCurrentUserEqualToPageOwner }) {
 

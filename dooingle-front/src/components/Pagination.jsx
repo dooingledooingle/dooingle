@@ -7,9 +7,6 @@ export default function Pagination({ currentPage, currentPageNumber, onPageChang
 
   // 페이지 번호 배열 생성
   const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, idx) => startPage + idx);
-  console.log(currentPage)
-  console.log(endPage)
-  console.log(startPage)
 
   return (
     <div className="flex justify-center gap-[1.25rem] font-bold">

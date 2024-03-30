@@ -1,4 +1,3 @@
-import {Link} from "react-router-dom";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
 
 export default function WelcomePage() {
