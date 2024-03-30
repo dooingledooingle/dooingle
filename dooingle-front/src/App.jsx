@@ -7,18 +7,35 @@ import MyProfilePage from "./pages/MyProfile.jsx";
 import FollowPage from "./pages/Follow.jsx";
 import NoticePage from "./pages/Notice.jsx";
 import NoticeDetailPage from "./pages/NoticeDetail.jsx";
+import RootLayout from "./layouts/RootLayout.jsx";
+import MainLayout from "./layouts/MainLayout.jsx";
+import AuthProvider from "./contexts/AuthContext.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
-  { path: '/feeds', element: <FeedPage /> },
-  { path: '/personal-dooingles/:userLink', element: <PersonalDooinglePage /> },
-  { path: '/my-profile', element: <MyProfilePage /> },
-  { path: '/follows', element: <FollowPage /> },
-  { path: '/notices', element: <NoticePage /> },
-  { path: '/notices/:noticeId', element: <NoticeDetailPage /> },
-  { path: '/admin', element: <AdminHomePage /> },
+  {
+    element: (
+      <AuthProvider>
+        <RootLayout/>
+      </AuthProvider>
+    ),
+    children: [
+      { path: '/personal-dooingles/:userLink', element: <PersonalDooinglePage /> },
+      { path: '/my-profile', element: <MyProfilePage /> },
+      {
+        element: <MainLayout />,
+        children: [
+          { path: '/feeds', element: <FeedPage /> },
+          { path: '/follows', element: <FollowPage /> },
+          { path: '/notices', element: <NoticePage /> },
+          { path: '/notices/:noticeId', element: <NoticeDetailPage /> },
+          { path: '/admin', element: <AdminHomePage /> },
+        ]
+      }
+    ]
+  }
 ])
 
 export default function App() {
-  return <RouterProvider router={router}/>
+  return <RouterProvider router={router}/>;
 }

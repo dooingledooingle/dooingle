@@ -1,45 +1,14 @@
-import {Link} from "react-router-dom";
-import Header from "../components/Header.jsx";
 import Dooingle from "../components/Dooingle.jsx";
-import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
-import Navigation from "../components/Navigation.jsx";
-import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {useEffect, useRef, useState} from "react";
 import {EventSourcePolyfill} from 'event-source-polyfill';
-import axios from "axios";
 import {BACKEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
-
-async function fetchDooinglesFeedSlice(lastDooingleId = null) {
-  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
-
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles`.concat(queryParameter), {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data;
-}
-
-async function fetchDooinglesFeedSliceOfFollowing(lastDooingleId = null) {
-  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
-
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/dooingles/follow`.concat(queryParameter), {
-    withCredentials: true,
-  });
-  return response.data;
-}
-
-async function fetchLoggedInUserLink() {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data.userLink;
-}
+import {fetchDooinglesFeedSlice, fetchDooinglesFeedSliceOfFollowing} from "../fetch.js"
 
 export default function FeedPage() {
 
   const [newFeedNotification, setNewFeedNotification] = useState(null);
   // const [personalNotification, setPersonalNotification] = useState(null); TODO 개인 알림 관련 별도 작업 필요
-  const [currentUserLink, setCurrentUserLink] = useState(undefined);
   const [dooingles, setDooingles] = useState([]);
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const hasNextSlice = useRef(false);
@@ -49,9 +18,6 @@ export default function FeedPage() {
       setDooingles(newDooinglesSlice.content)
       hasNextSlice.current = !newDooinglesSlice.last
     });
-    fetchLoggedInUserLink().then(loggedInUserLink => {
-      setCurrentUserLink(loggedInUserLink)
-    })
 
     const eventSource = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
       {withCredentials: true}
@@ -155,69 +121,54 @@ export default function FeedPage() {
   }*/
 
   return (
-    <>
-      <Header />
-
-      <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
-        <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
-          <div className="flex flex-col items-center py-[3.75rem] gap-[1.25rem]">
-            <ProfileImageFrame userLink={currentUserLink} />
-            <Navigation/>
-          </div>
-        </nav>
-
-        <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
-          <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
-            <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button onClick={handleEntireFeedButton} className="py-[0.5rem]">
-                <div>
-                  전체
-                </div>
-              </button>
+    <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
+      <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
+        <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+          <button onClick={handleEntireFeedButton} className="py-[0.5rem]">
+            <div>
+              전체
             </div>
-            <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
-              <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
-                <div>
-                  팔로우
-                </div>
-              </button>
+          </button>
+        </div>
+        <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+          <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
+            <div>
+              팔로우
             </div>
-          </div>
+          </button>
+        </div>
+      </div>
 
-          {newFeedNotification && (
-            <button type="button" onClick={handleNewFeedNotificationButton}
-                    className="fixed top-[4.5rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
+      {newFeedNotification && (
+        <button type="button" onClick={handleNewFeedNotificationButton}
+                className="fixed top-[4.5rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
                   rounded-[0.625rem] text-[0.75rem] text-white font-bold bg-[#fa61bd]
                   border-[0.0625rem] border-[#fa61bd] animate-pulse">
-              새 피드가 있어요!
-            </button>
-          )}
-{/*          TODO 개인 알림 관련 별도 작업 필요
+          새 피드가 있어요!
+        </button>
+      )}
+      {/*          TODO 개인 알림 관련 별도 작업 필요
           {personalNotification && (
             <div className="border-2">
               <button onClick={handlePersonalNotificationButton}>새로 뒹글을 받았거나 내가 쓴 뒹글에 캐치가 있어요!</button>
             </div>
           )}*/}
 
-          <div className="pt-[1rem]">
-            {dooingles.map(dooingle => (
-              <Dooingle
-                key={dooingle.dooingleId}
-                ownerName={dooingle.ownerName}
-                ownerUserLink={dooingle.ownerUserLink}
-                dooingleId={dooingle.dooingleId}
-                content={dooingle.content}
-                hasCatch={dooingle.hasCatch}
-              />
-            ))}
-          </div>
-          <div className="flex justify-center mt-[1rem]">
-            {hasNextSlice.current && <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)} />}
-          </div>
-        </section>
-
-        <DooinglerListAside/>
+      <div className="pt-[1rem]">
+        {dooingles.map(dooingle => (
+          <Dooingle
+            key={dooingle.dooingleId}
+            ownerName={dooingle.ownerName}
+            ownerUserLink={dooingle.ownerUserLink}
+            dooingleId={dooingle.dooingleId}
+            content={dooingle.content}
+            hasCatch={dooingle.hasCatch}
+          />
+        ))}
       </div>
-    </>
-  )
+      <div className="flex justify-center mt-[1rem]">
+        {hasNextSlice.current && <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)}/>}
+      </div>
+    </section>
+  );
 }

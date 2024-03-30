@@ -1,92 +1,28 @@
-import Header from "../components/Header.jsx";
 import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooingleAndCatch from "../components/DooingleAndCatch.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
-import {Link, useParams, useSearchParams} from "react-router-dom";
+import {useParams, useSearchParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN, FRONTEND_SERVER_ORIGIN} from "../env.js"
+import {FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
-
-async function fetchDooinglesAndCatchesSlice(userLink, lastDooingleId = null) {
-  const queryParameter = lastDooingleId === null ? "" : `?cursor=${lastDooingleId}`
-
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`.concat(queryParameter), {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data;
-}
-
-async function fetchIsFollowingUser(userLink) {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data.isFollowingUser;
-}
-
-async function fetchAddFollow(userLink) {
-  const response = await axios.post(
-    `${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`,
-    null,
-    {withCredentials: true},
-  );
-  return response.data;
-}
-
-async function fetchCancelFollow(userLink) {
-  const response = await axios.delete(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
-    withCredentials: true,
-  });
-  return response.data;
-}
-
-async function fetchAddDooingle(userLink, dooingleContent) {
-  const addDooingleRequestBody = {
-    content: dooingleContent
-  }
-
-  const response = await axios.post(
-    `${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/dooingles`,
-    addDooingleRequestBody,
-    {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  return response.data;
-}
-
-async function fetchLoggedInUserLink() { // TODO Feed에도 있는 함수, 추후 반드시 정리 필요
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
-    withCredentials: true, // ajax 요청에서 withCredentials config 추가
-  });
-  return response.data.userLink;
-}
-
-async function fetchPageOwnerUserProfile(userLink) {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/${userLink}/profile`, {
-    withCredentials: true,
-  });
-  return response.data;
-}
+import {fetchDooinglesAndCatchesSlice, fetchIsFollowingUser, fetchAddFollow, fetchCancelFollow, fetchAddDooingle, fetchPageOwnerUserProfile} from "../fetch.js";
+import {useAuth} from "../contexts/useContext.js";
 
 export default function PersonalDooinglePage() {
 
+  const {authenticatedUserLink} = useAuth()
   const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
   const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
-  const [currentUserLink, setCurrentUserLink] = useState(undefined);
   // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const params = useParams();
   const [searchParams] = useSearchParams()
   const pageOwnerUserLink = params?.userLink;
   const dooingleRef = useRef();
   const hasNextSlice = useRef(false);
-  const isCurrentUserEqualToPageOwner = (currentUserLink === pageOwnerUserLink)
+  const isCurrentUserEqualToPageOwner = (authenticatedUserLink === pageOwnerUserLink)
 
   useEffect(() => {
     if (searchParams) {
@@ -111,12 +47,6 @@ export default function PersonalDooinglePage() {
       setPageOwnerUserProfile(result)
     })
   }, [pageOwnerUserLink]);
-
-  useEffect(() => {
-    fetchLoggedInUserLink().then(loggedInUserLink => {
-      setCurrentUserLink(loggedInUserLink)
-    })
-  }, []);
 
   function handleAddFollowButton() {
     fetchAddFollow(pageOwnerUserLink).then(() => setIsFollowingUser(true))
@@ -168,8 +98,6 @@ export default function PersonalDooinglePage() {
 
   return (
     <>
-      <Header />
-
       {/* 소개 섹션 반투명 */}
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
         <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
