@@ -123,6 +123,11 @@ export default function FeedPage() {
 
   function handleNewFeedNotificationButton() {
     setNewFeedNotification(null);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
   }
 
   function handlePersonalNotificationButton() {
@@ -160,17 +165,21 @@ export default function FeedPage() {
           </div>
 
           {newFeedNotification && (
-            <div className="border-2">
-              <button onClick={handleNewFeedNotificationButton}>새 피드가 있어요!</button>
-            </div>
+            <button type="button" onClick={handleNewFeedNotificationButton}
+                    className="fixed top-[4.5rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
+                  rounded-[0.625rem] text-[0.75rem] text-white font-bold bg-[#fa61bd]
+                  border-[0.0625rem] border-[#fa61bd] animate-pulse">
+              새 피드가 있어요!
+            </button>
           )}
+{/*          TODO 개인 알림 관련 별도 작업 필요
           {personalNotification && (
             <div className="border-2">
               <button onClick={handlePersonalNotificationButton}>새로 뒹글을 받았거나 내가 쓴 뒹글에 캐치가 있어요!</button>
             </div>
-          )}
+          )}*/}
 
-          <div className="py-[1rem]">
+          <div className="pt-[1rem]">
             {dooingles.map(dooingle => (
               <Dooingle
                 key={dooingle.dooingleId}
@@ -182,7 +191,8 @@ export default function FeedPage() {
               />
             ))}
           </div>
-          <div className="flex justify-center">
+          {/* TODO 맨 마지막 글에서는 ...이 보이지 않도록 만들기 */}
+          <div className="flex justify-center mt-[1rem]">
             <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)} />
           </div>
         </section>
