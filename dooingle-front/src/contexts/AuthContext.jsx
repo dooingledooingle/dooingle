@@ -9,7 +9,7 @@ export default function AuthProvider({children}) {
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authenticatedUserLink, setAuthenticatedUserLink] = useState("");
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginInductionModal, setShowLoginInductionModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function AuthProvider({children}) {
       setAuthenticatedUserLink(fetchedLink)
     })
     setIsAuthenticated(true)
-    setShowLoginModal(false);
+    setShowLoginInductionModal(false);
   }, []);
 
   /*
@@ -51,11 +51,13 @@ export default function AuthProvider({children}) {
   }
 
   function handle401Error(){
-    setShowLoginModal(true);
+    setIsAuthenticated(false);
+    setAuthenticatedUserLink("");
+    setShowLoginInductionModal(true);
   }
 
   return (
-    <AuthContext.Provider value={{isAuthenticated, authenticatedUserLink, showLoginModal, logout, handle401Error}}>
+    <AuthContext.Provider value={{isAuthenticated, authenticatedUserLink, showLoginInductionModal, setShowLoginInductionModal, logout, handle401Error}}>
       {children}
     </AuthContext.Provider>
   );

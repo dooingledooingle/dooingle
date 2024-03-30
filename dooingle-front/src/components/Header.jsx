@@ -48,7 +48,7 @@ export default function Header() {
 {/*          <Link to={"#"}> TODO 알림 기능 필요함
             <img src="/notification.svg" alt="알림 링크" className="h-[2.5rem]"/>
           </Link>*/}
-          <div ref={userMenuRef} className="relative">
+          <div ref={userMenuRef} className="relative -z-1">
             <button onClick={toggleUserMenu} className="focus:outlink-none">
               <img src="/user-menu.svg" alt="사용자 메뉴 드롭다운 메뉴" className="h-[2.5rem]"/>
             </button>
