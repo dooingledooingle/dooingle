@@ -145,10 +145,6 @@ export default function MyProfilePage() {
                    bg-[#fa61bd] text-white">변경 내용 저장</button>
           </div>
         </section>
-
-        <div className="col-start-1 col-span-12 mt-10">
-          <Link to={"/"}>웰컴 페이지로</Link>
-        </div>
       </div>
     </>
   );

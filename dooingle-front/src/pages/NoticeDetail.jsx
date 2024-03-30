@@ -92,10 +92,6 @@ export default function NoticeDetailPage() {
         </section>
 
         <DooinglerListAside/>
-
-        <div className="col-start-1 col-span-12 mt-10">
-          <Link to={"/"}>웰컴 페이지로</Link>
-        </div>
       </div>
     </>
   )
