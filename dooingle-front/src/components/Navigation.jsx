@@ -20,17 +20,14 @@ export default function Navigation() {
   return (
     <div className="flex flex-col items-center gap-[1rem]">
       <div>
-        <Link to={`/my-profile`}>내 프로필</Link>
-      </div>
-      <div>
         <Link to={`/personal-dooingles/${currentUserLink}`}>내 뒹글함</Link>
       </div>
       <div>
         <Link to={`/follows`}>팔로우하는 뒹글러</Link>
       </div>
-      <div>
+{/*      <div> TODO 뒹글 탐색 기능 필요함
         <a href="#">뒹글 탐색</a>
-      </div>
+      </div>*/}
     </div>
   );
 }
