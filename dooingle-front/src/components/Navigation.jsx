@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import {useAuth} from "../contexts/useContext.js";
+import {useAuth} from "../hooks/useContext.js";
 
 export default function Navigation() {
 

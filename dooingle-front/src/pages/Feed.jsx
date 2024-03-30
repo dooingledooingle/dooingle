@@ -2,7 +2,7 @@ import Dooingle from "../components/Dooingle.jsx";
 import {useEffect, useRef, useState} from "react";
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import {fetchDooinglesFeedSlice, fetchDooinglesFeedSliceOfFollowing} from "../fetch.js"
-import {useNotification} from "../contexts/useContext.js";
+import {useNotification} from "../hooks/useContext.js";
 
 export default function FeedPage() {
 

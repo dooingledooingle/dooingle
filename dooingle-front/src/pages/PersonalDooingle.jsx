@@ -8,7 +8,7 @@ import {FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 import {fetchDooinglesAndCatchesSlice, fetchIsFollowingUser, fetchAddFollow, fetchCancelFollow, fetchAddDooingle, fetchPageOwnerUserProfile} from "../fetch.js";
-import {useAuth} from "../contexts/useContext.js";
+import {useAuth} from "../hooks/useContext.js";
 
 export default function PersonalDooinglePage() {
 

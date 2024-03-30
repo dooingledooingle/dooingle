@@ -2,7 +2,7 @@ import ProfileImageFrame from "../components/ProfileImageFrame.jsx";
 import Navigation from "../components/Navigation.jsx";
 import DooinglerListAside from "../components/DooinglerListAside.jsx";
 import {Outlet} from "react-router-dom";
-import {useAuth} from "../contexts/useContext.js";
+import {useAuth} from "../hooks/useContext.js";
 
 export default function MainLayout() {
 

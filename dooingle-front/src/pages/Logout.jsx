@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import Spinner from "../components/miscellaneous/Spinner.jsx";
-import {useAuth} from "../contexts/useContext.js";
+import {useAuth} from "../hooks/useContext.js";
 
 export default function LogoutPage() {
   
