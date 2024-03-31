@@ -3,6 +3,7 @@ package com.dooingle.global.security
 import com.dooingle.global.jwt.JwtAuthenticationFilter
 import jakarta.servlet.DispatcherType
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -12,6 +13,7 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -29,6 +31,7 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
+            .securityMatcher(NegatedRequestMatcher(EndpointRequest.toAnyEndpoint()))
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .csrf { it.disable() }
@@ -72,5 +75,13 @@ class SecurityConfig(
 
         return UrlBasedCorsConfigurationSource()
             .also { it.registerCorsConfiguration("/**", configuration) }
+    }
+
+    @Bean
+    fun actuatorFilterChain(http: HttpSecurity): SecurityFilterChain {
+        return http
+            .securityMatcher(EndpointRequest.toAnyEndpoint())
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .build()
     }
 }
