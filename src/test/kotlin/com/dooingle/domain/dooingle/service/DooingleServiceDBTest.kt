@@ -24,10 +24,12 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -48,7 +50,7 @@ class DooingleServiceDBTest(
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
-    private val distributedLock: DistributedLock
+    private val distributedLock: DistributedLock,
 ) {
 
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
@@ -67,6 +69,7 @@ class DooingleServiceDBTest(
         dooingleRepository.deleteAll()
         followRepository.deleteAll()
         socialUserRepository.deleteAll()
+        dooingleCountRepository.deleteAll()
     }
 
     @Test
@@ -178,24 +181,25 @@ class DooingleServiceDBTest(
         val executor = Executors.newFixedThreadPool(THREAD_COUNT)
         val barrier = CyclicBarrier(THREAD_COUNT)
         val guestList = mutableListOf<SocialUser>()
+        val owner = socialUserRepository.save(SocialUser(nickname = "owner", provider = OAuth2Provider.KAKAO, providerId = "aaaa", userLink = "aaaa"))
 
         repeat(THREAD_COUNT) {
-            guestList.add(socialUserRepository.save(userA))
+            socialUserRepository.save(SocialUser(nickname = "guest", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
+                .let { guestList.add(it) }
         }
-        val owner = socialUserRepository.save(userB)
 
         // WHEN
-        for(i in guestList) {
+        for(guest in guestList) {
             executor.execute {
                 barrier.await()
                 dooingleService.addDooingle(
-                    fromUserId = i.id!!,
+                    fromUserId = guest.id!!,
                     ownerUserLink = owner.userLink,
-                    addDooingleRequest = AddDooingleRequest("뒹글 from ${i.id}")
+                    addDooingleRequest = AddDooingleRequest("뒹글")
                 )
             }
         }
-        executor.awaitTermination(10, TimeUnit.SECONDS)
+        executor.awaitTermination(15, TimeUnit.SECONDS)
 
         // THEN
         dooingleCountRepository.findByOwnerId(owner.id!!)!!.count shouldBe THREAD_COUNT
