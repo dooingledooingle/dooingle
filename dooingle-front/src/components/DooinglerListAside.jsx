@@ -1,14 +1,6 @@
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js";
 import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
-
-async function fetchUserList(condition) {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users?condition=${condition}`, {
-    withCredentials: true,
-  });
-  return response.data;
-}
+import {fetchUserList} from "../fetch.js";
 
 export default function DooinglerListAside() {
   const [newDooinglerList, setNewDooinglerList] = useState([])
@@ -20,8 +12,7 @@ export default function DooinglerListAside() {
   }, []);
 
   return (
-    <aside
-      className="col-start-10 col-span-3 flex flex-col justify-end items-center text-[#5f6368]">
+    <aside className="col-start-10 col-span-3 flex flex-col justify-end items-center text-[#5f6368]">
       <div className="sticky bottom-0 py-[4.5rem]">
         <div
           className="flex flex-col items-center gap-[0.25rem] rounded-br-[0.625rem] border-b-[0.0625rem] border-[#ef7ec2]">

@@ -41,6 +41,12 @@ class UserController(
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
 
+    @GetMapping("/{userLink}/profile")
+    fun getOtherUserProfile(@PathVariable userLink: String) : ResponseEntity<ProfileResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getOtherUserProfile(userLink))
+    }
+
+
     @GetMapping("/{userLink}/profile-image")
     fun getProfileImageByUserLink(@PathVariable userLink: String) : ResponseEntity<ProfileImageUrlResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfileImageUrlByUserLink(userLink))

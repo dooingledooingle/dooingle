@@ -150,6 +150,18 @@ class SocialUserService(
         }
     }
 
+    fun getOtherUserProfile(userLink: String) : ProfileResponse {
+        val targetUser = socialUserRepository.findByUserLink(userLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink)
+        val profile = profileRepository.findByUser(targetUser)
+
+        return if (profile != null) {
+            ProfileResponse(nickname = targetUser.nickname, description = profile.description, imageUrl = profile.imageUrl)
+        } else {
+            ProfileResponse(nickname = targetUser.nickname, description = null, imageUrl = null)
+        }
+    }
+
     fun getProfileImageUrlByUserLink(userLink: String): ProfileImageUrlResponse {
         val targetUser = socialUserRepository.findByUserLink(userLink)
             ?: throw SocialUserNotFoundByUserLinkException(userLink)

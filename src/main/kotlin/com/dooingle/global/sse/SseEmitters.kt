@@ -67,6 +67,7 @@ class SseEmitters {
             list.forEach { emitter ->
                 emitter.complete()
             }
+            notificationEmitters.remove(key)
         }
     }
 
