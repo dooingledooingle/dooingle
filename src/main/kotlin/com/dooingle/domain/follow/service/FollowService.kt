@@ -52,12 +52,13 @@ class FollowService(
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
 
         return followRepository.getFollowDetailListByFromUser(fromUser)
+
     }
 
     fun showFollowersNumber(userId: Long): Int {
         val toUser = socialUserRepository.findByIdOrNull(userId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
-        val followers = followRepository.countByToUser(toUser)
+        val followers = followRepository.countByToUser(toUser = toUser)
 
         return followers
     }
