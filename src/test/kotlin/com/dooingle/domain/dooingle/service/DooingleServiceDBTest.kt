@@ -180,26 +180,32 @@ class DooingleServiceDBTest(
         // GIVEN
         val executor = Executors.newFixedThreadPool(THREAD_COUNT)
         val barrier = CyclicBarrier(THREAD_COUNT)
-        val guestList = mutableListOf<SocialUser>()
-        val owner = socialUserRepository.save(SocialUser(nickname = "owner", provider = OAuth2Provider.KAKAO, providerId = "aaaa", userLink = "aaaa"))
 
         repeat(THREAD_COUNT) {
-            socialUserRepository.save(SocialUser(nickname = "guest", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
-                .let { guestList.add(it) }
+            socialUserRepository.save(SocialUser(nickname = "guest", provider = OAuth2Provider.KAKAO, providerId = "aaaa", userLink = "aaaa"))
         }
 
-        // WHEN
-        for(guest in guestList) {
+        val owner = socialUserRepository.save(SocialUser(nickname = "owner", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
+
+        repeat(THREAD_COUNT) {
             executor.execute {
                 barrier.await()
                 dooingleService.addDooingle(
-                    fromUserId = guest.id!!,
+                    fromUserId = it.toLong()+1L,
                     ownerUserLink = owner.userLink,
                     addDooingleRequest = AddDooingleRequest("뒹글")
                 )
             }
         }
         executor.awaitTermination(15, TimeUnit.SECONDS)
+
+//        repeat(THREAD_COUNT) {
+//            dooingleService.addDooingle(
+//                fromUserId = it.toLong()+1,
+//                ownerUserLink = owner.userLink,
+//                addDooingleRequest = AddDooingleRequest("뒹글")
+//            )
+//        }
 
         // THEN
         dooingleCountRepository.findByOwnerId(owner.id!!)!!.count shouldBe THREAD_COUNT
