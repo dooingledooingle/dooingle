@@ -10,6 +10,7 @@ export default function FeedPage() {
   const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const hasNextSlice = useRef(false);
   const {newFeedNotification, setNewFeedNotification} = useNotification()
+  const {personalNotification, setPersonalNotification} = useNotification();
 
   useEffect(() => {
     fetchDooinglesFeedSlice().then(newDooinglesSlice => {
@@ -72,9 +73,9 @@ export default function FeedPage() {
     });
   }
 
-/*  function handlePersonalNotificationButton() {
+  function handlePersonalNotificationButton() {
     setPersonalNotification(null);
-  }*/
+  }
 
   return (
     <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
@@ -97,18 +98,21 @@ export default function FeedPage() {
 
       {newFeedNotification && (
         <button type="button" onClick={handleNewFeedNotificationButton}
-                className="fixed top-[4.5rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
+                className="fixed top-[3.8rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
                   rounded-[0.625rem] text-[0.75rem] text-white font-bold bg-[#fa61bd]
                   border-[0.0625rem] border-[#fa61bd] animate-pulse">
           새 피드가 있어요!
         </button>
       )}
-      {/*          TODO 개인 알림 관련 별도 작업 필요
-          {personalNotification && (
-            <div className="border-2">
-              <button onClick={handlePersonalNotificationButton}>새로 뒹글을 받았거나 내가 쓴 뒹글에 캐치가 있어요!</button>
-            </div>
-          )}*/}
+      {personalNotification && (
+        <button type="button" onClick={handlePersonalNotificationButton}
+                className="fixed top-[6rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
+                  rounded-[0.625rem] text-[0.75rem] text-white font-bold bg-[#fa61bd]
+                  border-[0.0625rem] border-[#fa61bd] animate-pulse">
+          {(personalNotification.notificationType === "DOOINGLE") && "새 뒹글이 굴러왔어요!"}
+          {(personalNotification.notificationType === "CATCH") && "내 뒹글에 캐치가 달렸어요!"}
+        </button>
+      )}
 
       <div className="pt-[1rem]">
         {dooingles.map(dooingle => (
