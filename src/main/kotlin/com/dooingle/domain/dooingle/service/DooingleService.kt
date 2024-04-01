@@ -41,7 +41,7 @@ class DooingleService(
         fromUserId: Long,
         ownerUserLink: String,
         addDooingleRequest: AddDooingleRequest
-    ): DooingleResponse = distributedLock("DOOINGLE:$ownerId") {
+    ): DooingleResponse = distributedLock("DOOINGLE:$ownerUserLink") {
         val guest = socialUserRepository.findByIdOrNull(fromUserId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
         val owner = socialUserRepository.findByUserLink(ownerUserLink)

@@ -23,3 +23,10 @@ cloud:
 
 frontend:
   domain: "test"
+
+spring:
+  data:
+    redis:
+      host: "test"
+      port: 1
+      password: "test"

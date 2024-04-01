@@ -33,22 +33,21 @@ import java.time.ZonedDateTime
 import kotlin.math.min
 
 @DisplayName("DooingleService 단위 테스트")
-class DooingleServiceUnitTest(
-    private val distributedLock: DistributedLock
-) : AnnotationSpec() {
+class DooingleServiceUnitTest : AnnotationSpec() {
 
     private val mockDooingleRepository = mockk<DooingleRepository>()
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
     private val mockCatchRepository = mockk<CatchRepository>()
     private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
     private val mockNotificationService = mockk<NotificationService>()
+    private val mockDistributedLock = mockk<DistributedLock>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
         dooingleCountRepository = mockDooingleCountRepository,
         notificationService = mockNotificationService,
-        distributedLock = distributedLock
+        distributedLock = mockDistributedLock
     )
 
     lateinit var owner: SocialUser

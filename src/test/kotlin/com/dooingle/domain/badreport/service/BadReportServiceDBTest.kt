@@ -11,6 +11,7 @@ import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.RedisConfig
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.AfterEach
@@ -24,7 +25,7 @@ import java.time.ZonedDateTime
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class BadReportServiceDBTest @Autowired constructor(
     private val badReportRepository: BadReportRepository,

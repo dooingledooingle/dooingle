@@ -15,9 +15,8 @@ import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.RedisConfig
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.collections.haveLowerBound
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -26,7 +25,6 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -38,7 +36,7 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
 class DooingleServiceDBTest(
@@ -47,8 +45,7 @@ class DooingleServiceDBTest(
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
-    private val distributedLock: DistributedLock,
-
+    private val distributedLock: DistributedLock
 ) {
 
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
