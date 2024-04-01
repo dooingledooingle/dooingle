@@ -7,7 +7,7 @@ on:
     branches:
       - frontend/dev-localhost
 jobs:
-  deploy-preview-with-localhost:
+  frontend-deployment-preview-with-localhost:
     runs-on: ubuntu-latest
     steps:
       # (1) 체크아웃
