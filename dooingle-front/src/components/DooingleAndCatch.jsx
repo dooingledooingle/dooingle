@@ -36,16 +36,28 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
         <div className="px-[0.5rem] text-[#456bf5] font-bold  max-w-fit">
           <span>익명의 뒹글러</span>
         </div>
-        <div className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-fit">
-          <span className="text-[#5f6368]">{dooingleContent}</span>
+        <div className="flex items-center gap-[0.5rem]">
+          <div
+            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-fit">
+            <span className="text-[#5f6368]">{dooingleContent}</span>
+          </div>
+          <button>
+            <img src="/report.svg" alt="신고 버튼" className="w-[1.125rem] hover:src"/>
+          </button>
         </div>
       </div>
       {catchContent ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem]">
         <div className="px-[0.5rem] text-[#456bf5] font-bold max-w-fit">
           <span>{ownerName}</span>
         </div>
-        <div className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#98a2ff] rounded-[0.625rem] max-w-fit">
-          <span className="text-[#5f6368]">{catchContent}</span>
+        <div className="flex items-center gap-[0.5rem]">
+          <button>
+            <img src="/report.svg" alt="신고 버튼" className="w-[1.125rem] hover:src"/>
+          </button>
+          <div
+            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#98a2ff] rounded-[0.625rem] max-w-fit">
+            <span className="text-[#5f6368]">{catchContent}</span>
+          </div>
         </div>
       </div> : null}
       {(catchContent === null && isCurrentUserEqualToPageOwner) && (isCatchFormVisible ? (<div>
