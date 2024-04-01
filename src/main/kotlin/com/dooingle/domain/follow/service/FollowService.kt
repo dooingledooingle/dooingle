@@ -57,7 +57,7 @@ class FollowService(
 
     fun showFollowersNumber(toUserLink: String): Int {
         val toUser = socialUserRepository.findByUserLink(toUserLink)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = toUserLink.toLong())
+            ?: throw SocialUserNotFoundByUserLinkException(userLink = toUserLink)
         val followers = followRepository.countByToUser(toUser = toUser)
 
         return followers
