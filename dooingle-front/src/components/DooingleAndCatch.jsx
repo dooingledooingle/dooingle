@@ -21,6 +21,12 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
     event.preventDefault();
 
     const catchContent = catchRef.current.value;
+
+    if (catchContent.toString().trim().length > 200 || catchContent.toString().trim().length < 10) {
+      alert("뒹글은 10자 이상 200자 이하여야 합니다.");
+      return;
+    }
+
     fetchAddCatch(dooingleId, catchContent).then(addedCatch => {
       setDooinglesAndCatches(prevDooinglesAndCatches => {
         /* 새로운 리스트 만들어서 원래 내용 복사 후 그 리스트를 반환하게 해야함 */

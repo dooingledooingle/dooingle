@@ -61,6 +61,11 @@ export default function PersonalDooinglePage() {
 
     const dooingleContent = dooingleRef.current.value;
 
+    if (dooingleContent.toString().trim().length > 200 || dooingleContent.toString().trim().length < 10) {
+      alert("뒹글은 10자 이상 200자 이하여야 합니다.");
+      return;
+    }
+
     fetchAddDooingle(pageOwnerUserLink, dooingleContent).then(addedDooingle => {
       /* DooingleResponse와 DooingleAndCatchResponse의 차이 때문에 억지로 catch, catch 내의 content 필드를 넣어줌 */
       addedDooingle = {...addedDooingle, catch: {content: null}}

@@ -51,6 +51,13 @@ export default function MyProfilePage() {
   }
 
   function handleSaveButton() {
+    const descriptionInputValue = descriptionInputRef.current.value
+    
+    if (descriptionInputValue.toString().trim().length > 100 || descriptionInputValue.toString().trim().length < 5) {
+      alert("자기소개는 5자 이상 100자 이하여야 합니다.");
+      return;
+    }
+
     const formData = new FormData();
 
     let formDataImageUrl = null
@@ -59,7 +66,7 @@ export default function MyProfilePage() {
     }
 
     const requestObject = {
-      description: descriptionInputRef.current.value, // current.value가 아니라 current만 둘 경우, "Converting circular structure to JSON" 에러 발생
+      description: descriptionInputValue, // current.value가 아니라 current만 둘 경우, "Converting circular structure to JSON" 에러 발생
       imageUrl: formDataImageUrl,
     }
 
