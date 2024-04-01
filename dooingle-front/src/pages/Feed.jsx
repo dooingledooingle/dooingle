@@ -7,7 +7,7 @@ import {useNotification} from "../hooks/useContext.js";
 export default function FeedPage() {
 
   const [dooingles, setDooingles] = useState([]);
-  const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
+  const [showingEntireFeed, setShowingEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const hasNextSlice = useRef(false);
   const {newFeedNotification, setNewFeedNotification} = useNotification()
   const {personalNotification, setPersonalNotification} = useNotification();
@@ -46,7 +46,7 @@ export default function FeedPage() {
       setDooingles(newDooinglesSlice.content)
       hasNextSlice.current = !newDooinglesSlice.last
     });
-    setIsEntireFeed(true);
+    setShowingEntireFeed(true);
   }
 
   function handleFollowingFeedButton() {
@@ -54,12 +54,12 @@ export default function FeedPage() {
       setDooingles(newDooinglesSlice.content)
       hasNextSlice.current = !newDooinglesSlice.last
     });
-    setIsEntireFeed(false);
+    setShowingEntireFeed(false);
   }
 
   function handleNewFeedNotificationButton() {
     setNewFeedNotification(null);
-    setIsEntireFeed(true);
+    setShowingEntireFeed(true);
 
     /* TODO 일단 직전 dooingles의 크기와 상관 없이 새로운 slice 가져와서 교체함 */
     fetchDooinglesFeedSlice().then(newDooinglesSlice => {
@@ -80,16 +80,18 @@ export default function FeedPage() {
   return (
     <section className="col-start-4 col-span-6 flex flex-col py-[2.75rem] text-[#5f6368]">
       <div className="flex px-[2rem] gap-[1.75rem] shadow-[inset_0_-0.125rem_0_0_#9aa1aa]">
-        <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+        <div
+          className={"px-[0.5rem] " + (showingEntireFeed ? "shadow-[inset_0_-0.125rem_0_0_#fa61bd]" : "hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]")}>
           <button onClick={handleEntireFeedButton} className="py-[0.5rem]">
-            <div>
+            <div className={"" + (showingEntireFeed ? "text-[#fa61bd]" : "hover:text-[#fa61bd]")}>
               전체
             </div>
           </button>
         </div>
-        <div className="hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]">
+        <div
+          className={"px-[0.5rem] " + (showingEntireFeed ? "hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]" : "shadow-[inset_0_-0.125rem_0_0_#fa61bd]")}>
           <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
-            <div>
+            <div className={"" + (showingEntireFeed ? "hover:text-[#fa61bd]" : "text-[#fa61bd]")}>
               팔로우
             </div>
           </button>
@@ -127,7 +129,7 @@ export default function FeedPage() {
         ))}
       </div>
       <div className="flex justify-center mt-[1rem]">
-        {hasNextSlice.current && <MorePostButton onClick={() => handleMoreFeedButton(isEntireFeed)}/>}
+        {hasNextSlice.current && <MorePostButton onClick={() => handleMoreFeedButton(showingEntireFeed)}/>}
       </div>
     </section>
   );
