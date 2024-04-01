@@ -33,6 +33,9 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -169,6 +172,35 @@ class DooingleServiceDBTest(
         result.content shouldBe addDooingleRequest.content
     }
 
+    @Test
+    fun `100명의 유저가 1명의 유저에게 동시에 뒹글을 등록하는 경우 뒹글 Count는 100이어야 한다`(){
+        // GIVEN
+        val executor = Executors.newFixedThreadPool(THREAD_COUNT)
+        val barrier = CyclicBarrier(THREAD_COUNT)
+        val guestList = mutableListOf<SocialUser>()
+
+        repeat(THREAD_COUNT) {
+            guestList.add(socialUserRepository.save(userA))
+        }
+        val owner = socialUserRepository.save(userB)
+
+        // WHEN
+        for(i in guestList) {
+            executor.execute {
+                barrier.await()
+                dooingleService.addDooingle(
+                    fromUserId = i.id!!,
+                    ownerUserLink = owner.userLink,
+                    addDooingleRequest = AddDooingleRequest("뒹글 from ${i.id}")
+                )
+            }
+        }
+        executor.awaitTermination(10, TimeUnit.SECONDS)
+
+        // THEN
+        dooingleCountRepository.findByOwnerId(owner.id!!)!!.count shouldBe THREAD_COUNT
+    }
+
 
     private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
     private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
@@ -230,5 +262,7 @@ class DooingleServiceDBTest(
     )
 
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
+
+    private val THREAD_COUNT = 10
 
 }

@@ -14,7 +14,7 @@ class DistributedLock(
     operator fun <T> invoke(
         key: String,
         waitTime: Duration = Duration.ofSeconds(5),
-        leaseTime: Duration = Duration.ofSeconds(5),
+        leaseTime: Duration = Duration.ofSeconds(3),
         func: () -> T
     ): T {
         val lock = redissonClient.getLock("REDISSON_LOCK:$key")
