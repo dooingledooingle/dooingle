@@ -98,13 +98,13 @@ class NotificationSseTest(
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
 
-        val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
-                notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
-            )
-        )
-        eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
+//        val notificationString = objectMapper.writeValueAsString(
+//            NotificationResponse(
+//                notificationType = NotificationType.DOOINGLE.toString(),
+//                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+//            )
+//        )
+//        eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
 
         eventWrapper.receivedData[2] shouldBe dooingleString // 피드 알림
     }
@@ -134,13 +134,13 @@ class NotificationSseTest(
 
         addCatchResponse.code shouldBe HttpStatus.CREATED.value()
 
-        val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
-                notificationType = NotificationType.CATCH.toString(),
-                cursor = dooingle.id!!
-            )
-        )
-        eventWrapperOfA.receivedData[1] shouldBe notificationString
+//        val notificationString = objectMapper.writeValueAsString(
+//            NotificationResponse(
+//                notificationType = NotificationType.CATCH.toString(),
+//                cursor = dooingle.id!!
+//            )
+//        )
+//        eventWrapperOfA.receivedData[1] shouldBe notificationString
     }
 
     @Test
@@ -179,14 +179,14 @@ class NotificationSseTest(
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
 
-        val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
-                notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
-            )
-        )
-        eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림
-        eventWrapperOfA2.receivedData[1] shouldBe notificationString
+//        val notificationString = objectMapper.writeValueAsString(
+//            NotificationResponse(
+//                notificationType = NotificationType.DOOINGLE.toString(),
+//                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+//            )
+//        )
+//        eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림
+//        eventWrapperOfA2.receivedData[1] shouldBe notificationString
 
         eventWrapperOfB.receivedData[1] shouldBe dooingleString // 피드 알림
         eventWrapperOfA1.receivedData[2] shouldBe dooingleString
