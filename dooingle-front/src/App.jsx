@@ -12,6 +12,7 @@ import MainLayout from "./layouts/MainLayout.jsx";
 import AuthProvider from "./contexts/AuthContext.jsx";
 import LogoutPage from "./pages/Logout.jsx";
 import NotificationProvider from "./contexts/NotificationContext.jsx";
+import ReportProvider from "./contexts/ReportContext.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: <WelcomePage /> },
@@ -20,7 +21,9 @@ const router = createBrowserRouter([
     element: (
       <AuthProvider>
         <NotificationProvider>
-          <RootLayout/>
+          <ReportProvider>
+            <RootLayout/>
+          </ReportProvider>
         </NotificationProvider>
       </AuthProvider>
     ),

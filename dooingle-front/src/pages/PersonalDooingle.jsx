@@ -167,6 +167,7 @@ export default function PersonalDooinglePage() {
                 ownerName={dooingleAndCatch.ownerName}
                 setDooinglesAndCatches={setDooinglesAndCatches}
                 dooingleContent={dooingleAndCatch.content}
+                catchId={dooingleAndCatch.catch.catchId}
                 catchContent={dooingleAndCatch.catch.content}
                 isCurrentUserEqualToPageOwner={isCurrentUserEqualToPageOwner}
               />

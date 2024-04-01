@@ -166,3 +166,23 @@ export async function fetchNotifications() {
   });
   return response.data;
 }
+
+export async function fetchAddBadReport(reportedTargetType, reportedTargetId, reportReason) {
+  const addBadReportRequestBody = {
+    reportedTargetType: reportedTargetType,
+    reportedTargetId: reportedTargetId,
+    reportReason: reportReason
+  }
+
+  const response = await axios.post(
+    `${BACKEND_SERVER_ORIGIN}/api/badreports`,
+    addBadReportRequestBody,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  return response.data;
+}

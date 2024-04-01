@@ -1,10 +1,12 @@
 import {useRef, useState} from "react";
 import SmallSubmitButton from "./button/SmallSubmitButton.jsx";
 import {fetchAddCatch} from "../fetch.js";
+import {useReport} from "../hooks/useContext.js";
 
-export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAndCatches, dooingleContent, catchContent, isCurrentUserEqualToPageOwner }) {
+export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAndCatches, dooingleContent, catchId, catchContent, isCurrentUserEqualToPageOwner }) {
 
   const [isCatchFormVisible, setIsCatchFormVisible] = useState(false);
+  const {setShowReportModal, setReportTarget} = useReport()
   const catchRef = useRef();
 
   function handleShowCatchFormButton() {
@@ -30,33 +32,42 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
     catchRef.current.value = "";
   }
 
+  function handleReportButton(reportedTargetType, reportedTargetId, reportedTargetContent) {
+    setReportTarget({
+      reportedTargetType: reportedTargetType,
+      reportedTargetId: reportedTargetId,
+      reportedTargetContent: reportedTargetContent
+    })
+    setShowReportModal(true)
+  }
+
   return (
-    <div className="py-[1rem]">
+    <div className="py-[1rem] ml-[1rem]">
       <div className="flex flex-col px-[0.75rem] gap-[0.375rem]">
         <div className="px-[0.5rem] text-[#456bf5] font-bold  max-w-fit">
           <span>익명의 뒹글러</span>
         </div>
-        <div className="flex items-center gap-[0.5rem]">
+        <div className="flex justify-start items-center gap-[0.5rem]">
           <div
             className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-fit">
-            <span className="text-[#5f6368]">{dooingleContent}</span>
+            <span className="text-[#5f6368] break-words">{dooingleContent}</span>
           </div>
-          <button>
-            <img src="/report.svg" alt="신고 버튼" className="w-[1.125rem] hover:src"/>
+          <button type="button" onClick={() => handleReportButton("DOOINGLE", dooingleId, dooingleContent)}>
+            <img src="/report.svg" alt="뒹글 신고 버튼" className="w-[1.125rem] hover:src"/>
           </button>
         </div>
       </div>
-      {catchContent ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem]">
+      {catchContent ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem] mr-[1.5rem]">
         <div className="px-[0.5rem] text-[#456bf5] font-bold max-w-fit">
           <span>{ownerName}</span>
         </div>
-        <div className="flex items-center gap-[0.5rem]">
-          <button>
-            <img src="/report.svg" alt="신고 버튼" className="w-[1.125rem] hover:src"/>
+        <div className="flex justify-end items-center gap-[0.5rem]">
+          <button type="button" onClick={() => handleReportButton("CATCH", catchId, catchContent)}>
+            <img src="/report.svg" alt="캐치 신고 버튼" className="w-[1.125rem] hover:src"/>
           </button>
           <div
-            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#98a2ff] rounded-[0.625rem] max-w-fit">
-            <span className="text-[#5f6368]">{catchContent}</span>
+            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] max-w-fit">
+            <span className="text-[#5f6368] break-words">{catchContent}</span>
           </div>
         </div>
       </div> : null}
