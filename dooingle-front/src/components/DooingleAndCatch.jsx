@@ -55,11 +55,11 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
         </div>
         <div className="flex justify-start items-center gap-[0.5rem]">
           <div
-            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-fit">
-            <span className="text-[#5f6368] break-words">{dooingleContent}</span>
+            className="px-[1.25rem] py-[0.625rem] w-fit border-[0.03125rem] border-[#8692ff] rounded-[0.625rem] max-w-[65%]">
+            <span className="text-[#5f6368] whitespace-pre-wrap break-words">{dooingleContent}</span>
           </div>
           <button type="button" onClick={() => handleReportButton("DOOINGLE", dooingleId, dooingleContent)}>
-            <img src="/report.svg" alt="뒹글 신고 버튼" className="w-[1.125rem] hover:src"/>
+            <img src="/report.svg" alt="뒹글 신고 버튼" className="w-[1.125rem]"/>
           </button>
           {(catchContent === null && isCurrentUserEqualToPageOwner) && (!isCatchFormVisible &&
             <div className="flex group">
@@ -74,13 +74,13 @@ export default function DooingleAndCatch({ dooingleId, ownerName, setDooinglesAn
         <div className="px-[0.5rem] text-[#456bf5] font-bold max-w-fit">
           <span>{ownerName}</span>
         </div>
-        <div className="flex justify-end items-center gap-[0.5rem]">
+        <div className="flex justify-end items-center gap-[0.5rem] w-full">
           <button type="button" onClick={() => handleReportButton("CATCH", catchId, catchContent)}>
-            <img src="/report.svg" alt="캐치 신고 버튼" className="w-[1.125rem] hover:src"/>
+            <img src="/report.svg" alt="캐치 신고 버튼" className="w-[1.125rem]"/>
           </button>
           <div
-            className="px-[1.25rem] py-[0.625rem] w-[65%] border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] max-w-fit">
-            <span className="text-[#5f6368] break-words">{catchContent}</span>
+            className="px-[1.25rem] py-[0.625rem] w-fit border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] max-w-[65%]">
+            <span className="text-[#5f6368] whitespace-pre-wrap break-words">{catchContent}</span>
           </div>
         </div>
       </div> : null}
