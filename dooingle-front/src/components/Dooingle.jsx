@@ -23,7 +23,7 @@ export default function Dooingle({ownerName, ownerUserLink, dooingleId, content,
           hasCatch &&
           <Link
             to={`/personal-dooingles/${ownerUserLink}?lastDooingleId=${dooingleId + 1}`}
-            className="pl-[1rem] font-medium text-[#5f6368] hover:text-[#fa61bd]">답변이 있는 뒹글입니다.
+            className="pl-[1.125rem] font-medium text-[0.75rem] text-[#5f6368] hover:text-[#fa61bd]">답변이 있는 뒹글입니다.
           </Link>
         }
       </div>
