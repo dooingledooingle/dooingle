@@ -78,15 +78,18 @@ export default function Header() {
               {personalNotification && <img src="/notification-on.svg" alt="알림 드롭다운" className="h-[2.5rem]"/>}
             </button>
             {showNotificationDropdown && (
-              <ul className="absolute flex flex-col items-center gap-[0.125rem] right-0 w-[14.5rem]
-              bg-white rounded-b-[0.5rem] border-[#d3d3d3] border-[0.03125rem] border-t-0 shadow-sm pb-[0.25rem]">
+              <ul className="absolute flex flex-col right-0 w-[14.5rem]
+              bg-white rounded-b-[0.5rem] border-[#d3d3d3] border-[0.03125rem] border-t-0 shadow-sm pt-[0.25rem] pb-[0.5rem]">
                 {notifications.map(notification =>
-                  <li key={notification.notificationType + notification.cursor.toString()}
+                  <li key={notification.cursor.toString()}
                       className="px-[1.25rem] py-[0.375rem]">
-                    <span className="text-[0.875rem] pr-[0.75rem]">
-                      {(notification.notificationType === "DOOINGLE") && "새 뒹글이 굴러왔어요!"}
-                      {(notification.notificationType === "CATCH") && "내 뒹글에 캐치가 달렸어요!"}
-                    </span>
+                    <div className="flex justify-between">
+                      <span className="text-[0.8125rem] pr-[0.75rem]">
+                        {(notification.notificationType === "DOOINGLE") && "새 뒹글이 굴러왔어요!"}
+                        {(notification.notificationType === "CATCH") && "뒹글에 캐치가 달렸어요!"}
+                      </span>
+                      <Link to={`/personal-dooingles/${notification.ownerUserLink}`} className="text-[0.75rem] hover:text-[#ef7ec2]"> 보러 가기</Link>
+                    </div>
                     {/*
                     <Link to={"/personal-dooingles/aaaa"} className="text-[0.75rem]">보러가기</Link>
                     // userLink 데이터가 없어서 링크를 줄 수 없는 상황임
