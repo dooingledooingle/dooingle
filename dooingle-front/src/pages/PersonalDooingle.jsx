@@ -155,14 +155,18 @@ export default function PersonalDooinglePage() {
           </div>
 
           {isCurrentUserEqualToPageOwner || <form
-            className="flex justify-center items-center my-[2rem] gap-[4%]"
+            className="flex justify-center items-center my-[2rem] gap-[3%]"
             onSubmit={handleDooingleSubmit}
           >
             <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
                       className="w-[70%] p-[1rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
-            <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
+            <div className="flex group">
+              <img src="/post-button.svg" alt="캐치 버튼"
+                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000"/>
+              <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
+            </div>
           </form>}
           <div className="py-[1rem]">
             {dooinglesAndCatches?.map(dooingleAndCatch => (

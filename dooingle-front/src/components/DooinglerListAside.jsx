@@ -13,7 +13,7 @@ export default function DooinglerListAside() {
 
   return (
     <aside className="col-start-10 col-span-3 flex flex-col justify-end items-center text-[#5f6368]">
-      <div className="sticky bottom-0 py-[4.5rem]">
+      <div className="fixed bottom-[4.5rem]">
         <div
           className="flex flex-col items-center gap-[0.25rem] rounded-br-[0.625rem] border-b-[0.0625rem] border-[#ef7ec2]">
           <div className="flex flex-col gap-[0.5rem] px-[1rem] py-[0.625rem]">
