@@ -96,6 +96,13 @@ export async function fetchCancelFollow(userLink) {
   return response.data;
 }
 
+export async function fetchFollowCount(userLink) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}/number`, {
+    withCredentials: true
+  });
+  return response.data;
+}
+
 export async function fetchAddDooingle(userLink, dooingleContent) {
   const addDooingleRequestBody = {
     content: dooingleContent

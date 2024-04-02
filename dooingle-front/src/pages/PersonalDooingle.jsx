@@ -7,7 +7,15 @@ import {useEffect, useRef, useState} from "react";
 import {FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
-import {fetchDooinglesAndCatchesSlice, fetchIsFollowingUser, fetchAddFollow, fetchCancelFollow, fetchAddDooingle, fetchPageOwnerUserProfile} from "../fetch.js";
+import {
+  fetchDooinglesAndCatchesSlice,
+  fetchIsFollowingUser,
+  fetchAddFollow,
+  fetchCancelFollow,
+  fetchAddDooingle,
+  fetchPageOwnerUserProfile,
+  fetchFollowCount
+} from "../fetch.js";
 import {useAuth} from "../hooks/useContext.js";
 import DeleteModal from "../components/modal/DeleteModal.jsx";
 
@@ -18,6 +26,7 @@ export default function PersonalDooinglePage() {
   const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [followerCount, setFollowerCount] = useState(false)
   // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const params = useParams();
   const [searchParams] = useSearchParams();
@@ -42,6 +51,12 @@ export default function PersonalDooinglePage() {
       });
     }
   }, [pageOwnerUserLink, searchParams]);
+
+  useEffect(() => {
+    fetchFollowCount(pageOwnerUserLink).then(result => {
+      setFollowerCount(result)
+    })
+  }, [pageOwnerUserLink, isFollowingUser]);
   
   useEffect(() => {
     fetchIsFollowingUser(pageOwnerUserLink).then(result => {
@@ -119,10 +134,13 @@ export default function PersonalDooinglePage() {
           <div className="col-start-4 col-span-6 flex justify-start items-center gap-[5%]">
             <ProfileImageFrame userLink={pageOwnerUserLink} />
             <div className="flex flex-col gap-[0.375rem]">
-              <div className="flex items-center gap-[1rem]">
+              <div className="flex items-center gap-[0.75rem]">
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
-                {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition">☆</button>}
+                <div className="flex gap-[0.5rem] items-center">
+                  {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
+                </div>
               </div>
               <div><span className="text-[1rem] ">{pageOwnerUserProfile.description}</span></div>
               <button onClick={handleCopyUserLinkButton} className="flex items-center">
