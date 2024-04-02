@@ -20,14 +20,14 @@ jobs:
           DEV_ENV: ${{ secrets.DEV_ENV }}
         run: mkdir -p ./src/main/resources \
           && touch ./src/main/resources/application-dev-env.yml \
-          && echo ${{ DEV_ENV }} > ./src/main/resources/application-dev-env.yml
+          && echo $DEV_ENV > ./src/main/resources/application-dev-env.yml
 
       # appspec.yml 파일 작성
       - name: Make appspec yml for deployment
         env:
           APPSPEC_DEV: ${{ secrets.APPSPEC_DEV }}
         run: touch appspec.yml \
-          && echo {{ secrets.APPSPEC_DEV }} | base64 --decode > appspec.yml
+          && echo $APPSPEC_DEV | base64 --decode > appspec.yml
 
       # JDK 17 설치
       - name: Setup Java JDK 17 Adopt
