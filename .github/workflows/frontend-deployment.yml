@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - frontend/dev
-      - add/frontend-with-dev-server-deployment
 jobs:
   frontend-deployment:
     runs-on: ubuntu-latest
