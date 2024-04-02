@@ -1,0 +1,25 @@
+# 2024-03-07 기준 test 프로파일 실행 시, local-memory-h2 프로파일 설정 + 여기 있는 임의 환경 변수 설정 기반으로 실행되도록 함
+oauth2:
+  kakao:
+    client_id: "test"
+    redirect_url: "http://localhost:8080/oauth2/callback/kakao"
+    auth_server_base_url: "https://kauth.kakao.com"
+    resource_server_base_url: "https://kapi.kakao.com"
+
+jwt:
+  secret_key: "test123456test123456test123456test123456"
+  issuer: "test.com"
+  access_token_expiration_hour: 1
+
+cloud:
+  aws:
+    credentials:
+      accessKey: "test"
+      secretKey: "test"
+    region:
+      static: "test"
+    s3:
+      bucketName: "test"
+
+frontend:
+  domain: "test"

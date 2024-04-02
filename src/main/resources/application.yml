@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    group:
+      local-h2: local-env
+      local-memory-h2: local-env
+      local-dev-infra: local-dev-infra-env
+      dev: dev-env
+      prod: prod-env
+      test: local-memory-h2
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

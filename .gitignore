@@ -1,0 +1,51 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### 환경 변수 - 절대 외부 노출 금지, 외부 노출 시 빽마당 식샷추 팀원 전원에게 돌려야 함
+src/**/**env.yml
+# 현재 application-local-env.yml, application-local-dev-infra-env.yml, application-dev-env.yml
+# 위 중 application-dev-env.yml는 GitHub secrets로 올려서 사용 중
+
+### appspec.yml
+
+
+### vercel
+.vercel
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Kotlin ###
+.kotlin

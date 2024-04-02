@@ -1,0 +1,2 @@
+export const BACKEND_SERVER_ORIGIN = import.meta.env.VITE_BACKEND_SERVER_ORIGIN
+export const FRONTEND_SERVER_ORIGIN = import.meta.env.VITE_FRONTEND_SERVER_ORIGIN
