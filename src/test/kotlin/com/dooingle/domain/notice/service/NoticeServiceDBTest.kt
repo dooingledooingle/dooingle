@@ -57,8 +57,8 @@ class NoticeServiceDBTest(
         shouldThrow<NotPermittedException> { noticeService.addNotice(user.id!!, request) }
     }
 
-    private val user = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val admin = SocialUser(role = UserRole.ADMIN, nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
+    private val user = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "aaaaaaaaaa")
+    private val admin = SocialUser(role = UserRole.ADMIN, nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "bbbbbbbbbb")
 
     companion object {
         private val addNoticeRequest = AddNoticeRequest(title = "공지사항 제목", content = "공지사항 내용")
