@@ -1,6 +1,7 @@
 package com.dooingle.domain.notice.service
 
 import com.dooingle.domain.notice.dto.AddNoticeRequest
+import com.dooingle.domain.notice.dto.NoticeResponse
 import com.dooingle.domain.notice.model.Notice
 import com.dooingle.domain.notice.repository.NoticeRepository
 import com.dooingle.domain.user.model.SocialUser
@@ -10,6 +11,7 @@ import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.AfterEach
@@ -130,13 +132,19 @@ class NoticeServiceDBTest(
     @Test
     fun `전체 공지사항 리스트가 10개씩 조회되는지 확인`(){
         // given
-//        noticeRepository.saveAll(noticeList)
+        noticeRepository.saveAll(noticeList)
+        socialUserRepository.saveAll(userList)
+
+        val pageNumber = 1
 
         // when
-
+        val page = noticeService.findAllNotices(pageNumber)
 
         // then
-
+        page.size shouldBe 10
+        page.hasNext() shouldBe true
+        page.first().title shouldBe NoticeResponse.from(noticeList.last()).title
+        page.last().title shouldBe NoticeResponse.from(noticeList[noticeList.size - 10]).title
     }
 
     companion object {
