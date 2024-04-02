@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - add/prod-deployment-try
 
 jobs:
   deployment-dev:
