@@ -137,8 +137,8 @@ export default function PersonalDooinglePage() {
               <div className="flex items-center gap-[0.75rem]">
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
                 <div className="flex gap-[0.5rem] items-center">
-                  {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                  {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  {(isCurrentUserEqualToPageOwner || isFollowingUser) && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {(!isCurrentUserEqualToPageOwner && !isFollowingUser) && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
                   <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
                 </div>
               </div>
