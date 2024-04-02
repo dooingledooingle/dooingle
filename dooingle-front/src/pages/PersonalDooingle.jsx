@@ -9,6 +9,7 @@ import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 import {fetchDooinglesAndCatchesSlice, fetchIsFollowingUser, fetchAddFollow, fetchCancelFollow, fetchAddDooingle, fetchPageOwnerUserProfile} from "../fetch.js";
 import {useAuth} from "../hooks/useContext.js";
+import DeleteModal from "../components/modal/DeleteModal.jsx";
 
 export default function PersonalDooinglePage() {
 
@@ -16,13 +17,17 @@ export default function PersonalDooinglePage() {
   const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
   const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const params = useParams();
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
   const pageOwnerUserLink = params?.userLink;
   const dooingleRef = useRef();
   const hasNextSlice = useRef(false);
-  const isCurrentUserEqualToPageOwner = (authenticatedUserLink === pageOwnerUserLink)
+  const deleteTargetRelatedDooingleIdRef = useRef();
+  const deleteTargetContentRef = useRef();
+  const deleteTargetIdRef = useRef();
+  const isCurrentUserEqualToPageOwner = (authenticatedUserLink === pageOwnerUserLink);
 
   useEffect(() => {
     if (searchParams) {
@@ -103,6 +108,11 @@ export default function PersonalDooinglePage() {
 
   return (
     <>
+      {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal}
+                                       deleteTargetRelatedDooingleIdRef={deleteTargetRelatedDooingleIdRef}
+                                       deleteTargetIdRef={deleteTargetIdRef}
+                                       deleteContentRef={deleteTargetContentRef}/>}
+
       {/* 소개 섹션 반투명 */}
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
         <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
@@ -179,6 +189,10 @@ export default function PersonalDooinglePage() {
                 catchId={dooingleAndCatch.catch.catchId}
                 catchContent={dooingleAndCatch.catch.content}
                 isCurrentUserEqualToPageOwner={isCurrentUserEqualToPageOwner}
+                setShowDeleteModal = {setShowDeleteModal}
+                deleteTargetRelatedDooingleIdRef = {deleteTargetRelatedDooingleIdRef}
+                deleteTargetIdRef = {deleteTargetIdRef}
+                deleteTargetContentRef= {deleteTargetContentRef}
               />
             ))}
           </div>

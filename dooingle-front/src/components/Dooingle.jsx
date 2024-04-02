@@ -32,7 +32,7 @@ export default function Dooingle({ownerName, ownerUserLink, dooingleId, content,
           <span className="text-[#5f6368] whitespace-pre-wrap break-words">{content}</span>
         </div>
         <button type="button" onClick={() => handleReportButton("DOOINGLE", dooingleId, content)}>
-          <img src="/report.svg" alt="신고 버튼" className="w-[1.125rem] hover:src"/>
+          <img src="/report.svg" alt="신고 버튼" className="w-[1.375rem]"/>
         </button>
       </div>
     </div>

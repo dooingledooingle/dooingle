@@ -53,6 +53,19 @@ export async function fetchAddCatch(dooingleId, catchContent) {
   return response.data;
 }
 
+export async function fetchDeleteCatch(dooingleId, catchId) {
+  const response = await axios.delete(
+    `${BACKEND_SERVER_ORIGIN}/api/dooingles/${dooingleId}/catches/${catchId}`,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  return response.data;
+}
+
 export async function fetchIsFollowingUser(userLink) {
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
