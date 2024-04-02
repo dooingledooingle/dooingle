@@ -21,8 +21,10 @@ jobs:
 
       # appspec.yml 파일 작성
       - name: Make appspec yml for deployment
+        env:
+          APPSPEC: ${{ secrets.APPSPEC_PROD }}
         run: touch ./appspec.yml \
-          && echo "${{ secrets.APPSPEC_PROD }}" > ./appspec.yml # appspec.yml 파일 내용은 base64 인코딩해서 넣어줄 것
+          && echo $APPSPEC > ./appspec.yml # appspec.yml 파일 내용은 base64 인코딩해서 넣어줄 것
 
       # JDK 17 설치
       - name: Setup Java JDK 17 Adopt
