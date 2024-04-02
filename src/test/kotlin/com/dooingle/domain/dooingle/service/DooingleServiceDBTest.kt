@@ -2,6 +2,7 @@ package com.dooingle.domain.dooingle.service
 
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.controller.DooingleFeedController
+import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
@@ -14,10 +15,17 @@ import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.collections.haveLowerBound
 import io.kotest.matchers.collections.shouldBeIn
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -40,7 +48,7 @@ class DooingleServiceDBTest(
     private val followRepository: FollowRepository
 ) {
 
-    private val mockNotificationService = mockk<NotificationService>()
+    private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
     private val dooingleService = DooingleService(
         dooingleRepository,
@@ -70,11 +78,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, null, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) }
+            .filter { followingUserLinkList.contains(it.owner.userLink) }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
@@ -96,11 +104,11 @@ class DooingleServiceDBTest(
         val result = dooingleService.getDooingleFeedOfFollowing(userId, cursor, DEFAULT_PAGE_REQUEST)
 
         // THEN
-        val followingUserIdList = followRepository.findAllByFromUser(userA).map { it.toUser.id }
-        result.content.forEach { it.ownerId shouldBeIn followingUserIdList }
+        val followingUserLinkList = followRepository.findAllByFromUser(userA).map { it.toUser.userLink }
+        result.content.forEach { it.ownerUserLink shouldBeIn followingUserLinkList }
 
         val dooinglesFollowingSorted = dooingleRepository.findAll()
-            .filter { followingUserIdList.contains(it.owner.id) && it.id!! < cursor }
+            .filter { followingUserLinkList.contains(it.owner.userLink) && it.id!! < cursor }
             .sortedByDescending { it.id }
         result.zip(dooinglesFollowingSorted) { response, entity -> response.dooingleId shouldBe entity.id }
 
@@ -137,10 +145,35 @@ class DooingleServiceDBTest(
         }
     }
 
-    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1")
-    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2")
-    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3")
-    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4")
+
+    @Test
+    fun `뒹글이 정상적으로 등록 될 경우`() {
+        // given
+        socialUserRepository.saveAll(userList)
+        followRepository.saveAll(followingList)
+        dooingleRepository.saveAll(dooingleList)
+
+        val owner = userA
+        val guest = userB
+        val addDooingleRequest = AddDooingleRequest("졸려요")
+
+        every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
+
+        // when
+        val result = dooingleService.addDooingle(guest.id!!, owner.userLink, addDooingleRequest)
+
+        // then
+        dooingleRepository.count() shouldBe dooingleList.size + 1
+        result.ownerName shouldBe owner.nickname
+        result.content shouldBe addDooingleRequest.content
+    }
+
+
+    private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
+    private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
+    private val userC = SocialUser(nickname = "C", provider = OAuth2Provider.KAKAO, providerId = "3", userLink = "3333333333")
+    private val userD = SocialUser(nickname = "D", provider = OAuth2Provider.KAKAO, providerId = "4", userLink = "4444444444")
+
     private val userList = listOf(userA, userB, userC, userD)
 
     private val followingList = listOf(

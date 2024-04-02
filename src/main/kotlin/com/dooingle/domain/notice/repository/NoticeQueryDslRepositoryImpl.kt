@@ -24,9 +24,10 @@ class NoticeQueryDslRepositoryImpl(
             .select(
                 Projections.constructor(
                     NoticeResponse::class.java,
+                    notice.id,
                     notice.title,
                     notice.content,
-                    notice.createdAt
+                    notice.createdAt,
                 )
             )
             .from(notice)

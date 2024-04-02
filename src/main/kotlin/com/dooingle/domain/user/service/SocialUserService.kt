@@ -3,16 +3,15 @@ package com.dooingle.domain.user.service
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
-import com.dooingle.domain.user.dto.DooinglerResponse
+import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.model.Profile
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.ProfileRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
-import com.dooingle.domain.user.dto.OAuth2UserInfo
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
-import com.dooingle.domain.user.dto.ProfileResponse
-import com.dooingle.domain.user.dto.UpdateProfileDto
+import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
+import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -42,7 +41,8 @@ class SocialUserService(
         val socialUser = SocialUser(
             provider = oAuth2UserInfo.provider,
             providerId = oAuth2UserInfo.id,
-            nickname = oAuth2UserInfo.nickname
+            nickname = oAuth2UserInfo.nickname,
+            userLink = createRandomUserLink(),
         )
 
         oAuth2UserInfo.profileImage?.let {
@@ -52,6 +52,16 @@ class SocialUserService(
 
         return socialUserRepository.save(socialUser)
     }
+
+    private fun createUniqueRandomUserLink(): String {
+        lateinit var randomUserLink: String
+        do {
+            randomUserLink = createRandomUserLink()
+        } while (socialUserRepository.existsByUserLink(randomUserLink)) // 난수 문자열로 생성했는데 존재한다면 다시 생성
+        return randomUserLink
+    }
+
+    private fun createRandomUserLink() = RandomStringUtils.randomAlphanumeric(10, 20)
 
     fun getDooinglerList(condition: String?): List<DooinglerResponse> {
         return when (condition) {
@@ -138,6 +148,29 @@ class SocialUserService(
         else {
             return ProfileResponse(nickname = user.nickname, description = null, imageUrl = null)
         }
+    }
+
+    fun getOtherUserProfile(userLink: String) : ProfileResponse {
+        val targetUser = socialUserRepository.findByUserLink(userLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink)
+        val profile = profileRepository.findByUser(targetUser)
+
+        return if (profile != null) {
+            ProfileResponse(nickname = targetUser.nickname, description = profile.description, imageUrl = profile.imageUrl)
+        } else {
+            ProfileResponse(nickname = targetUser.nickname, description = null, imageUrl = null)
+        }
+    }
+
+    fun getProfileImageUrlByUserLink(userLink: String): ProfileImageUrlResponse {
+        val targetUser = socialUserRepository.findByUserLink(userLink)
+            ?: throw SocialUserNotFoundByUserLinkException(userLink)
+
+        return ProfileImageUrlResponse(profileRepository.findByUser(targetUser)?.imageUrl)
+    }
+
+    fun getCurrentDooingler(userId: Long): DooinglerResponse {
+        return socialUserRepository.getDooingler(userId)
     }
 
     companion object {

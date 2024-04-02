@@ -19,7 +19,7 @@ class SseEmitters {
 
     // ConcurrentHashMap 에 저장
     fun addWith(userId: Long): SseEmitter {
-        val emitter = SseEmitter() // 만료 시간 설정 (기본 30초). 만료 시간 되면 브라우저에서 자동으로 서버에 재연결 요청
+        val emitter = SseEmitter(60 * 1_000) // 만료 시간 설정 (기본 30초). 만료 시간 되면 브라우저에서 자동으로 서버에 재연결 요청
         // emitter 생성 후 만료 시간까지 아무 데이터도 보내지 않으면 브라우저에서 재연결 요청시 503 Service Unavailable 에러 발생하므로
         // 처음 연결 시 더미 데이터 전달
         emitter.sendData(eventName = "connect", data = CONNECTED_MESSAGE)
@@ -67,6 +67,7 @@ class SseEmitters {
             list.forEach { emitter ->
                 emitter.complete()
             }
+            notificationEmitters.remove(key)
         }
     }
 

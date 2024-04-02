@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 PROJECT_ROOT="/home/ubuntu/dooingle"
 
-JAR_FILE="$PROJECT_ROOT/build/libs/dooingle-0.1.jar"
+JAR_FILE="$PROJECT_ROOT/build/libs/dooingle-1.0.0.jar"
 
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
