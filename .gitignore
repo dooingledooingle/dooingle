@@ -11,7 +11,7 @@ src/**/**env.yml
 # 위 중 application-dev-env.yml는 GitHub secrets로 올려서 사용 중
 
 ### appspec.yml
-appspec.yml
+
 
 ### vercel
 .vercel
