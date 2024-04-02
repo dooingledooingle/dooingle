@@ -3,6 +3,7 @@ package com.dooingle.domain.dooingle.service
 import com.dooingle.domain.catchdomain.repository.CatchRepository
 import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
+import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
@@ -184,11 +185,13 @@ class DooingleServiceDBTest(
         repeat(THREAD_COUNT) {
             socialUserRepository.save(SocialUser(nickname = "guest", provider = OAuth2Provider.KAKAO, providerId = "aaaa", userLink = "aaaa"))
         }
-
         val owner = socialUserRepository.save(SocialUser(nickname = "owner", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
 
+        every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
+
+        // WHEN
         repeat(THREAD_COUNT) {
-            executor.execute {
+            executor.submit {
                 barrier.await()
                 dooingleService.addDooingle(
                     fromUserId = it.toLong()+1L,
@@ -197,15 +200,7 @@ class DooingleServiceDBTest(
                 )
             }
         }
-        executor.awaitTermination(15, TimeUnit.SECONDS)
-
-//        repeat(THREAD_COUNT) {
-//            dooingleService.addDooingle(
-//                fromUserId = it.toLong()+1,
-//                ownerUserLink = owner.userLink,
-//                addDooingleRequest = AddDooingleRequest("뒹글")
-//            )
-//        }
+        executor.awaitTermination(10, TimeUnit.SECONDS)
 
         // THEN
         dooingleCountRepository.findByOwnerId(owner.id!!)!!.count shouldBe THREAD_COUNT
@@ -274,5 +269,4 @@ class DooingleServiceDBTest(
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
 
     private val THREAD_COUNT = 10
-
 }
