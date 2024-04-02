@@ -18,12 +18,6 @@ spring:
     console:
       enabled: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
 logging:
   level:
     'org.hibernate.SQL': debug

@@ -61,7 +61,9 @@ export default function Header() {
 
         <div className="col-start-4 col-span-6 flex justify-center items-center text-[#8692ff]">
           <div className="min-w-fit">
-            <Link to="/feeds" className="text-[2rem] font-bold">Dooingle</Link>
+            <Link to="/feeds" className="text-[2rem] font-bold">
+              <img src="/dooingle-outline.svg" alt="헤더 로고, 피드페이지 링크" className="h-[2.5rem]"/>
+            </Link>
           </div>
         </div>
 

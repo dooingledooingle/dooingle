@@ -7,5 +7,25 @@
 
 body {
     font-family: "Noto Sans KR", sans-serif;
-    font-weight: 400;
+    overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+    width: 1rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d8dcfc;
+    border-radius: 0.5rem;
+    border-left: 0.15rem solid #eef0ff;
+    border-right: 0.15rem solid #eef0ff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #b1b9ff;
+}
+
+::-webkit-scrollbar-track {
+    background: #eef0ff;
+    border-radius: 0.25rem;
 }

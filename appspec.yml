@@ -18,6 +18,6 @@ hooks:
       timeout: 60
       runas: ubuntu
   ApplicationStart:
-    - location: scripts/start.sh
+    - location: scripts/start.sh # 배포 타겟에 따라 다른 location 사용
       timeout: 60
       runas: ubuntu
