@@ -90,7 +90,11 @@ class NotificationSseTest(
         val eventWrapper = EventSourceWrapper()
         factory.newEventSource(connectRequest, eventWrapper.listener)
 
+        Thread.sleep(300)
+
         val addDooingleResponse = getResponse(addDooingleRequest)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapper.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
@@ -127,7 +131,11 @@ class NotificationSseTest(
         val eventWrapperOfA = EventSourceWrapper()
         factory.newEventSource(connectRequestOfA, eventWrapperOfA.listener)
 
+        Thread.sleep(300)
+
         val addCatchResponse = getResponse(addCatchRequestOfB)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapperOfA.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
@@ -169,7 +177,11 @@ class NotificationSseTest(
         val eventWrapperOfB = EventSourceWrapper()
         factory.newEventSource(connectRequestOfB, eventWrapperOfB.listener)
 
+        Thread.sleep(300)
+
         val addDooingleResponse = getResponse(addDooingleRequest)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapperOfA1.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
