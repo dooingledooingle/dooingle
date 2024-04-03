@@ -54,7 +54,9 @@ class DooingleService(
 
         val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
             ?: dooingleCountRepository.save(DooingleCount(owner = owner))
+
         dooingleCount.plus()
+        dooingleCountRepository.save(dooingleCount)
 
         notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 

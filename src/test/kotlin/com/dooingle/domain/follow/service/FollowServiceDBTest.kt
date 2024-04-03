@@ -26,7 +26,6 @@ import org.springframework.test.context.TestConstructor
 @Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
-
 class FollowServiceDBTest (
     private val socialUserRepository: SocialUserRepository,
     private val followRepository: FollowRepository,

@@ -1,6 +1,5 @@
 package com.dooingle.global.aop
 
-import org.redisson.Redisson
 import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -13,7 +12,7 @@ class DistributedLock(
 
     operator fun <T> invoke(
         key: String,
-        waitTime: Duration = Duration.ofSeconds(5),
+        waitTime: Duration = Duration.ofSeconds(10),
         leaseTime: Duration = Duration.ofSeconds(3),
         func: () -> T
     ): T {
