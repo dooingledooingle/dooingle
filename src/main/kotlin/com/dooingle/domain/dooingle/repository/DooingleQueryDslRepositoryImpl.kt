@@ -117,7 +117,8 @@ class DooingleQueryDslRepositoryImpl(
                         CatchResponse::class.java,
                         catch.id,
                         catch.content,
-                        catch.createdAt
+                        catch.createdAt,
+                        catch.deletedAt,
                     ),
                     dooingle.createdAt
                 )
