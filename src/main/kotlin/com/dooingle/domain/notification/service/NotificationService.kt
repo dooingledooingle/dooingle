@@ -34,7 +34,7 @@ class NotificationService(
         // https://jsonobject.tistory.com/558 참고하면서 더 고민해볼 것 - 서비스 로직만 Transaction 거는 방법도 생각해보기
         // TODO 원인은 모르겠지만 일부 emitter가 시간이 지나도 사라지지 않고 계속 남아있는 현상 발생함
         try {
-            saveAndSendNotification(user, NotificationType.DOOINGLE, dooingleResponse.dooingleId)
+            saveAndSendNotification(user, NotificationType.DOOINGLE, dooingleResponse.dooingleId, dooingleResponse.ownerUserLink)
                 .also { sseEmitters.sendNewFeedNotification(dooingleResponse) }
         } catch (exception: IOException) {
             sseEmitters.completeAllEmitters()
@@ -43,16 +43,17 @@ class NotificationService(
         }
     }
 
-    fun addCatchNotification(user: SocialUser, dooingleId: Long) {
-        saveAndSendNotification(user, NotificationType.CATCH, dooingleId)
+    fun addCatchNotification(user: SocialUser, dooingleId: Long, ownerUserLink: String) {
+        saveAndSendNotification(user, NotificationType.CATCH, dooingleId, ownerUserLink)
     }
 
-    fun saveAndSendNotification(user: SocialUser, type: NotificationType, dooingleId: Long) {
+    fun saveAndSendNotification(user: SocialUser, type: NotificationType, dooingleId: Long, ownerUserLink: String) {
         notificationRepository.save(
             Notification(
                 user = user,
                 notificationType = type,
-                resourceId = dooingleId
+                resourceId = dooingleId,
+                ownerUserLink = ownerUserLink
             )
         ).let {
             sseEmitters.sendUserNotification(
