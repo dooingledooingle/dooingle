@@ -40,7 +40,7 @@ class CatchService(
         dooingle.catch = catch
         catchRepository.save(catch)
 
-        notificationService.addCatchNotification(user = dooingle.guest, dooingleId = dooingleId, ownerUserLink = dooingle.owner.userLink)
+        notificationService.addCatchNotification(user = dooingle.guest, dooingleId = dooingleId)
 
         return CatchResponse.from(catch)
     }
