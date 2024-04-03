@@ -40,20 +40,21 @@ class FollowServiceDBTest (
     }
 
     @Test
-    fun `팔로우를 정상 등록 한 경우`(){
+    fun `팔로우를 정상 등록한 경우`(){
 
         // given
         socialUserRepository.saveAll(userList)
 
         val fromUser = userA
         val toUser = userB
+        val toUserLink = userB.userLink
 
         // when
         followService.follow(toUser.userLink, fromUser.id!!)
 
         // then
         followRepository.count() shouldBe 1
-        followService.showFollowersNumber(userB.id!!) shouldBe 1
+        followService.showFollowersNumber(toUserLink) shouldBe 1
         followRepository.findAllByFromUser(userA).first().toUser.id!! shouldBe userB.id!!
     }
 
@@ -93,13 +94,14 @@ class FollowServiceDBTest (
 
         val fromUser = userA
         val toUser = userB
+        val toUserLink = userB.userLink
 
         // when
         followService.cancelFollowing(toUser.userLink,fromUser.id!!)
 
         // then
         followRepository.findAllByFromUser(userA).count() shouldBe 1
-        followService.showFollowersNumber(userB.id!!) shouldBe 0
+        followService.showFollowersNumber(toUserLink) shouldBe 0
         followRepository.findAllByFromUser(userA).map { it.toUser }.contains(userB) shouldBe false
 
     }

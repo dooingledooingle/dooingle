@@ -6,9 +6,10 @@ export default {
   ],
   theme: {
     extend: {
-      // fontFamily: {
-      //   "NotoSansKR":["NotoSansKR"]
-      // }
+      fontFamily: {
+        NotoSansKR: ["Noto Sans KR", "sans-serif"],
+        NanumGothic: ["Nanum Gothic", "sans-serif"],
+      },
     },
   },
   plugins: [],

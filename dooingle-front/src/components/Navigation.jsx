@@ -1,36 +1,21 @@
 import {Link} from "react-router-dom";
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {BACKEND_SERVER_ORIGIN} from "../env.js";
-
-async function fetchCurrentUser() {
-  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/current-dooingler`, {
-    withCredentials: true,
-  });
-  return response.data;
-}
+import {useAuth} from "../hooks/useContext.js";
 
 export default function Navigation() {
-  const [currentUserLink, setCurrentUserLink] = useState()
 
-  useEffect(() => {
-    fetchCurrentUser().then(currentUser => setCurrentUserLink(currentUser?.userLink))
-  }, []);
+  const {authenticatedUserLink} = useAuth()
 
   return (
     <div className="flex flex-col items-center gap-[1rem]">
       <div>
-        <Link to={`/my-profile`}>내 프로필</Link>
-      </div>
-      <div>
-        <Link to={`/personal-dooingles/${currentUserLink}`}>내 뒹글함</Link>
+        <Link to={`/personal-dooingles/${authenticatedUserLink}`}>내 뒹글 페이지</Link>
       </div>
       <div>
         <Link to={`/follows`}>팔로우하는 뒹글러</Link>
       </div>
-      <div>
+{/*      <div> TODO 뒹글 탐색 기능 필요함
         <a href="#">뒹글 탐색</a>
-      </div>
+      </div>*/}
     </div>
   );
 }
