@@ -61,7 +61,7 @@ class CatchServiceDBTest @Autowired constructor(
         val dooingle = dooingle
         val addCatchRequest = AddCatchRequest("캐치 테스트")
 
-        every { mockNotificationService.addCatchNotification(any(), any(), any()) } just runs
+        every { mockNotificationService.addCatchNotification(any(), any()) } just runs
 
         // when
         catchService.addCatch(dooingle.id!!, owner.id!!, addCatchRequest)
@@ -96,7 +96,7 @@ class CatchServiceDBTest @Autowired constructor(
         val dooingle = dooingle
         val addCatchRequest = AddCatchRequest("캐치 테스트")
 
-        every { mockNotificationService.addCatchNotification(any(), any(), any()) } just runs
+        every { mockNotificationService.addCatchNotification(any(), any()) } just runs
 
         // when
         val catchResponse = catchService.addCatch(dooingle.id!!, owner.id!!, addCatchRequest)

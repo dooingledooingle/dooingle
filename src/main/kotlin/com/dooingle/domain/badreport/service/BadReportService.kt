@@ -23,7 +23,7 @@ class BadReportService(
 ) {
 
     @Transactional
-    fun addReport(reporterId: Long, addBadReportRequest: AddBadReportRequest): Unit = distributedLock("BadReport:$reporterId")  {
+    fun addReport(reporterId: Long, addBadReportRequest: AddBadReportRequest) {
         val reporter = socialUserRepository.findByIdOrNull(reporterId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = reporterId)
 

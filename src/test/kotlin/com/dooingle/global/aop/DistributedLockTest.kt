@@ -74,6 +74,7 @@ class DistributedLockTest @Autowired constructor(
 
     @AfterEach
     fun clearData() {
+        badReportRepository.deleteAll()
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()
