@@ -71,6 +71,10 @@ class SocialUserService(
         }
     }
 
+    fun searchDooinglers(nickname: String): List<SearchDooinglerResponse> {
+        return socialUserRepository.searchDooinglers(nickname)
+    }
+
     @Transactional
     fun updateProfile(userId: Long, request: UpdateProfileDto, image: MultipartFile?): UpdateProfileDto {
         var imageUrl:String? = null
