@@ -152,7 +152,7 @@ export default function PersonalDooinglePage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
+      <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem]">
         {/* Feed와 배치 다른 부분: nav의 py가 3.75rem -> 3rem, 본문 섹션 py가 2.75rem -> 0.75rem */}
 
         {/* nav */}
@@ -183,7 +183,7 @@ export default function PersonalDooinglePage() {
           </div>
 
           {isCurrentUserEqualToPageOwner || <form
-            className="flex justify-center items-center my-[2rem] gap-[3%]"
+            className="flex justify-center items-center mt-[2rem] mb-[1rem] gap-[3%]"
             onSubmit={handleDooingleSubmit}
           >
             <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
@@ -196,7 +196,7 @@ export default function PersonalDooinglePage() {
               <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
             </div>
           </form>}
-          <div className="py-[1rem]">
+          <div className="pb-[1rem]">
             {dooinglesAndCatches?.map(dooingleAndCatch => (
               <DooingleAndCatch
                 key={dooingleAndCatch.dooingleId}
