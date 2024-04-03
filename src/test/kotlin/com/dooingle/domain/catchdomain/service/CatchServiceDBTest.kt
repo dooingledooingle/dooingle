@@ -7,6 +7,7 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
@@ -37,10 +38,11 @@ class CatchServiceDBTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
+    private val distributedLock: DistributedLock,
 )
 {
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
-    private val catchService = CatchService(dooingleRepository,catchRepository,mockNotificationService)
+    private val catchService = CatchService(dooingleRepository,catchRepository,mockNotificationService, distributedLock)
 
     @AfterEach
     fun clearData() {
@@ -59,7 +61,7 @@ class CatchServiceDBTest @Autowired constructor(
         val dooingle = dooingle
         val addCatchRequest = AddCatchRequest("캐치 테스트")
 
-        every { mockNotificationService.addCatchNotification(any(), any()) } just runs
+        every { mockNotificationService.addCatchNotification(any(), any(), any()) } just runs
 
         // when
         catchService.addCatch(dooingle.id!!, owner.id!!, addCatchRequest)
@@ -94,7 +96,7 @@ class CatchServiceDBTest @Autowired constructor(
         val dooingle = dooingle
         val addCatchRequest = AddCatchRequest("캐치 테스트")
 
-        every { mockNotificationService.addCatchNotification(any(), any()) } just runs
+        every { mockNotificationService.addCatchNotification(any(), any(), any()) } just runs
 
         // when
         val catchResponse = catchService.addCatch(dooingle.id!!, owner.id!!, addCatchRequest)
