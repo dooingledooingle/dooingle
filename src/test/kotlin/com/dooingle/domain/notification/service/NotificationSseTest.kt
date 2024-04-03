@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
@@ -101,11 +102,14 @@ class NotificationSseTest(
 
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
+        val dooingleId = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+        val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
             NotificationResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+                cursor = dooingle!!.id!! + 1,
+                ownerUserLink = dooingle.owner.userLink
             )
         )
         eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
@@ -141,11 +145,14 @@ class NotificationSseTest(
         eventWrapperOfA.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
 
         addCatchResponse.code shouldBe HttpStatus.CREATED.value()
+        val catchId = addCatchResponse.body.string().substringAfter("catchId\":").substringBefore(",").toLong()
+        val catch = catchRepository.findByIdOrNull(catchId)
 
         val notificationString = objectMapper.writeValueAsString(
             NotificationResponse(
                 notificationType = NotificationType.CATCH.toString(),
-                cursor = dooingle.id!!
+                cursor = catch!!.dooingle.id!! + 1,
+                ownerUserLink = catch!!.dooingle.owner.userLink
             )
         )
         eventWrapperOfA.receivedData[1] shouldBe notificationString
@@ -190,11 +197,14 @@ class NotificationSseTest(
 
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
+        val dooingleId = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+        val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
             NotificationResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+                cursor = dooingle!!.id!! + 1,
+                ownerUserLink = dooingle.owner.userLink
             )
         )
         eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림
