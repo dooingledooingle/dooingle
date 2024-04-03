@@ -4,7 +4,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.IOException
+import java.util.Queue
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Consumer
@@ -15,7 +17,7 @@ class SseEmitters {
     private val logger = LoggerFactory.getLogger("~~~~~~~~Emitter Logger~~~~~~~~~~")
 
     // 타임아웃/비동기 요청 완료 콜백이 emitter 관리하는 다른 스레드에서 실행되기 때문에 thread-safe 자료구조 사용해야 함
-    private val notificationEmitters = ConcurrentHashMap<String, MutableList<SseEmitter>>()
+    private val notificationEmitters = ConcurrentHashMap<String, Queue<SseEmitter>>()
 
     // ConcurrentHashMap 에 저장
     fun addWith(userId: Long): SseEmitter {
@@ -26,9 +28,14 @@ class SseEmitters {
 
         // 향후 이벤트 발생 시 클라이언트로 이벤트 전송하기 위해 ConcurrentHashMap 에 로그인 유저 아이디를 키로 서버에 저장
         val key = userId.toString()
-        // key(userId)가 존재하면 value 반환하고, 존재하지 않으면 빈 list 생성해 value 에 넣고 반환
-        val emitterList = notificationEmitters.getOrPut(key) { CopyOnWriteArrayList() }
-        emitterList.add(emitter)
+        // key(userId)가 존재하면 value 반환하고, 존재하지 않으면 빈 queue 생성해 value 에 넣고 반환
+        val emitterQueue = notificationEmitters.getOrPut(key) { ConcurrentLinkedQueue() }
+        emitterQueue.offer(emitter)
+        // queue에 담긴 emitter가 제한 개수를 넘어가면 queue에서 제거하고 완료시킴
+        if (emitterQueue.size > EMITTERS_SIZE) {
+            emitterQueue.poll()
+                .complete()
+        }
         logger.info("new emitter added: {}", emitter)
         logger.info("emitter map: {}", notificationEmitters)
 
@@ -38,8 +45,8 @@ class SseEmitters {
         }
         emitter.onCompletion {  // 비동기 요청 완료 시 콜백
             logger.info("onCompletion callback")
-            emitterList.remove(emitter)    // 새로운 emitter 생성하기 때문에 서버에서 기존 emitter 제거
-            if (emitterList.isEmpty()) {
+            emitterQueue.remove(emitter)    // 새로운 emitter 생성하기 때문에 서버에서 기존 emitter 제거
+            if (emitterQueue.isEmpty()) {
                 notificationEmitters.remove(key)
             }
             logger.info("emitter map: {}", notificationEmitters)
@@ -55,16 +62,16 @@ class SseEmitters {
     }
 
     fun sendNewFeedNotification(data: Any) {
-        notificationEmitters.forEach { (key, list) ->
-            list.forEach { emitter ->
+        notificationEmitters.forEach { (key, queue) ->
+            queue.forEach { emitter ->
                 emitter.sendData(eventName = "feed", data = data)
             }
         }
     }
 
     fun completeAllEmitters() {
-        notificationEmitters.forEach { (key, list) ->
-            list.forEach { emitter ->
+        notificationEmitters.forEach { (key, queue) ->
+            queue.forEach { emitter ->
                 emitter.complete()
             }
             notificationEmitters.remove(key)
@@ -101,6 +108,7 @@ class SseEmitters {
 
     companion object {
         const val CONNECTED_MESSAGE = "connected"
+        const val EMITTERS_SIZE = 3
         private val counter = AtomicLong()
     }
 }
@@ -110,7 +118,7 @@ fun SseEmitter.sendData(eventName: String, data: Any) {
         send(
             SseEmitter.event()
                 .name(eventName) // 클라이언트에서 해당 이름의 이벤트를 받을 수 있음
-                .data(data) // 더미 데이터
+                .data(data) // 데이터
         )
     } catch (e: IOException) {
         complete() // 브라우저 닫은 뒤에 데이터 전송하면 broken pipe 에러 생기기 때문에 완료시킴
