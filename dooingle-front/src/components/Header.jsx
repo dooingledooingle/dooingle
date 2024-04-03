@@ -78,9 +78,9 @@ export default function Header() {
               {personalNotification && <img src="/notification-on.svg" alt="알림 드롭다운" className="h-[2.5rem]"/>}
             </button>
             {showNotificationDropdown && (
-              <ul className="absolute flex flex-col right-0 w-[14.5rem]
+              <ul className="absolute z-40 flex flex-col right-0 w-[14.5rem]
               bg-white rounded-b-[0.5rem] border-[#d3d3d3] border-[0.03125rem] border-t-0 shadow-sm pt-[0.25rem] pb-[0.5rem]">
-                {notifications.map(notification =>
+                {notifications.length !== 0 && notifications.map(notification =>
                   <li key={notification.cursor.toString()}
                       className="px-[1.25rem] py-[0.375rem]">
                     <div className="flex justify-between">
@@ -88,14 +88,17 @@ export default function Header() {
                         {(notification.notificationType === "DOOINGLE") && "새 뒹글이 굴러왔어요!"}
                         {(notification.notificationType === "CATCH") && "뒹글에 캐치가 달렸어요!"}
                       </span>
-                      <Link to={`/personal-dooingles/${notification.ownerUserLink}`} className="text-[0.75rem] hover:text-[#ef7ec2]"> 보러 가기</Link>
+                      <Link to={`/personal-dooingles/${notification.ownerUserLink}`} className="self-center text-[0.75rem] hover:text-[#ef7ec2]"> 보러 가기</Link>
                     </div>
-                    {/*
-                    <Link to={"/personal-dooingles/aaaa"} className="text-[0.75rem]">보러가기</Link>
-                    // userLink 데이터가 없어서 링크를 줄 수 없는 상황임
-                    */}
                   </li>
                 )}
+                {notifications.length === 0 &&
+                  <li className="px-[1.25rem] py-[0.375rem]">
+                    <div className="flex justify-center">
+                      <span className="text-[0.8125rem] pr-[0.75rem]">지금은 아무 것도 없어요!</span>
+                    </div>
+                  </li>
+                }
               </ul>
             )}
           </div>
