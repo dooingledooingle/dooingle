@@ -6,6 +6,7 @@ import com.dooingle.domain.badreport.dto.BlockBadReportDto
 import com.dooingle.domain.badreport.model.ReportedTargetType
 import com.dooingle.domain.badreport.repository.BadReportRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -30,7 +31,7 @@ class BadReportService(
             addBadReportRequest.reportedTargetType,
             addBadReportRequest.reportedTargetId
         )
-        check(reportedList.find { it.reporter.id == reporterId } == null) { throw Exception("이미 신고했습니다.") }
+        check(reportedList.find { it.reporter.id == reporterId } == null) { throw ConflictStateException("이미 신고되었습니다.") }
 
         addBadReportRequest.toEntity(reporter).let { badReportRepository.save(it) }
 
