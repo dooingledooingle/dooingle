@@ -19,12 +19,27 @@ class BadReportService(
     private val badReportRepository: BadReportRepository,
 ) {
 
+    @Transactional
     fun addReport(reporterId: Long, addBadReportRequest: AddBadReportRequest) {
         val reporter = socialUserRepository.findByIdOrNull(reporterId)
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = reporterId)
-        // TODO 같은 게시물 여러 번 신고 못하게 해야함 + 따닥 방지까지 고려 필요함
+
+        // TODO 따닥 방지까지 고려 필요함
+
+        val reportedList = badReportRepository.findByReportedTargetTypeAndReportedTargetId(
+            addBadReportRequest.reportedTargetType,
+            addBadReportRequest.reportedTargetId
+        )
+        check(reportedList.find { it.reporter.id == reporterId } == null) { throw Exception("이미 신고했습니다.") }
 
         addBadReportRequest.toEntity(reporter).let { badReportRepository.save(it) }
+
+        if (reportedList.size + 1 == TOTAL_REPORTED_NUMBER) {
+            when (addBadReportRequest.reportedTargetType) {
+                ReportedTargetType.DOOINGLE -> blockReportedDooingles(BlockBadReportDto(listOf(addBadReportRequest.reportedTargetId)))
+                ReportedTargetType.CATCH -> blockReportedCatches(BlockBadReportDto(listOf(addBadReportRequest.reportedTargetId)))
+            }
+        }
     }
 
     fun getBadReportPagedList(reportedTargetType: ReportedTargetType, pageRequest: PageRequest): Page<BadReportResponse>? {
@@ -40,4 +55,9 @@ class BadReportService(
     fun blockReportedCatches(request: BlockBadReportDto){
         badReportRepository.updateReportedCatches(request.reportedIdList)
     }
+
+    companion object {
+        const val TOTAL_REPORTED_NUMBER: Int = 3
+    }
+
 }
