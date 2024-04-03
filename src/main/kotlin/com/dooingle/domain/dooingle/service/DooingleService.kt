@@ -69,7 +69,20 @@ class DooingleService(
             ?: throw SocialUserNotFoundByUserLinkException(userLink = ownerUserLink)
         val pageRequest = PageRequest.ofSize(USER_FEED_PAGE_SIZE)
 
-        return dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
+        val personalPageBySlice = dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
+
+        return personalPageBySlice.map { getResponseWithCatchContentHided(it) }
+    }
+
+    private fun getResponseWithCatchContentHided(dooingleAndCatchResponse: DooingleAndCatchResponse): DooingleAndCatchResponse{
+        return if (dooingleAndCatchResponse.catch?.deletedAt == null) {
+            // catch가 null이거나 catch의 deletedAt이 null인 경우 map 빠른 종료
+            dooingleAndCatchResponse
+        } else {
+            // deletedAt이 null이 아닌 경우에 대해서 CatchResponse의 content를 숨기는 로직 진행
+            val contentHidedCatch = dooingleAndCatchResponse.catch.copy(content = null)
+            dooingleAndCatchResponse.copy(catch = contentHidedCatch)
+        }
     }
 
     fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
