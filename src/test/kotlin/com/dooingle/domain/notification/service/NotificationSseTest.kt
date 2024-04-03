@@ -5,6 +5,7 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.dto.NotificationResponse
+import com.dooingle.domain.notification.dto.NotificationSseResponse
 import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.notification.repository.NotificationRepository
 import com.dooingle.domain.user.model.SocialUser
@@ -106,10 +107,9 @@ class NotificationSseTest(
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
                 cursor = dooingle!!.id!! + 1,
-                ownerUserLink = dooingle.owner.userLink
             )
         )
         eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
@@ -149,10 +149,9 @@ class NotificationSseTest(
         val catch = catchRepository.findByIdOrNull(catchId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.CATCH.toString(),
                 cursor = catch!!.dooingle.id!! + 1,
-                ownerUserLink = catch!!.dooingle.owner.userLink
             )
         )
         eventWrapperOfA.receivedData[1] shouldBe notificationString
@@ -201,10 +200,9 @@ class NotificationSseTest(
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
                 cursor = dooingle!!.id!! + 1,
-                ownerUserLink = dooingle.owner.userLink
             )
         )
         eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림
