@@ -6,7 +6,7 @@ import com.dooingle.domain.user.dto.DooinglerWithProfileResponse
 interface SocialUserQueryDslRepository {
     fun getNewDooinglers(size: Long): List<DooinglerResponse>
 
-    fun searchDooinglers(nickname: String): List<DooinglerWithProfileResponse>
+    fun searchDooinglersByNickname(nickname: String): List<DooinglerWithProfileResponse>
 
     fun getRandomDooinglers(size: Long): List<DooinglerWithProfileResponse>
 

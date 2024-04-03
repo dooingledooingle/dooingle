@@ -72,7 +72,7 @@ class SocialUserService(
     }
 
     fun searchDooinglers(nickname: String): List<DooinglerWithProfileResponse> {
-        return socialUserRepository.searchDooinglers(nickname)
+        return socialUserRepository.searchDooinglersByNickname(nickname)
     }
 
     fun getRandomDooinglers(): List<DooinglerWithProfileResponse> {

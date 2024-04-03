@@ -29,7 +29,7 @@ class SocialUserQueryDslRepositoryImpl(
             .fetch()
     }
 
-    override fun searchDooinglers(nickname: String): List<DooinglerWithProfileResponse> {
+    override fun searchDooinglersByNickname(nickname: String): List<DooinglerWithProfileResponse> {
         return queryFactory.select(
             Projections.constructor(
                 DooinglerWithProfileResponse::class.java,
