@@ -21,7 +21,8 @@ class CatchService(
     private val distributedLock: DistributedLock
 ) {
     // 캐치 생성
-    fun addCatch(dooingleId: Long, ownerId: Long, addCatchRequest: AddCatchRequest): CatchResponse = distributedLock("CATCH:$dooingleId") {
+    fun addCatch(dooingleId: Long, ownerId: Long, addCatchRequest: AddCatchRequest
+    ): CatchResponse = distributedLock("CATCH:$dooingleId") {
         val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
             ?: throw ModelNotFoundException(modelName = "Dooingle", modelId = dooingleId)
 

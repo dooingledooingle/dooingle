@@ -66,7 +66,7 @@ class FollowService(
     }
 
     @Transactional
-    fun cancelFollowing(toUserLink: String, fromUserId: Long) {
+    fun cancelFollowing(toUserLink: String, fromUserId: Long) = distributedLock("FOLLOW_CANCEL:$fromUserId") {
         val toUser = socialUserRepository.findByUserLink(toUserLink)
             ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
