@@ -96,19 +96,19 @@ class DooingleService(
         return dooingleRepository.getDooinglesBySlice(cursor, pageRequest).map { hideIfBlocked(it) }
     }
 
+    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
+        val user = socialUserRepository.findByIdOrNull(userId)
+            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
+
+        return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest).map { hideIfBlocked(it) }
+    }
+
     private fun hideIfBlocked(dooingleFeedResponse: DooingleFeedResponse): DooingleFeedResponse {
         return if (dooingleFeedResponse.blockedAt == null) {
             dooingleFeedResponse
         } else {
             dooingleFeedResponse.copy(content = null)
         }
-    }
-
-    fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
-        val user = socialUserRepository.findByIdOrNull(userId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = userId)
-
-        return dooingleRepository.getDooinglesFollowingBySlice(userId, cursor, pageRequest)
     }
 
     // 단일 뒹글 조회(글자수 제한 정책으로 실제 사용되지는 않지만 정책수정을 통한 추가 기능의 확장성을 위해 남겨둠)

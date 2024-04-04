@@ -69,6 +69,7 @@ class DooingleQueryDslRepositoryImpl(
                     dooingle.content,
                     catch.isNotNull,
                     dooingle.createdAt,
+                    dooingle.blockedAt,
                 )
             )
             .from(dooingle)
