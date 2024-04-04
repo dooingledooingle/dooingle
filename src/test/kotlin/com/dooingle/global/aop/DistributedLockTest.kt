@@ -40,40 +40,37 @@ import java.util.concurrent.TimeUnit
 // @Import(value = [QueryDslConfig::class, EmbeddedRedisServerConfig::class, EmbeddedRedisClientConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class DistributedLockTest @Autowired constructor(
-    private val dooingleService: DooingleService,
-    private val followService: FollowService,
-    private val catchService: CatchService,
-    private val badReportService: BadReportService,
-
     private val dooingleRepository: DooingleRepository,
+    // private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
     private val badReportRepository: BadReportRepository,
-    private val distributedLock: DistributedLock,
+    distributedLock: DistributedLock,
 )  {
 
     private val THREAD_COUNT = 2
     private val BIG_THREAD_COUNT = 100
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
-//    private val dooingleService = DooingleService(
-//        dooingleRepository, socialUserRepository, catchRepository, dooingleCountRepository, mockNotificationService, distributedLock
-//    )
-//    private val followService = FollowService(
-//        followRepository, socialUserRepository, distributedLock
-//    )
-//    private val catchService = CatchService(
-//        dooingleRepository, catchRepository, mockNotificationService, distributedLock
-//    )
-//    private val badReportService = BadReportService(
-//        socialUserRepository, badReportRepository, distributedLock
-//    )
+    private val dooingleService = DooingleService(
+        dooingleRepository, socialUserRepository, catchRepository, dooingleCountRepository, mockNotificationService, distributedLock
+    )
+    private val followService = FollowService(
+        followRepository, socialUserRepository, distributedLock
+    )
+    private val catchService = CatchService(
+        dooingleRepository, catchRepository, mockNotificationService, distributedLock
+    )
+    private val badReportService = BadReportService(
+        socialUserRepository, badReportRepository, distributedLock
+    )
 
     @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
+        // notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()
