@@ -82,7 +82,15 @@ class DooingleService(
     }
 
     fun getDooingleFeed(cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
-        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest)
+        return dooingleRepository.getDooinglesBySlice(cursor, pageRequest).map { hideIfBlocked(it) }
+    }
+
+    private fun hideIfBlocked(dooingleFeedResponse: DooingleFeedResponse): DooingleFeedResponse {
+        return if (dooingleFeedResponse.blockedAt == null) {
+            dooingleFeedResponse
+        } else {
+            dooingleFeedResponse.copy(content = null)
+        }
     }
 
     fun getDooingleFeedOfFollowing(userId: Long, cursor: Long?, pageRequest: PageRequest): Slice<DooingleFeedResponse> {
