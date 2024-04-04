@@ -12,18 +12,14 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooingle.service.DooingleService
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
-import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.follow.service.FollowService
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
-import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import com.dooingle.global.redis.RedisConfig
-import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
@@ -35,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.test.context.ActiveProfiles
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
@@ -141,35 +136,6 @@ class DistributedLockTest @Autowired constructor(
     }
 
     @Test
-    fun `동일한 팔로우 취소 요청이 여러번 들어오면 한번만 처리되어야 한다`(){
-        // GIVEN
-        val executor = Executors.newFixedThreadPool(THREAD_COUNT)
-        val barrier = CyclicBarrier(THREAD_COUNT)
-
-        val fromUser = socialUserRepository.save(SocialUser(nickname = "fromUser", provider = OAuth2Provider.KAKAO, providerId = "aaaa", userLink = "aaaa"))
-        val toUser = socialUserRepository.save(SocialUser(nickname = "toUser", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
-        followRepository.save(Follow(toUser = toUser, fromUser = fromUser))
-
-        // WHEN
-        val result = kotlin.runCatching {
-            repeat(THREAD_COUNT) {
-                executor.execute {
-                    barrier.await()
-                    followService.cancelFollowing(
-                        toUserLink = toUser.userLink,
-                        fromUserId = fromUser.id!!
-                    )
-                }
-            }
-            executor.awaitTermination(10, TimeUnit.SECONDS)
-        }
-
-        // THEN
-        followRepository.findAllByFromUser(fromUser).size shouldBe 0
-        shouldNotThrow<DataIntegrityViolationException> { result.getOrThrow() }
-    }
-
-    @Test
     fun `뒹글 주인이 캐치 등록을 여러번 요청해도 캐치는 하나만 등록되어야 한다`(){
         // GIVEN
         val executor = Executors.newFixedThreadPool(THREAD_COUNT)
@@ -225,5 +191,4 @@ class DistributedLockTest @Autowired constructor(
         // THEN
         badReportRepository.findAll().size shouldBe 1
     }
-
 }

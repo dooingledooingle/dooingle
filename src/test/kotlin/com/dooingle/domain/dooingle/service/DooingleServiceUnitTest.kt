@@ -87,6 +87,13 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         every { mockSocialUserRepository.findByUserLink(ownerUserLink) } returns owner
         every { mockSocialUserRepository.findByIdOrNull(fromUserId) } returns owner
 
+        every {
+            mockDistributedLock.invoke<Any?>(any(), any(), any(), captureLambda())
+        } answers {
+            val lambda: () -> Any? = arg<(()-> Any?)>(3)
+            lambda()
+        }
+
         // expected
         shouldThrow<InvalidParameterException> { dooingleService.addDooingle(fromUserId, ownerUserLink, addDooingleRequest) }
     }
