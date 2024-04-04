@@ -67,7 +67,18 @@ class DooingleService(
 
         val personalPageBySlice = dooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest)
 
-        return personalPageBySlice.map { getResponseWithCatchContentHided(it) }
+        return personalPageBySlice.map { getResponseWithContentHided(it) }
+    }
+
+    private fun getResponseWithContentHided(dooingleAndCatchResponse: DooingleAndCatchResponse): DooingleAndCatchResponse {
+        val catchResponse = dooingleAndCatchResponse.catch
+        val newCatchResponse = catchResponse?.takeIf { it.deletedAt != null || it.blockedAt != null }?.copy(content = "차단된 캐치입니다.")
+
+        return if (dooingleAndCatchResponse.blockedAt == null) {
+            if (newCatchResponse == null) dooingleAndCatchResponse else dooingleAndCatchResponse.copy(catch = newCatchResponse)
+        } else {
+            dooingleAndCatchResponse.copy(content = null, catch = newCatchResponse ?: catchResponse)
+        }
     }
 
     private fun getResponseWithCatchContentHided(dooingleAndCatchResponse: DooingleAndCatchResponse): DooingleAndCatchResponse{
