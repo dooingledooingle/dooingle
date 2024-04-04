@@ -123,10 +123,11 @@ export default function PersonalDooinglePage() {
 
   return (
     <>
-      {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal}
-                                       deleteTargetRelatedDooingleIdRef={deleteTargetRelatedDooingleIdRef}
-                                       deleteTargetIdRef={deleteTargetIdRef}
-                                       deleteContentRef={deleteTargetContentRef}/>}
+      {showDeleteModal && <DeleteModal setShowDeleteModal= {setShowDeleteModal}
+                                       setDooinglesAndCatches = {setDooinglesAndCatches}
+                                       deleteTargetRelatedDooingleIdRef = {deleteTargetRelatedDooingleIdRef}
+                                       deleteTargetIdRef = {deleteTargetIdRef}
+                                       deleteContentRef = {deleteTargetContentRef}/>}
 
       {/* 소개 섹션 반투명 */}
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
@@ -204,8 +205,7 @@ export default function PersonalDooinglePage() {
                 ownerName={dooingleAndCatch.ownerName}
                 setDooinglesAndCatches={setDooinglesAndCatches}
                 dooingleContent={dooingleAndCatch.content}
-                catchId={dooingleAndCatch.catch.catchId}
-                catchContent={dooingleAndCatch.catch.content}
+                catchResponse={dooingleAndCatch.catch}
                 isCurrentUserEqualToPageOwner={isCurrentUserEqualToPageOwner}
                 setShowDeleteModal = {setShowDeleteModal}
                 deleteTargetRelatedDooingleIdRef = {deleteTargetRelatedDooingleIdRef}

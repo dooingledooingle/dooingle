@@ -8,8 +8,7 @@ export default function DooingleAndCatch({
                                            ownerName,
                                            setDooinglesAndCatches,
                                            dooingleContent,
-                                           catchId,
-                                           catchContent,
+                                           catchResponse,
                                            isCurrentUserEqualToPageOwner,
                                            setShowDeleteModal,
                                            deleteTargetRelatedDooingleIdRef,
@@ -18,8 +17,13 @@ export default function DooingleAndCatch({
                                          }) {
 
   const [isCatchFormVisible, setIsCatchFormVisible] = useState(false);
-  const {setShowReportModal, setReportTarget} = useReport()
+  const {setShowReportModal, setReportTarget} = useReport();
   const catchRef = useRef();
+
+  const catchId = catchResponse.id;
+  const catchContent = catchResponse.content;
+  const existsCatch = catchResponse.createdAt !== null;
+  const isCatchDeleted = catchResponse.deletedAt !== null;
 
   function handleShowCatchFormButton() {
     setIsCatchFormVisible(true);
@@ -43,7 +47,7 @@ export default function DooingleAndCatch({
       setDooinglesAndCatches(prevDooinglesAndCatches => {
         /* 새로운 리스트 만들어서 원래 내용 복사 후 그 리스트를 반환하게 해야함 */
         const catchAddedDooinglesAndCatches = [...prevDooinglesAndCatches];
-        catchAddedDooinglesAndCatches.filter(dooingleAndCatch => dooingleAndCatch.dooingleId === dooingleId)[0].catch.content = addedCatch.content;
+        catchAddedDooinglesAndCatches.filter(dooingleAndCatch => dooingleAndCatch.dooingleId === dooingleId)[0].catch = addedCatch;
         return catchAddedDooinglesAndCatches
       })
     })
@@ -60,11 +64,11 @@ export default function DooingleAndCatch({
   }
 
   function handleDeleteButton() {
-    setShowDeleteModal(true);
-    console.log(dooingleId)
     deleteTargetRelatedDooingleIdRef.current = dooingleId;
-    deleteTargetIdRef.current = catchId;
+    deleteTargetIdRef.current = catchResponse.catchId;
     deleteTargetContentRef.current = catchContent;
+
+    setShowDeleteModal(true);
   }
 
   return (
@@ -82,7 +86,7 @@ export default function DooingleAndCatch({
             <button type="button" onClick={() => handleReportButton("DOOINGLE", dooingleId, dooingleContent)}>
               <img src="/report.svg" alt="뒹글 신고 버튼" className="w-[1.375rem]"/>
             </button>
-            {(catchContent === null && isCurrentUserEqualToPageOwner) && (!isCatchFormVisible &&
+            {(!existsCatch && isCurrentUserEqualToPageOwner) && (!isCatchFormVisible &&
               <div className="flex group">
                 <SmallSubmitButton onClick={handleShowCatchFormButton}>받을래요</SmallSubmitButton>
                 <img src="/post-button.svg" alt="캐치 버튼"
@@ -91,25 +95,36 @@ export default function DooingleAndCatch({
           </div>
 
         </div>
-        {catchContent ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem] mr-[1.5rem]">
-          <div className="px-[0.5rem] text-[#456bf5] font-bold max-w-fit">
-            <span>{ownerName}</span>
-          </div>
-          <div className="flex justify-end items-center gap-[0.5rem] w-full">
-            {isCurrentUserEqualToPageOwner &&
-              <button type="button" onClick={handleDeleteButton}>
-                <img src="/delete-icon.svg" alt="캐치 삭제 버튼" className="w-[1.375rem]"/>
-              </button>
-            }
-            <button type="button" onClick={() => handleReportButton("CATCH", catchId, catchContent)}>
-              <img src="/report.svg" alt="캐치 신고 버튼" className="w-[1.375rem]"/>
-            </button>
-            <div
-              className="px-[1.25rem] py-[0.625rem] w-fit border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] max-w-[65%]">
-              <span className="text-[#5f6368] whitespace-pre-wrap break-words">{catchContent}</span>
+        {
+          existsCatch ? <div className="flex flex-col items-end px-[0.75rem] gap-[0.375rem] mr-[1.5rem]">
+            <div className="px-[0.5rem] text-[#456bf5] font-bold max-w-fit">
+              <span>{ownerName}</span>
             </div>
-          </div>
-        </div> : null}
+            {
+              !isCatchDeleted &&
+              <div className="flex justify-end items-center gap-[0.5rem] w-full">
+                {isCurrentUserEqualToPageOwner &&
+                  <button type="button" onClick={handleDeleteButton}>
+                    <img src="/delete-icon.svg" alt="캐치 삭제 버튼" className="w-[1.375rem]"/>
+                  </button>
+                }
+                <button type="button" onClick={() => handleReportButton("CATCH", catchId, catchContent)}>
+                  <img src="/report.svg" alt="캐치 신고 버튼" className="w-[1.375rem]"/>
+                </button>
+                <div
+                  className="px-[1.25rem] py-[0.625rem] w-fit border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem] max-w-[65%]">
+                  <span className="text-[#5f6368] whitespace-pre-wrap break-words">{catchContent}</span>
+                </div>
+              </div>
+            }
+            {
+              isCatchDeleted &&
+              <div className="py-[0.5rem] w-fit">
+                <span className="text-[#8e677f] break-words">삭제된 캐치라서 다시 볼 수 없어요...</span>
+              </div>
+            }
+          </div> : null
+        }
         {(catchContent === null && isCurrentUserEqualToPageOwner) && (isCatchFormVisible && (<div>
           <form onSubmit={handleCatchSubmit} className="flex ml-[1rem] items-center">
           <textarea ref={catchRef} placeholder="엎질러진 물처럼 캐치는 수정할 수 없어요."

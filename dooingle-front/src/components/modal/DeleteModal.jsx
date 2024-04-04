@@ -1,11 +1,21 @@
 import {fetchDeleteCatch} from "../../fetch.js";
 
-export default function DeleteModal({setShowDeleteModal, deleteTargetRelatedDooingleIdRef, deleteTargetIdRef, deleteContentRef}) {
+export default function DeleteModal({setShowDeleteModal, setDooinglesAndCatches, deleteTargetRelatedDooingleIdRef, deleteTargetIdRef, deleteContentRef}) {
 
   function handleCatchDeleteButton() {
-    fetchDeleteCatch(deleteTargetRelatedDooingleIdRef.current, deleteTargetIdRef.current)
+    fetchDeleteCatch(deleteTargetRelatedDooingleIdRef.current, deleteTargetIdRef.current).then(() => {
+      setDooinglesAndCatches(prev => {
+          const catchDeletedDooinglesAndCatches = [...prev]
+          // 삭제 후 렌더링을 위해 임의로 content, deletedAt을 넣음 - TODO 더 나은 방법이 있을 것 같다...
+          const targetCatch = catchDeletedDooinglesAndCatches.filter(dooingleAndCatch => dooingleAndCatch.dooingleId === Number(deleteTargetRelatedDooingleIdRef.current))[0].catch
+          targetCatch.content = null;
+          targetCatch.deletedAt = Date.now();
+          return catchDeletedDooinglesAndCatches;
+        }
+      )
+    })
 
-    deleteContentRef.current = undefined
+    deleteContentRef.current = undefined;
     setShowDeleteModal(false);
   }
 
