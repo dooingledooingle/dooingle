@@ -4,7 +4,6 @@ import org.redisson.Redisson
 import org.redisson.api.RedissonClient
 import org.redisson.config.Config
 import org.redisson.spring.data.connection.RedissonConnectionFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -16,7 +15,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 // @DependsOn("embeddedRedisServerConfig") // 직접 의존하게 하면서 주석 처리
 @Configuration
 class EmbeddedRedisClientConfig(
-    @Value("\${spring.data.redis.host}") private val host: String,
     private val embeddedRedisServerConfig: EmbeddedRedisServerConfig
 ) {
 
@@ -24,7 +22,7 @@ class EmbeddedRedisClientConfig(
     fun redissonClient(): RedissonClient {
         val config = Config()
         config.useSingleServer()
-            .setAddress("redis://$host:${embeddedRedisServerConfig.redisPort}")
+            .setAddress("redis://localhost:${embeddedRedisServerConfig.redisPort}")
         return Redisson.create(config)
     }
 
