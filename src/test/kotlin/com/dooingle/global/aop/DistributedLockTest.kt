@@ -18,8 +18,6 @@ import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.querydsl.QueryDslConfig
-import com.dooingle.global.redis.RedisConfig
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
@@ -30,17 +28,23 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestConstructor
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+// @Import(value = [QueryDslConfig::class, EmbeddedRedisServerConfig::class, EmbeddedRedisClientConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class DistributedLockTest @Autowired constructor(
+    private val dooingleService: DooingleService,
+    private val followService: FollowService,
+    private val catchService: CatchService,
+    private val badReportService: BadReportService,
+
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
@@ -54,18 +58,18 @@ class DistributedLockTest @Autowired constructor(
     private val BIG_THREAD_COUNT = 100
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
-    private val dooingleService = DooingleService(
-        dooingleRepository, socialUserRepository, catchRepository, dooingleCountRepository, mockNotificationService, distributedLock
-    )
-    private val followService = FollowService(
-        followRepository, socialUserRepository, distributedLock
-    )
-    private val catchService = CatchService(
-        dooingleRepository, catchRepository, mockNotificationService, distributedLock
-    )
-    private val badReportService = BadReportService(
-        socialUserRepository, badReportRepository, distributedLock
-    )
+//    private val dooingleService = DooingleService(
+//        dooingleRepository, socialUserRepository, catchRepository, dooingleCountRepository, mockNotificationService, distributedLock
+//    )
+//    private val followService = FollowService(
+//        followRepository, socialUserRepository, distributedLock
+//    )
+//    private val catchService = CatchService(
+//        dooingleRepository, catchRepository, mockNotificationService, distributedLock
+//    )
+//    private val badReportService = BadReportService(
+//        socialUserRepository, badReportRepository, distributedLock
+//    )
 
     @AfterEach
     fun clearData() {
