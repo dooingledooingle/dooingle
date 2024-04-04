@@ -5,14 +5,12 @@ spring:
     url: jdbc:h2:mem:test;MODE=MySQL
     username: sa
     password:
+    hikari:
+      maximum-pool-size: 50 # 분산락 테스트 시 DB 커넥션 풀 문제가 발생하여 test 환경에서만 풀 사이즈 늘려둠
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
-  data:
-    redis:
-      host: "localhost"
-      port: 6379
 
 oauth2:
   kakao:
