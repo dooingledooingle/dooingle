@@ -18,8 +18,6 @@ import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
-import com.dooingle.global.querydsl.QueryDslConfig
-import com.dooingle.global.redis.RedisConfig
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
@@ -30,24 +28,26 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestConstructor
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+// @Import(value = [QueryDslConfig::class, EmbeddedRedisServerConfig::class, EmbeddedRedisClientConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class DistributedLockTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
+    // private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
     private val badReportRepository: BadReportRepository,
-    private val distributedLock: DistributedLock,
+    distributedLock: DistributedLock,
 )  {
 
     private val THREAD_COUNT = 2
@@ -70,6 +70,7 @@ class DistributedLockTest @Autowired constructor(
     @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
+        // notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()
