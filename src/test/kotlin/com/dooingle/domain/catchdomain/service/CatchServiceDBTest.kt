@@ -12,6 +12,7 @@ import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.RedisConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -30,10 +31,9 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, RedisConfig::class, DistributedLock::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
-
 class CatchServiceDBTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
