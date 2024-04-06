@@ -96,6 +96,7 @@ class DistributedLockTest @Autowired constructor(
                     ownerUserLink = owner.userLink,
                     addDooingleRequest = AddDooingleRequest("뒹글")
                 )
+                println("현재 스레드 addDooingle() 완전히 종료")
             }
         }
         executor.awaitTermination(10, TimeUnit.SECONDS)
