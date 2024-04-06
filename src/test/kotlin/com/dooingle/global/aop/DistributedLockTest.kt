@@ -14,10 +14,12 @@ import com.dooingle.domain.dooingle.service.DooingleService
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.follow.service.FollowService
+import com.dooingle.domain.notification.repository.NotificationRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.oauth2.provider.OAuth2Provider
+import com.ninjasquad.springmockk.MockkBean
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
@@ -40,37 +42,28 @@ import java.util.concurrent.TimeUnit
 // @Import(value = [QueryDslConfig::class, EmbeddedRedisServerConfig::class, EmbeddedRedisClientConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class DistributedLockTest @Autowired constructor(
+    private val dooingleService: DooingleService,
+    private val followService: FollowService,
+    private val catchService: CatchService,
+    private val badReportService: BadReportService,
+    //
     private val dooingleRepository: DooingleRepository,
-    // private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+    private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
     private val badReportRepository: BadReportRepository,
-    distributedLock: DistributedLock,
 )  {
 
+    @MockkBean private lateinit var notificationService: NotificationService
     private val THREAD_COUNT = 2
     private val BIG_THREAD_COUNT = 100
-    private val mockNotificationService = mockk<NotificationService>(relaxed = true)
-
-    private val dooingleService = DooingleService(
-        dooingleRepository, socialUserRepository, catchRepository, dooingleCountRepository, mockNotificationService, distributedLock
-    )
-    private val followService = FollowService(
-        followRepository, socialUserRepository, distributedLock
-    )
-    private val catchService = CatchService(
-        dooingleRepository, catchRepository, mockNotificationService, distributedLock
-    )
-    private val badReportService = BadReportService(
-        socialUserRepository, badReportRepository, distributedLock
-    )
 
     @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
-        // notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+        notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()
@@ -92,7 +85,7 @@ class DistributedLockTest @Autowired constructor(
         val owner = socialUserRepository.save(SocialUser(nickname = "owner", provider = OAuth2Provider.KAKAO, providerId = "bbbb", userLink = "bbbb"))
         //dooingleCountRepository.save(DooingleCount(owner = owner))
 
-        every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
+        every { notificationService.addDooingleNotification(any(), any()) } just runs
 
         // WHEN
         for (guestId in guestIdList) {

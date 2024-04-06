@@ -82,6 +82,8 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     // 테스트(MockK): mockk
     testImplementation("io.mockk:mockk:1.13.8")
+    // 테스트(MockK): mockk
+    testImplementation("com.ninja-squad:springmockk:3.0.1")
 }
 
 tasks.withType<KotlinCompile> {
