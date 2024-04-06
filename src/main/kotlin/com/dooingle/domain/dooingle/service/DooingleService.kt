@@ -53,13 +53,14 @@ class DooingleService(
         dooingleRepository.save(dooingle)
 
         val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
-            ?: dooingleCountRepository.save(DooingleCount(owner = owner))
+            ?: dooingleCountRepository.save(DooingleCount(owner = owner)).also { println("===새로운 DooingleCount 생성!===") }
 
         dooingleCount.plus()
         dooingleCountRepository.save(dooingleCount)
 
         notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
 
+        println("===DooingleService addDooingle() 리턴 직전!===")
         return@distributedLock DooingleResponse.from(dooingle)
     }
 
