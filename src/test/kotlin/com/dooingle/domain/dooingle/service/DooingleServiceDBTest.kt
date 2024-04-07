@@ -46,7 +46,6 @@ class DooingleServiceDBTest(
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
     private val distributedLock: DistributedLock,
-    private val dooingleAddService: DooingleAddService,
 ) {
 
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
@@ -55,8 +54,9 @@ class DooingleServiceDBTest(
         dooingleRepository,
         socialUserRepository,
         catchRepository,
-        distributedLock,
-        dooingleAddService,
+        dooingleCountRepository,
+        mockNotificationService,
+        distributedLock
     )
 
     @AfterEach
