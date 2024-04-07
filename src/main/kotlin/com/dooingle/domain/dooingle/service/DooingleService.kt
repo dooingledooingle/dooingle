@@ -8,60 +8,39 @@ import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.model.DooingleCount
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
-import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
-import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DooingleService(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository,
-    private val notificationService: NotificationService,
-    private val distributedLock: DistributedLock
+    private val distributedLock: DistributedLock,
+    private val dooingleAddService: DooingleAddService,
 ) {
+
     companion object {
         const val USER_FEED_PAGE_SIZE = 10
     }
 
     // 뒹글 생성
-    @Transactional
     fun addDooingle(
         fromUserId: Long,
         ownerUserLink: String,
         addDooingleRequest: AddDooingleRequest
     ): DooingleResponse = distributedLock("DOOINGLE:$ownerUserLink") {
-        val guest = socialUserRepository.findByIdOrNull(fromUserId)
-            ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
-        val owner = socialUserRepository.findByUserLink(ownerUserLink)
-            ?: throw SocialUserNotFoundByUserLinkException(userLink = ownerUserLink)
-        val dooingle = addDooingleRequest.to(guest, owner)
 
-        if (guest.id == owner.id) throw InvalidParameterException("내 뒹글 페이지에 뒹글을 남길 수 없습니다.")
+        val addDooingle = dooingleAddService.addDooingle(fromUserId, ownerUserLink, addDooingleRequest)
+        println("===DooingleService addDooingle() 리턴 후!===")
 
-        dooingleRepository.save(dooingle)
-
-        val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
-            ?: dooingleCountRepository.save(DooingleCount(owner = owner)).also { println("===새로운 DooingleCount 생성!===") }
-
-        dooingleCount.plus()
-        dooingleCountRepository.save(dooingleCount)
-
-        notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
-
-        println("===DooingleService addDooingle() 리턴 직전!===")
-        return@distributedLock DooingleResponse.from(dooingle)
+        return@distributedLock addDooingle
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)

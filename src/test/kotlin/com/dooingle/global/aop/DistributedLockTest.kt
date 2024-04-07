@@ -23,7 +23,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.runs
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -48,7 +47,7 @@ class DistributedLockTest @Autowired constructor(
     private val badReportService: BadReportService,
     //
     private val dooingleRepository: DooingleRepository,
-    private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+    private val notificationRepository: NotificationRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
@@ -56,6 +55,7 @@ class DistributedLockTest @Autowired constructor(
     private val badReportRepository: BadReportRepository,
 )  {
 
+    // 직접 생성한 dooingleService에서 잘 작동했던 이유는 Spring bean이 아니므로 transactional이 동작하지 않았기 때문
     @MockkBean private lateinit var notificationService: NotificationService
     private val THREAD_COUNT = 2
     private val BIG_THREAD_COUNT = 100
@@ -63,7 +63,7 @@ class DistributedLockTest @Autowired constructor(
     @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
-        notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+        notificationRepository.deleteAll()
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()

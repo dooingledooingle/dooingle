@@ -38,16 +38,14 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockDooingleRepository = mockk<DooingleRepository>()
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
     private val mockCatchRepository = mockk<CatchRepository>()
-    private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
-    private val mockNotificationService = mockk<NotificationService>()
     private val mockDistributedLock = mockk<DistributedLock>()
+    private val mockDooingleAddService = mockk<DooingleAddService>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
-        dooingleCountRepository = mockDooingleCountRepository,
-        notificationService = mockNotificationService,
-        distributedLock = mockDistributedLock
+        distributedLock = mockDistributedLock,
+        dooingleAddService = mockDooingleAddService,
     )
 
     lateinit var owner: SocialUser
