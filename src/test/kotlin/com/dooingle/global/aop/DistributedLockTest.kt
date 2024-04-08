@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-// @Import(value = [QueryDslConfig::class, EmbeddedRedisServerConfig::class, EmbeddedRedisClientConfig::class, DistributedLock::class])
 @ActiveProfiles("test")
 class DistributedLockTest @Autowired constructor(
     private val dooingleService: DooingleService,
@@ -48,7 +47,7 @@ class DistributedLockTest @Autowired constructor(
     private val badReportService: BadReportService,
     //
     private val dooingleRepository: DooingleRepository,
-    private val notificationRepository: NotificationRepository, // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+    private val notificationRepository: NotificationRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
@@ -63,7 +62,7 @@ class DistributedLockTest @Autowired constructor(
     @AfterEach
     fun clearData() {
         badReportRepository.deleteAll()
-        notificationRepository.deleteAll() // SocialUser와의 관계에서 Referential integrity constraint violation 때문에 넣어줬다가 mock 사용하는 것으로 다시 되돌리면서 주석 처리
+        notificationRepository.deleteAll()
         catchRepository.deleteAll()
         dooingleRepository.deleteAll()
         dooingleCountRepository.deleteAll()

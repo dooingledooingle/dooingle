@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit
 class DistributedLock(
     private val redissonClient : RedissonClient
 ) {
-    var count = 0
 
     operator fun <T> invoke(
         key: String,
@@ -21,7 +20,6 @@ class DistributedLock(
         if (!lock.tryLock(waitTime.seconds, leaseTime.seconds, TimeUnit.SECONDS)) {
             throw RuntimeException("Lock 획득 대기시간 만료")
         }
-        println("count: ${++count}")
         return func().also { lock.unlock() }
     }
 }
