@@ -37,6 +37,7 @@ class DooingleQueryDslRepositoryImpl(
                     dooingle.content,
                     catch.isNotNull,
                     dooingle.createdAt,
+                    dooingle.blockedAt,
                 )
             )
             .from(dooingle)
@@ -68,6 +69,7 @@ class DooingleQueryDslRepositoryImpl(
                     dooingle.content,
                     catch.isNotNull,
                     dooingle.createdAt,
+                    dooingle.blockedAt,
                 )
             )
             .from(dooingle)
@@ -119,8 +121,10 @@ class DooingleQueryDslRepositoryImpl(
                         catch.content,
                         catch.createdAt,
                         catch.deletedAt,
+                        catch.blockedAt
                     ),
-                    dooingle.createdAt
+                    dooingle.createdAt,
+                    dooingle.blockedAt,
                 )
             )
             .from(dooingle)
