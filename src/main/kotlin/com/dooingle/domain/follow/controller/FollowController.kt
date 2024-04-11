@@ -49,7 +49,7 @@ class FollowController(
     @Operation(summary = "내 팔로워 수 조회")
     @GetMapping("/{toUserLink}/number")
     fun showFollowersNumber(
-        @RequestParam toUserLink: String
+        @PathVariable toUserLink: String
     ) : ResponseEntity<Int>{
         return ResponseEntity
             .status(HttpStatus.OK)

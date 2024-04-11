@@ -1,11 +1,7 @@
 package com.dooingle.domain.user.controller
 
-import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.dto.ProfileImageUrlResponse
-import com.dooingle.domain.user.dto.ProfileResponse
-import com.dooingle.domain.user.dto.UpdateProfileDto
+import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.service.SocialUserService
-import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -23,6 +19,16 @@ class UserController(
     @GetMapping
     fun getDooinglerList(@RequestParam condition: String?): ResponseEntity<List<DooinglerResponse>> {
         return ResponseEntity.ok().body(socialUserService.getDooinglerList(condition))
+    }
+
+    @GetMapping("/search")
+    fun searchDooinglers(@RequestParam nickname: String): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.searchDooinglers(nickname))
+    }
+
+    @GetMapping("/random")
+    fun getRandomDooinglers(): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.getRandomDooinglers())
     }
 
     @PatchMapping(value = ["/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])

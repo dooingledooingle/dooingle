@@ -71,6 +71,14 @@ class SocialUserService(
         }
     }
 
+    fun searchDooinglers(nickname: String): List<DooinglerWithProfileResponse> {
+        return socialUserRepository.searchDooinglersByNickname(nickname)
+    }
+
+    fun getRandomDooinglers(): List<DooinglerWithProfileResponse> {
+        return socialUserRepository.getRandomDooinglers(RANDOM_DOOINGLERS_SIZE)
+    }
+
     @Transactional
     fun updateProfile(userId: Long, request: UpdateProfileDto, image: MultipartFile?): UpdateProfileDto {
         var imageUrl:String? = null
@@ -178,6 +186,7 @@ class SocialUserService(
         const val NEW_DOOINGLERS_KEYWORD = "new"
         const val HOT_DOOINGLERS_SIZE: Long = 5
         const val NEW_DOOINGLERS_SIZE: Long = 5
+        const val RANDOM_DOOINGLERS_SIZE: Long = 5
     }
 
 }
