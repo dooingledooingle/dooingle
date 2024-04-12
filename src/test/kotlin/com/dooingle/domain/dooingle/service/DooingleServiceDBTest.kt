@@ -157,6 +157,7 @@ class DooingleServiceDBTest(
         val guest = userB
         val addDooingleRequest = AddDooingleRequest("졸려요")
 
+        every { mockDooingleCountService.plusCount(any()) } just runs
         every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
 
         // when
