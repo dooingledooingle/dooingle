@@ -19,6 +19,10 @@ export default function FeedPage() {
     });
   }, []);
 
+  useEffect(() => {
+    setNewFeedNotification(null)
+  }, [setNewFeedNotification]);
+
   function handleMoreFeedButton(isEntireFeed) {
     const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
 
