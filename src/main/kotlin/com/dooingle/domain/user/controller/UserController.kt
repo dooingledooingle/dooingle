@@ -2,7 +2,6 @@ package com.dooingle.domain.user.controller
 
 import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.service.SocialUserService
-import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -23,8 +22,13 @@ class UserController(
     }
 
     @GetMapping("/search")
-    fun searchDooinglers(@RequestParam nickname: String): ResponseEntity<List<SearchDooinglerResponse>> {
+    fun searchDooinglers(@RequestParam nickname: String): ResponseEntity<List<DooinglerWithProfileResponse>> {
         return ResponseEntity.ok().body(socialUserService.searchDooinglers(nickname))
+    }
+
+    @GetMapping("/random")
+    fun getRandomDooinglers(): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.getRandomDooinglers())
     }
 
     @PatchMapping(value = ["/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
