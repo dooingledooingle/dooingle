@@ -21,8 +21,9 @@ class BadReportService(
     private val socialUserRepository: SocialUserRepository,
     private val badReportRepository: BadReportRepository,
     private val distributedLock: DistributedLock,
-    private val transactionForTrailingLambda: TransactionForTrailingLambda,
 ) {
+
+    private val transactionForTrailingLambda = TransactionForTrailingLambda()
 
     fun addReport(
         reporterId: Long, addBadReportRequest: AddBadReportRequest
@@ -65,5 +66,4 @@ class BadReportService(
     companion object {
         const val TOTAL_REPORTED_NUMBER: Int = 3
     }
-
 }

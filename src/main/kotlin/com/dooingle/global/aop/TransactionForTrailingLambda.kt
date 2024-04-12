@@ -1,14 +1,11 @@
 package com.dooingle.global.aop
 
-import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
-@Component
-class TransactionForTrailingLambda {
+open class TransactionForTrailingLambda {
 
     @Transactional
-    operator fun <T> invoke(
+    open operator fun <T> invoke(
         func: () -> T
     ): T {
         return func()
