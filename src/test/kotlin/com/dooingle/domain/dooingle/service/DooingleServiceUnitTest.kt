@@ -5,26 +5,22 @@ import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
-import com.dooingle.domain.dooingle.dto.DooingleResponse
-import com.dooingle.domain.dooingle.model.Dooingle
-import com.dooingle.domain.dooingle.model.QDooingle.dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.result.shouldNotBeSuccess
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import org.mockito.ArgumentMatchers.any
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
@@ -41,13 +37,15 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
     private val mockNotificationService = mockk<NotificationService>()
     private val mockDistributedLock = mockk<DistributedLock>()
+    private val mockTransactionForTrailingLambda = mockk<TransactionForTrailingLambda>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
         dooingleCountRepository = mockDooingleCountRepository,
         notificationService = mockNotificationService,
-        distributedLock = mockDistributedLock
+        distributedLock = mockDistributedLock,
+        transactionForTrailingLambda = mockTransactionForTrailingLambda,
     )
 
     lateinit var owner: SocialUser

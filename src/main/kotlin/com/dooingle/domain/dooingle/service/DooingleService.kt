@@ -13,6 +13,7 @@ import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.exception.custom.SocialUserNotFoundByUserLinkException
@@ -20,7 +21,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DooingleService(
@@ -29,14 +29,14 @@ class DooingleService(
     private val catchRepository: CatchRepository,
     private val dooingleCountRepository: DooingleCountRepository,
     private val notificationService: NotificationService,
-    private val distributedLock: DistributedLock
+    private val distributedLock: DistributedLock,
+    private val transactionForTrailingLambda: TransactionForTrailingLambda,
 ) {
     companion object {
         const val USER_FEED_PAGE_SIZE = 10
     }
 
     // 뒹글 생성
-    @Transactional
     fun addDooingle(
         fromUserId: Long,
         ownerUserLink: String,
@@ -50,15 +50,17 @@ class DooingleService(
 
         if (guest.id == owner.id) throw InvalidParameterException("내 뒹글 페이지에 뒹글을 남길 수 없습니다.")
 
-        dooingleRepository.save(dooingle)
+        transactionForTrailingLambda {
+            dooingleRepository.save(dooingle)
 
-        val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
-            ?: dooingleCountRepository.save(DooingleCount(owner = owner))
+            val dooingleCount = dooingleCountRepository.findByOwnerId(owner.id!!)
+                ?: dooingleCountRepository.save(DooingleCount(owner = owner))
 
-        dooingleCount.plus()
-        dooingleCountRepository.save(dooingleCount)
+            dooingleCount.plus()
+            dooingleCountRepository.save(dooingleCount)
 
-        notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
+            notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
+        }
 
         return@distributedLock DooingleResponse.from(dooingle)
     }

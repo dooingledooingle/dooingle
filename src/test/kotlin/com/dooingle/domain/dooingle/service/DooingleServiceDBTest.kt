@@ -12,6 +12,7 @@ import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
@@ -36,7 +37,7 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class, TransactionForTrailingLambda::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
 class DooingleServiceDBTest(
@@ -46,6 +47,7 @@ class DooingleServiceDBTest(
     private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository,
     private val distributedLock: DistributedLock,
+    transactionForTrailingLambda: TransactionForTrailingLambda,
 ) {
 
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
@@ -56,7 +58,8 @@ class DooingleServiceDBTest(
         catchRepository,
         dooingleCountRepository,
         mockNotificationService,
-        distributedLock
+        distributedLock,
+        transactionForTrailingLambda,
     )
 
     @AfterEach
