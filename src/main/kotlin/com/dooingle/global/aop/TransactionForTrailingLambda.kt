@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class TransactionForTrailingLambda {
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     operator fun <T> invoke(
         func: () -> T
     ): T {
