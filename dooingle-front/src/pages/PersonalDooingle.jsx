@@ -51,12 +51,6 @@ export default function PersonalDooinglePage() {
       });
     }
   }, [pageOwnerUserLink, searchParams]);
-
-  useEffect(() => {
-    fetchFollowCount(pageOwnerUserLink).then(result => {
-      setFollowerCount(result)
-    })
-  }, [pageOwnerUserLink, isFollowingUser]);
   
   useEffect(() => {
     fetchIsFollowingUser(pageOwnerUserLink).then(result => {
@@ -66,14 +60,22 @@ export default function PersonalDooinglePage() {
     fetchPageOwnerUserProfile(pageOwnerUserLink).then(result => {
       setPageOwnerUserProfile(result)
     })
+
+    fetchFollowCount(pageOwnerUserLink).then(result => {
+      setFollowerCount(result)
+    })
   }, [pageOwnerUserLink]);
 
   function handleAddFollowButton() {
     fetchAddFollow(pageOwnerUserLink).then(() => setIsFollowingUser(true))
+
+    setFollowerCount(prevCount => prevCount + 1)
   }
 
   function handleCancelFollowButton() {
     fetchCancelFollow(pageOwnerUserLink).then(() => setIsFollowingUser(false))
+
+    setFollowerCount(prevCount => prevCount - 1)
   }
 
   function handleDooingleSubmit(event) {
