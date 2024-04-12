@@ -37,7 +37,7 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class, TransactionForTrailingLambda::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
 class DooingleServiceDBTest(
