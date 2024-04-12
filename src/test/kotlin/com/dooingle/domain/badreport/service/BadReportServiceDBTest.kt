@@ -9,6 +9,7 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
 import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
 import com.dooingle.global.redis.EmbeddedRedisClientConfig
@@ -26,7 +27,7 @@ import java.time.ZonedDateTime
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class, TransactionForTrailingLambda::class])
 @ActiveProfiles("test")
 class BadReportServiceDBTest @Autowired constructor(
     private val badReportRepository: BadReportRepository,
@@ -34,9 +35,10 @@ class BadReportServiceDBTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
     private val catchRepository: CatchRepository,
     private val distributedLock: DistributedLock,
+    transactionForTrailingLambda: TransactionForTrailingLambda,
 ) {
 
-    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock)
+    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock, transactionForTrailingLambda)
 
     @AfterEach
     fun clearData() {
