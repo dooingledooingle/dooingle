@@ -8,8 +8,12 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.EmbeddedRedisClientConfig
+import com.dooingle.global.redis.EmbeddedRedisServerConfig
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.AfterEach
@@ -23,16 +27,17 @@ import java.time.ZonedDateTime
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class, TransactionForTrailingLambda::class])
 @ActiveProfiles("test")
 class BadReportServiceDBTest @Autowired constructor(
     private val badReportRepository: BadReportRepository,
     private val socialUserRepository: SocialUserRepository,
     private val dooingleRepository: DooingleRepository,
-    private val catchRepository: CatchRepository
+    private val catchRepository: CatchRepository,
+    private val distributedLock: DistributedLock,
 ) {
 
-    private val badReportService = BadReportService(socialUserRepository, badReportRepository)
+    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock)
 
     @AfterEach
     fun clearData() {

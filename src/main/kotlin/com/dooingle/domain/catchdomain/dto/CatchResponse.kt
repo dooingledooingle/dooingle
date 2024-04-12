@@ -8,6 +8,7 @@ data class CatchResponse(
     val content: String?,
     val createdAt: ZonedDateTime?, // TODO non-nullable로 할 경우 com.querydsl.core.types.ExpressionException: null 예외 발생함
     val deletedAt: ZonedDateTime? = null,
+    val blockedAt: ZonedDateTime? = null,
 ){
     companion object {
         fun from(catch: Catch): CatchResponse {

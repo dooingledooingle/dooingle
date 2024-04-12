@@ -1,14 +1,16 @@
 package com.dooingle.domain.follow.service
 
-import com.dooingle.domain.follow.dto.FollowDetailResponse
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.EmbeddedRedisClientConfig
+import com.dooingle.global.redis.EmbeddedRedisServerConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
@@ -21,15 +23,15 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
-
 class FollowServiceDBTest (
     private val socialUserRepository: SocialUserRepository,
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
+    private val distributedLock: DistributedLock
 ){
-    private val followService = FollowService(followRepository,socialUserRepository)
+    private val followService = FollowService(followRepository, socialUserRepository, distributedLock)
 
     @AfterEach
     fun clearData() {
