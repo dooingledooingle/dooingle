@@ -47,13 +47,13 @@ class FollowController(
     }
 
     @Operation(summary = "내 팔로워 수 조회")
-    @GetMapping("/number")
+    @GetMapping("/{toUserLink}/number")
     fun showFollowersNumber(
-        @AuthenticationPrincipal userPrincipal: UserPrincipal
+        @PathVariable toUserLink: String
     ) : ResponseEntity<Int>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(followService.showFollowersNumber(userPrincipal.id))
+            .body(followService.showFollowersNumber(toUserLink))
     }
 
     @Operation(summary = "팔로우 취소")

@@ -2,6 +2,7 @@ package com.dooingle.domain.notification.service
 
 import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.notification.dto.NotificationResponse
+import com.dooingle.domain.notification.dto.NotificationSseResponse
 import com.dooingle.domain.notification.model.Notification
 import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.notification.repository.NotificationRepository
@@ -52,12 +53,12 @@ class NotificationService(
             Notification(
                 user = user,
                 notificationType = type,
-                resourceId = dooingleId
+                resourceId = dooingleId,
             )
         ).let {
             sseEmitters.sendUserNotification(
                 userId = user.id!!,
-                data = NotificationResponse.from(it)
+                data = NotificationSseResponse.from(it)
             )
         }
     }

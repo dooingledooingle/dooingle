@@ -24,7 +24,7 @@ class NoticeController(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody request: AddNoticeRequest
     ): ResponseEntity<Unit> {
-        val id = noticeService.addNotice(userPrincipal, request)
+        val id = noticeService.addNotice(userPrincipal.id, request)
         return ResponseEntity.created(URI.create("/api/notices/$id")).build()
     }
 
@@ -35,7 +35,7 @@ class NoticeController(
         @PathVariable noticeId: Long,
         @RequestBody request: AddNoticeRequest
     ): ResponseEntity<NoticeResponse>{
-        noticeService.updateNotice(userPrincipal, noticeId, request)
+        noticeService.updateNotice(userPrincipal.id, noticeId, request)
         return ResponseEntity.ok().build()
     }
 
@@ -45,7 +45,7 @@ class NoticeController(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable noticeId: Long
     ):ResponseEntity<Unit>{
-        noticeService.deleteNotice(userPrincipal,noticeId)
+        noticeService.deleteNotice(userPrincipal.id, noticeId)
         return ResponseEntity.ok().build()
     }
 

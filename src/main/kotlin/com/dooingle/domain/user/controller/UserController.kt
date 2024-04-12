@@ -1,11 +1,7 @@
 package com.dooingle.domain.user.controller
 
-import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.dto.ProfileImageUrlResponse
-import com.dooingle.domain.user.dto.ProfileResponse
-import com.dooingle.domain.user.dto.UpdateProfileDto
+import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.service.SocialUserService
-import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -25,6 +21,16 @@ class UserController(
         return ResponseEntity.ok().body(socialUserService.getDooinglerList(condition))
     }
 
+    @GetMapping("/search")
+    fun searchDooinglers(@RequestParam nickname: String): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.searchDooinglers(nickname))
+    }
+
+    @GetMapping("/random")
+    fun getRandomDooinglers(): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.getRandomDooinglers())
+    }
+
     @PatchMapping(value = ["/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal,
                       @RequestPart(value = "request") @Valid request: UpdateProfileDto,
@@ -40,6 +46,12 @@ class UserController(
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
+
+    @GetMapping("/{userLink}/profile")
+    fun getOtherUserProfile(@PathVariable userLink: String) : ResponseEntity<ProfileResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getOtherUserProfile(userLink))
+    }
+
 
     @GetMapping("/{userLink}/profile-image")
     fun getProfileImageByUserLink(@PathVariable userLink: String) : ResponseEntity<ProfileImageUrlResponse>{

@@ -1,5 +1,6 @@
 package com.dooingle.domain.notification.repository
 
+import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.notification.dto.NotificationResponse
 import com.dooingle.domain.notification.model.QNotification
 import com.dooingle.domain.user.model.QSocialUser
@@ -17,7 +18,9 @@ class NotificationQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : NotificationQueryDslRepository{
     private val notification = QNotification.notification
+    private val dooingle = QDooingle.dooingle
     private val user = QSocialUser.socialUser
+    private val owner = QSocialUser("ow")
 
     override fun getNotificationBySlice(
         user: SocialUser,
@@ -46,10 +49,13 @@ class NotificationQueryDslRepositoryImpl(
                 Projections.constructor(
                     NotificationResponse::class.java,
                     notification.notificationType.stringValue(),
-                    notification.resourceId
+                    notification.resourceId,
+                    owner.userLink,
                 )
             ).from(notification)
             .join(notification.user, user)
+            .join(dooingle).on(dooingle.id.eq(notification.resourceId))
+            .join(owner).on(owner.eq(dooingle.owner))
             .where(whereClause)
             .orderBy(notification.id.desc())
             .limit(selectSize)

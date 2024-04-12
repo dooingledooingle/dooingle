@@ -5,6 +5,7 @@ import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
 import com.dooingle.domain.notification.dto.NotificationResponse
+import com.dooingle.domain.notification.dto.NotificationSseResponse
 import com.dooingle.domain.notification.model.NotificationType
 import com.dooingle.domain.notification.repository.NotificationRepository
 import com.dooingle.domain.user.model.SocialUser
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
@@ -90,18 +92,24 @@ class NotificationSseTest(
         val eventWrapper = EventSourceWrapper()
         factory.newEventSource(connectRequest, eventWrapper.listener)
 
+        Thread.sleep(300)
+
         val addDooingleResponse = getResponse(addDooingleRequest)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapper.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
 
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
+        val dooingleId = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+        val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+                cursor = dooingle!!.id!! + 1,
             )
         )
         eventWrapper.receivedData[1] shouldBe notificationString // 유저 알림
@@ -127,17 +135,23 @@ class NotificationSseTest(
         val eventWrapperOfA = EventSourceWrapper()
         factory.newEventSource(connectRequestOfA, eventWrapperOfA.listener)
 
+        Thread.sleep(300)
+
         val addCatchResponse = getResponse(addCatchRequestOfB)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapperOfA.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
 
         addCatchResponse.code shouldBe HttpStatus.CREATED.value()
+        val catchId = addCatchResponse.body.string().substringAfter("catchId\":").substringBefore(",").toLong()
+        val catch = catchRepository.findByIdOrNull(catchId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.CATCH.toString(),
-                cursor = dooingle.id!!
+                cursor = catch!!.dooingle.id!! + 1,
             )
         )
         eventWrapperOfA.receivedData[1] shouldBe notificationString
@@ -169,7 +183,11 @@ class NotificationSseTest(
         val eventWrapperOfB = EventSourceWrapper()
         factory.newEventSource(connectRequestOfB, eventWrapperOfB.listener)
 
+        Thread.sleep(300)
+
         val addDooingleResponse = getResponse(addDooingleRequest)
+
+        Thread.sleep(300)
 
         // THEN
         eventWrapperOfA1.receivedData[0] shouldBe SseEmitters.CONNECTED_MESSAGE
@@ -178,11 +196,13 @@ class NotificationSseTest(
 
         addDooingleResponse.code shouldBe HttpStatus.CREATED.value()
         val dooingleString = addDooingleResponse.body.string()
+        val dooingleId = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+        val dooingle = dooingleRepository.findByIdOrNull(dooingleId)
 
         val notificationString = objectMapper.writeValueAsString(
-            NotificationResponse(
+            NotificationSseResponse(
                 notificationType = NotificationType.DOOINGLE.toString(),
-                cursor = dooingleString.substringAfter("dooingleId\":").substringBefore(",").toLong()
+                cursor = dooingle!!.id!! + 1,
             )
         )
         eventWrapperOfA1.receivedData[1] shouldBe notificationString // 유저 알림

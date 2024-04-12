@@ -7,7 +7,8 @@ data class DooingleAndCatchResponse(
     val ownerName: String,
     val ownerUserLink: String,
     val dooingleId: Long,
-    val content: String,
+    val content: String?,
     val catch: CatchResponse?,
-    val createdAt: ZonedDateTime
+    val createdAt: ZonedDateTime,
+    val blockedAt: ZonedDateTime?
 )
