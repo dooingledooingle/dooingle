@@ -5,6 +5,7 @@ import com.dooingle.domain.follow.dto.IsFollowingUserResponse
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.exception.custom.ModelNotFoundException
@@ -16,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class FollowService(
     private val followRepository: FollowRepository,
-    private val socialUserRepository: SocialUserRepository
+    private val socialUserRepository: SocialUserRepository,
+    private val distributedLock: DistributedLock
 ) {
-    fun follow(toUserLink: String, fromUserId: Long) {
+    fun follow(toUserLink: String, fromUserId: Long) : Unit = distributedLock("FOLLOW:$fromUserId")  {
         val toUser = socialUserRepository.findByUserLink(toUserLink)
             ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)
@@ -64,7 +66,7 @@ class FollowService(
     }
 
     @Transactional
-    fun cancelFollowing(toUserLink: String, fromUserId: Long) {
+    fun cancelFollowing(toUserLink: String, fromUserId: Long) = distributedLock("FOLLOW_CANCEL:$fromUserId") {
         val toUser = socialUserRepository.findByUserLink(toUserLink)
             ?: throw SocialUserNotFoundByUserLinkException(toUserLink)
         val fromUser = socialUserRepository.findByIdOrNull(fromUserId)

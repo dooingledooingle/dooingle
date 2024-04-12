@@ -43,17 +43,14 @@ class DooingleService(
             ?: throw ModelNotFoundException(modelName = "Social User", modelId = fromUserId)
         val owner = socialUserRepository.findByUserLink(ownerUserLink)
             ?: throw SocialUserNotFoundByUserLinkException(userLink = ownerUserLink)
-        val dooingle = addDooingleRequest.to(guest, owner)
-
         if (guest.id == owner.id) throw InvalidParameterException("내 뒹글 페이지에 뒹글을 남길 수 없습니다.")
 
-        dooingleRepository.save(dooingle)
-
+        val dooingle = dooingleRepository.save(addDooingleRequest.to(guest, owner))
+        val dooingleResponse = DooingleResponse.from(dooingle)
         dooingleCountService.plusCount(owner)
+        notificationService.addDooingleNotification(user = owner, dooingleResponse = dooingleResponse)
 
-        notificationService.addDooingleNotification(user = owner, dooingleResponse = DooingleResponse.from(dooingle))
-
-        return DooingleResponse.from(dooingle)
+        return dooingleResponse
     }
 
     // 개인 뒹글 페이지 조회(뒹글,캐치)

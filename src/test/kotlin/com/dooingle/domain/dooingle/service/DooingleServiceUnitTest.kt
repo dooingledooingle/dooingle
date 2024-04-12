@@ -5,20 +5,18 @@ import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
-import com.dooingle.domain.dooingle.dto.DooingleResponse
-import com.dooingle.domain.dooingle.model.Dooingle
-import com.dooingle.domain.dooingle.model.QDooingle.dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.result.shouldNotBeSuccess
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -38,12 +36,13 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockCatchRepository = mockk<CatchRepository>()
     private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>()
+    private val mockDistributedLock = mockk<DistributedLock>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
         dooingleCountService = mockDooingleCountService,
-        notificationService = mockNotificationService
+        notificationService = mockNotificationService,
     )
 
     lateinit var owner: SocialUser
@@ -82,6 +81,13 @@ class DooingleServiceUnitTest : AnnotationSpec() {
 
         every { mockSocialUserRepository.findByUserLink(ownerUserLink) } returns owner
         every { mockSocialUserRepository.findByIdOrNull(fromUserId) } returns owner
+
+        every {
+            mockDistributedLock.invoke<Any?>(any(), any(), any(), captureLambda())
+        } answers {
+            val lambda: () -> Any? = arg<(()-> Any?)>(3)
+            lambda()
+        }
 
         // expected
         shouldThrow<InvalidParameterException> { dooingleService.addDooingle(fromUserId, ownerUserLink, addDooingleRequest) }

@@ -32,6 +32,7 @@ class NotificationService(
     }
 
     fun addDooingleNotification(user: SocialUser, dooingleResponse: DooingleResponse) {
+        println("===이 로그가 보인다면 mockkBean이 동작하지 않은 것!===")
         // https://jsonobject.tistory.com/558 참고하면서 더 고민해볼 것 - 서비스 로직만 Transaction 거는 방법도 생각해보기
         // TODO 원인은 모르겠지만 일부 emitter가 시간이 지나도 사라지지 않고 계속 남아있는 현상 발생함
         try {
