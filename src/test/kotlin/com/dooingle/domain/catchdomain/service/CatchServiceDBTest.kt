@@ -7,10 +7,13 @@ import com.dooingle.domain.dooingle.repository.DooingleRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
 import com.dooingle.global.exception.custom.ConflictStateException
 import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.EmbeddedRedisClientConfig
+import com.dooingle.global.redis.EmbeddedRedisServerConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -29,18 +32,18 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
-
 class CatchServiceDBTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
+    private val distributedLock: DistributedLock,
 )
 {
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
-    private val catchService = CatchService(dooingleRepository,catchRepository,mockNotificationService)
+    private val catchService = CatchService(dooingleRepository,catchRepository,mockNotificationService, distributedLock)
 
     @AfterEach
     fun clearData() {

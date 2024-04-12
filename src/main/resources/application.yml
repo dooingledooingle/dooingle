@@ -6,7 +6,6 @@ spring:
       local-dev-infra: local-dev-infra-env
       dev: dev-env
       prod: prod-env
-      test: local-memory-h2
 
   servlet:
     multipart:
