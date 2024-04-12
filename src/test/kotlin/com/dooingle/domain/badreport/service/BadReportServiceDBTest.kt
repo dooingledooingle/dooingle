@@ -35,10 +35,9 @@ class BadReportServiceDBTest @Autowired constructor(
     private val dooingleRepository: DooingleRepository,
     private val catchRepository: CatchRepository,
     private val distributedLock: DistributedLock,
-    transactionForTrailingLambda: TransactionForTrailingLambda,
 ) {
 
-    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock, transactionForTrailingLambda)
+    private val badReportService = BadReportService(socialUserRepository, badReportRepository, distributedLock)
 
     @AfterEach
     fun clearData() {
