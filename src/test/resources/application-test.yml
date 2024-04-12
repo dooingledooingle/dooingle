@@ -23,3 +23,9 @@ cloud:
 
 frontend:
   domain: "test"
+
+spring:
+  data:
+    redis:
+      host: "localhost"
+      port: 6379

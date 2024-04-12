@@ -5,7 +5,7 @@ import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.notification.service.NotificationService
@@ -44,17 +44,17 @@ class DooingleServiceDBTest(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository,
     private val followRepository: FollowRepository
 ) {
 
+    private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
     private val dooingleService = DooingleService(
         dooingleRepository,
         socialUserRepository,
         catchRepository,
-        dooingleCountRepository,
+        mockDooingleCountService,
         mockNotificationService
     )
 
@@ -157,6 +157,7 @@ class DooingleServiceDBTest(
         val guest = userB
         val addDooingleRequest = AddDooingleRequest("졸려요")
 
+        every { mockDooingleCountService.plusCount(any()) } just runs
         every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
 
         // when

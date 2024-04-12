@@ -6,6 +6,7 @@ import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
 import com.dooingle.domain.dooingle.model.QDooingle
 import com.dooingle.domain.follow.model.QFollow
+import com.dooingle.domain.user.dto.DooinglerResponse
 import com.dooingle.domain.user.model.QSocialUser
 import com.dooingle.domain.user.model.SocialUser
 import com.querydsl.core.BooleanBuilder
@@ -14,6 +15,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.SliceImpl
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 class DooingleQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
@@ -93,6 +96,24 @@ class DooingleQueryDslRepositoryImpl(
             .and(dooingle.owner.eq(owner))
         val list = getContents(whereClause, pageable)
         return changeToSlice(list, selectSize, pageable)
+    }
+
+    override fun getHotDooinglerList(size: Long): List<DooinglerResponse> {
+
+        return queryFactory.select(
+            Projections.constructor(
+                DooinglerResponse::class.java,
+                owner.id,
+                owner.nickname
+            )
+        )
+            .from(dooingle)
+            .leftJoin(dooingle.owner, owner)
+            .where(dooingle.createdAt.after(ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)))
+            .groupBy(dooingle.owner.id)
+            .orderBy(dooingle.guest.count().desc())
+            .limit(size)
+            .fetch()
     }
 
     private fun lessThanCursor(cursor: Long?) = cursor?.let { dooingle.id.lt(it) }

@@ -9,7 +9,7 @@ import com.dooingle.domain.dooingle.dto.DooingleResponse
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.model.QDooingle.dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
@@ -36,13 +36,13 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockDooingleRepository = mockk<DooingleRepository>()
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
     private val mockCatchRepository = mockk<CatchRepository>()
-    private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
+    private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
-        dooingleCountRepository = mockDooingleCountRepository,
+        dooingleCountService = mockDooingleCountService,
         notificationService = mockNotificationService
     )
 
