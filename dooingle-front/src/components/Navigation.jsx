@@ -8,6 +8,9 @@ export default function Navigation() {
   return (
     <div className="flex flex-col items-center gap-[1rem]">
       <div>
+        <Link to={`/feeds`}>뒹글 피드</Link>
+      </div>
+      <div>
         <Link to={`/personal-dooingles/${authenticatedUserLink}`}>내 뒹글 페이지</Link>
       </div>
       <div>
