@@ -2,11 +2,13 @@ package com.dooingle.global.security
 
 import com.dooingle.global.jwt.JwtAuthenticationFilter
 import jakarta.servlet.DispatcherType
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -15,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -89,7 +92,7 @@ class SecurityConfig(
             .build()
     }
 
-    @Profile("dev", "local-dev-infra", "local-h2", "local-memory-h2", "test")
+    @Profile("!prod")
     @Bean
     fun filterChainForLocal(http: HttpSecurity): SecurityFilterChain {
         return http
@@ -104,11 +107,16 @@ class SecurityConfig(
                 // requestMatchers("/api/notification").permitAll()으로 할 수도 있었겠지만 이 쪽이 더 낫다고 판단함
                 // cf. dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()가  requestMatchers("/api/**").authenticated()보다 뒤에 있는 경우에는 적용이 안 됨
                 it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                    // (2) 요청 url /api/** 패턴은 모두 인증 필요
+                    // (2) GET 메서드 요청 /api/** 패턴은 모두 허용
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/**",
+                    ).permitAll()
+                    // (3) GET 메서드 요청 외의 /api/** 패턴은 모두 인증 필요
                     .requestMatchers(
                         "/api/**",
                     ).authenticated()
-                    // (3) 요청 url 아래 패턴은 모두 허용(로그인, 인증 서버 콜백 리다이렉트 url 등)
+                    // (4) 요청 url 아래 패턴은 모두 허용(로그인, 인증 서버 콜백 리다이렉트 url 등)
                     .requestMatchers(
                         "/oauth2/login/**",
                         "/oauth2/callback/**",
