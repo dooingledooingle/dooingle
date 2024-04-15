@@ -7,6 +7,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -43,6 +44,7 @@ class UserController(
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
@@ -59,6 +61,7 @@ class UserController(
     }
 
     @GetMapping("/current-dooingler")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun getCurrentDooingler(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<DooinglerResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getCurrentDooingler(userPrincipal.id))
     }
