@@ -19,7 +19,7 @@ class OAuth2LoginController(
     private val oAuth2LoginService: OAuth2LoginService,
     @Value("\${frontend.domain}") frontendUri: String,
 ) {
-    private val frontendFeedPageUri = "$frontendUri/feeds"
+    private val frontendLoginPageUri = "$frontendUri/login"
 
     @GetMapping("/login/{provider}")
     fun redirectLoginPage(@PathVariable provider: OAuth2Provider, response: HttpServletResponse) {
@@ -44,7 +44,7 @@ class OAuth2LoginController(
             .build()
 
         val headers = HttpHeaders()
-            .also { it.location = URI.create(frontendFeedPageUri) } // 헤더에 리다이렉트 URI 설정
+            .also { it.location = URI.create(frontendLoginPageUri) } // 헤더에 리다이렉트 URI 설정
             .also { it.add(HttpHeaders.SET_COOKIE, accessTokenInCookie.toString()) } // 헤더에 SET COOKIE 헤더 추가, 내용은 위에서 만들어놓은 accessTokenInCookie 객체
 
         return ResponseEntity(headers, HttpStatus.PERMANENT_REDIRECT)

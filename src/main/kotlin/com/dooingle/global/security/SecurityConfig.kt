@@ -99,6 +99,7 @@ class SecurityConfig(
             .securityMatcher(NegatedRequestMatcher(EndpointRequest.toAnyEndpoint()))
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
+            .logout { it.disable() } // /login?logout으로 리다이렉션 동작 등 비활성화
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } }
@@ -118,6 +119,7 @@ class SecurityConfig(
                     ).authenticated()
                     // (4) 요청 url 아래 패턴은 모두 허용(로그인, 인증 서버 콜백 리다이렉트 url 등)
                     .requestMatchers(
+                        "/logout",
                         "/oauth2/login/**",
                         "/oauth2/callback/**",
                         "/swagger-ui/**",
