@@ -206,3 +206,16 @@ export async function fetchAddBadReport(reportedTargetType, reportedTargetId, re
   );
   return response.data;
 }
+
+export async function fetchLogout() {
+  await axios.post(
+    `${BACKEND_SERVER_ORIGIN}/logout`,
+    null,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
