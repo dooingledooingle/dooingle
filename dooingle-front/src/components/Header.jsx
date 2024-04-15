@@ -1,15 +1,17 @@
 import {Link} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
-import {useNotification} from "../hooks/useContext.js";
+import {useAuth, useNotification} from "../hooks/useContext.js";
 import {fetchNotifications} from "../fetch.js";
 
 export default function Header() {
+  const {isAuthenticated} = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [notifications, setNotifications] = useState([])
   const userMenuRef = useRef();
   const notificationDropdownRef = useRef();
   const {personalNotification, setPersonalNotification} = useNotification();
+  const {setShowLoginInductionModal} = useAuth();
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -55,6 +57,10 @@ export default function Header() {
     setShowNotificationDropdown(!showNotificationDropdown)
   }
 
+  function handleLoginButton() {
+    setShowLoginInductionModal(true);
+  }
+
   return (
     <header className="shadow-[inset_0_-0.0625rem_0_0_#d3d3d3]">
       <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
@@ -72,7 +78,7 @@ export default function Header() {
             <img src="/notice.svg" alt="공지사항 링크" className="h-[2.5rem]"/>
           </Link>
 
-          <div ref={notificationDropdownRef} className="relative -z-1">
+          {isAuthenticated && <div ref={notificationDropdownRef} className="relative -z-1">
             <button onClick={toggleNotificationDropdown} className="focus:outlink-none">
               {!personalNotification && <img src="/notification-off.svg" alt="알림 드롭다운" className="h-[2.5rem]"/>}
               {personalNotification && <img src="/notification-on.svg" alt="알림 드롭다운" className="h-[2.5rem]"/>}
@@ -88,7 +94,8 @@ export default function Header() {
                         {(notification.notificationType === "DOOINGLE") && "새 뒹글이 굴러왔어요!"}
                         {(notification.notificationType === "CATCH") && "뒹글에 캐치가 달렸어요!"}
                       </span>
-                      <Link to={`/personal-dooingles/${notification.ownerUserLink}`} className="self-center text-[0.75rem] hover:text-[#ef7ec2]"> 보러 가기</Link>
+                      <Link to={`/personal-dooingles/${notification.ownerUserLink}`}
+                            className="self-center text-[0.75rem] hover:text-[#ef7ec2]"> 보러 가기</Link>
                     </div>
                   </li>
                 )}
@@ -101,13 +108,13 @@ export default function Header() {
                 }
               </ul>
             )}
-          </div>
+          </div>}
 
           <div ref={userMenuRef} className="relative -z-1">
             <button onClick={toggleUserMenu} className="focus:outlink-none">
               <img src="/user-menu.svg" alt="사용자 메뉴 드롭다운 메뉴" className="h-[2.5rem]"/>
             </button>
-            {showUserMenu && (
+            {showUserMenu && isAuthenticated && (
               <ul className="absolute flex flex-col gap-[0.125rem] right-0 w-[8rem]
               bg-white rounded-b-[0.5rem] border-[#d3d3d3] border-[0.03125rem] border-t-0 shadow-sm pb-[0.25rem]">
                 <li className="px-[1.25rem] py-[0.375rem] hover:bg-[#eaecf9]">
@@ -115,6 +122,14 @@ export default function Header() {
                 </li>
                 <li className="px-[1.25rem] py-[0.375rem] hover:bg-[#eaecf9]">
                   <Link to={"/logout"}>로그아웃</Link>
+                </li>
+              </ul>
+            )}
+            {showUserMenu && !isAuthenticated && (
+              <ul className="absolute flex flex-col gap-[0.125rem] right-0 w-[8rem]
+              bg-white rounded-b-[0.5rem] border-[#d3d3d3] border-[0.03125rem] border-t-0 shadow-sm pb-[0.25rem]">
+                <li className="px-[1.25rem] py-[0.375rem] hover:bg-[#eaecf9]">
+                  <button onClick={handleLoginButton}>로그인</button>
                 </li>
               </ul>
             )}
