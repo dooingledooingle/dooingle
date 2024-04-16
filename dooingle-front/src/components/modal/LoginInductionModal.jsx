@@ -22,13 +22,13 @@ export default function LoginInductionModal() {
         <div className="fixed flex items-center inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" id="my-modal">
           <div className="relative -inset-y-[4rem] mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
-              {isAuthenticated && <>
+              {localStorage.getItem("isAuthenticated") === "true" && <>
                 <h3 className="text-lg leading-6 font-medium text-gray-900">뒹글을 로그인한지 오래 지났네요!</h3>
                 <div className="mt-2 px-7 py-3">
                   <p className="text-sm text-gray-500">다시 로그인해주세요!</p>
                 </div>
               </>}
-              {!isAuthenticated && <>
+              {localStorage.getItem("isAuthenticated") !== "true" && <>
                 <h3 className="text-lg leading-6 font-medium text-gray-900">뒹글에 로그인해볼까요?</h3>
               </>}
               <div className="flex flex-col items-center justify-center box-border gap-[0.625rem] h-[5.625rem]">
