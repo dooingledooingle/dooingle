@@ -1,4 +1,5 @@
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
+import {Link} from "react-router-dom";
 
 export default function WelcomePage() {
 
@@ -18,6 +19,7 @@ export default function WelcomePage() {
           <img src="/kakao_login_large_narrow.png" alt="카카오 소셜 로그인 버튼" className="lg:w-[60%] md:w-[30%] sm:w-[30%] w-[20%] "/>
         </button>
       </div>
+      <Link to="/feeds">그냥 구경할래요</Link>
     </section>
   )
 }

@@ -21,7 +21,7 @@ import DeleteModal from "../components/modal/DeleteModal.jsx";
 
 export default function PersonalDooinglePage() {
 
-  const {authenticatedUserLink} = useAuth()
+  const {isAuthenticated, authenticatedUserLink} = useAuth()
   const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
   const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
@@ -53,7 +53,7 @@ export default function PersonalDooinglePage() {
   }, [pageOwnerUserLink, searchParams]);
   
   useEffect(() => {
-    fetchIsFollowingUser(pageOwnerUserLink).then(result => {
+    isAuthenticated && fetchIsFollowingUser(pageOwnerUserLink).then(result => {
       setIsFollowingUser(result)
     })
 
@@ -140,8 +140,9 @@ export default function PersonalDooinglePage() {
               <div className="flex items-center gap-[0.75rem]">
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
                 <div className="flex gap-[0.5rem] items-center">
-                  {(isCurrentUserEqualToPageOwner || isFollowingUser) && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                  {(!isCurrentUserEqualToPageOwner && !isFollowingUser) && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  {!isAuthenticated && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
+                  {isAuthenticated && (isCurrentUserEqualToPageOwner || isFollowingUser) && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {isAuthenticated && (!isCurrentUserEqualToPageOwner && !isFollowingUser) && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
                   <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
                 </div>
               </div>
@@ -159,11 +160,11 @@ export default function PersonalDooinglePage() {
         {/* Feed와 배치 다른 부분: nav의 py가 3.75rem -> 3rem, 본문 섹션 py가 2.75rem -> 0.75rem */}
 
         {/* nav */}
-        <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
+        {isAuthenticated && <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3rem] gap-[1.25rem]">
-            <Navigation />
+            <Navigation/>
           </div>
-        </nav>
+        </nav>}
 
         {/* 뒹글 & 캐치 */}
         <section className="col-start-4 col-span-6 flex flex-col py-[0.75rem] text-[#5f6368]">

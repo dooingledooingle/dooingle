@@ -13,10 +13,31 @@ import AuthProvider from "./contexts/AuthContext.jsx";
 import LogoutPage from "./pages/Logout.jsx";
 import NotificationProvider from "./contexts/NotificationContext.jsx";
 import ReportProvider from "./contexts/ReportContext.jsx";
+import LoginPage from "./pages/Login.jsx";
 
 const router = createBrowserRouter([
-  { path: '/', element: <WelcomePage /> },
-  { path: '/admin', element: <AdminHomePage /> },
+  { path: '/', element: (
+    <AuthProvider>
+      <WelcomePage />
+    </AuthProvider>
+    )
+  },
+  {
+    path: '/login',
+    element: (
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>
+    ),
+  },
+  {
+    path: '/logout',
+    element: (
+      <AuthProvider>
+        <LogoutPage />
+      </AuthProvider>
+    ),
+  },
   {
     element: (
       <AuthProvider>
@@ -41,14 +62,7 @@ const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: '/logout',
-    element: (
-      <AuthProvider>
-        <LogoutPage />
-      </AuthProvider>
-    ),
-  },
+  { path: '/admin', element: <AdminHomePage /> },
 ])
 
 export default function App() {
