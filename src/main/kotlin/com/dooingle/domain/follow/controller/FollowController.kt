@@ -7,6 +7,7 @@ import com.dooingle.global.security.UserPrincipal
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
@@ -26,7 +27,9 @@ class FollowController(
             .body(followService.follow(toUserLink, userPrincipal.id))
     }
 
+    @Operation(summary = "팔로우하는 사용자인지 여부 조회")
     @GetMapping("/{toUserLink}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun isFollowingUser(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable toUserLink: String,
@@ -38,6 +41,7 @@ class FollowController(
 
     @Operation(summary = "내 팔로우 목록 조회")
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun showFollowingList(
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ) : ResponseEntity<List<FollowDetailResponse>> {
@@ -46,7 +50,7 @@ class FollowController(
             .body(followService.showFollowingList(userPrincipal.id))
     }
 
-    @Operation(summary = "내 팔로워 수 조회")
+    @Operation(summary = "팔로워 수 조회")
     @GetMapping("/{toUserLink}/number")
     fun showFollowersNumber(
         @PathVariable toUserLink: String

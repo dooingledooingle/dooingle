@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
 import {fetchCurrentProfile, fetchUpdateProfile} from "../fetch.js";
+import {useAuth} from "../hooks/useContext.js";
 
 const profileInitialState = {
   nickname: "",
@@ -13,11 +14,14 @@ export default function MyProfilePage() {
   const [updateImageUrlPreview, setUpdateImageUrlPreview] = useState("");
   const imageFileInputRef = useRef();
   const descriptionInputRef = useRef();
+  const {isAuthenticated, setShowLoginInductionModal} = useAuth();
 
   useEffect(() => {
-    fetchCurrentProfile().then(fetchedProfile => {
+    isAuthenticated && fetchCurrentProfile().then(fetchedProfile => {
       setPrevProfile(fetchedProfile)
     })
+
+    !isAuthenticated && setShowLoginInductionModal(true)
   }, []);
 
   function handleImageInput(event) {
