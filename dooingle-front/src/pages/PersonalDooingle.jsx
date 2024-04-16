@@ -160,11 +160,11 @@ export default function PersonalDooinglePage() {
         {/* Feed와 배치 다른 부분: nav의 py가 3.75rem -> 3rem, 본문 섹션 py가 2.75rem -> 0.75rem */}
 
         {/* nav */}
-        {isAuthenticated && <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
+        <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3rem] gap-[1.25rem]">
             <Navigation/>
           </div>
-        </nav>}
+        </nav>
 
         {/* 뒹글 & 캐치 */}
         <section className="col-start-4 col-span-6 flex flex-col py-[0.75rem] text-[#5f6368]">
