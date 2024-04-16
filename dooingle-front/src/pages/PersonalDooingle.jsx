@@ -141,8 +141,9 @@ export default function PersonalDooinglePage() {
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
                 <div className="flex gap-[0.5rem] items-center">
                   {!isAuthenticated && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
-                  {isAuthenticated && (isCurrentUserEqualToPageOwner || isFollowingUser) && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                  {isAuthenticated && (!isCurrentUserEqualToPageOwner && !isFollowingUser) && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  {isAuthenticated && isCurrentUserEqualToPageOwner && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && !isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
                   <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
                 </div>
               </div>
