@@ -1,5 +1,0 @@
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: update # TODO 추후 변경 가능
-    open-in-view: false
