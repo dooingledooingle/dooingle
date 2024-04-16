@@ -35,10 +35,21 @@ class SecurityConfig(
     @Profile("prod")
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        return commonHttpSecurity(http).authorizeHttpRequests {
+            // (prod 환경) 요청 url 아래 패턴은 ADMIN만 허용(swagger 문서)
+            it.requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+            ).hasAnyRole("ADMIN")
+        }.build()
+    }
+
+    private fun commonHttpSecurity(http: HttpSecurity): HttpSecurity {
         return http
             .securityMatcher(NegatedRequestMatcher(EndpointRequest.toAnyEndpoint()))
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
+            .logout { it.disable() } // /login?logout으로 리다이렉션 동작 등 비활성화
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } }
@@ -47,28 +58,27 @@ class SecurityConfig(
                 // requestMatchers("/api/notification").permitAll()으로 할 수도 있었겠지만 이 쪽이 더 낫다고 판단함
                 // cf. dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()가  requestMatchers("/api/**").authenticated()보다 뒤에 있는 경우에는 적용이 안 됨
                 it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                    // (2) 요청 url /api/** 패턴은 모두 인증 필요
+                    // (2) GET 메서드 요청 /api/** 패턴은 모두 허용
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/**",
+                    ).permitAll()
+                    // (3) GET 메서드 요청 외의 /api/** 패턴은 모두 인증 필요
                     .requestMatchers(
                         "/api/**",
                     ).authenticated()
-                    // (3) 요청 url 아래 패턴은 모두 허용(로그인, 인증 서버 콜백 리다이렉트 url 등)
+                    // (4) 로그인, 로그아웃 관련 패턴은 모두 허용
                     .requestMatchers(
                         "/oauth2/login/**",
                         "/oauth2/callback/**",
+                        "/logout",
                     ).permitAll()
-                    // (4) 요청 url 아래 패턴은 ADMIN만 허용
-                    .requestMatchers(
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/h2-console/**",
-                    ).hasAnyRole("ADMIN") // hasRole() 사용할 경우 에러 - collection이 아닐 때만 가능한 듯
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {
                 it.authenticationEntryPoint(authenticationEntrypoint)
                 it.accessDeniedHandler(accessDeniedHandler)
             }
-            .build()
     }
 
     private fun corsConfigurationSource(): CorsConfigurationSource {
@@ -94,44 +104,15 @@ class SecurityConfig(
 
     @Profile("!prod")
     @Bean
-    fun filterChainForLocal(http: HttpSecurity): SecurityFilterChain {
-        return http
-            .securityMatcher(NegatedRequestMatcher(EndpointRequest.toAnyEndpoint()))
-            .httpBasic { it.disable() }
-            .formLogin { it.disable() }
-            .logout { it.disable() } // /login?logout으로 리다이렉션 동작 등 비활성화
-            .csrf { it.disable() }
-            .cors { it.configurationSource(corsConfigurationSource()) }
-            .headers { it.frameOptions { frameOptionsConfig -> frameOptionsConfig.sameOrigin() } }
+    fun filterChainNotForProduction(http: HttpSecurity): SecurityFilterChain {
+        return commonHttpSecurity(http)
             .authorizeHttpRequests {
-                // (1) dispatcher type이 async인 경우 모두 허용 - CoyoteAdapter asyncDispatch access denied로 검색하여 https://github.com/spring-projects/spring-security/issues/11962 참고 후 임시 조치해둔 것
-                // requestMatchers("/api/notification").permitAll()으로 할 수도 있었겠지만 이 쪽이 더 낫다고 판단함
-                // cf. dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()가  requestMatchers("/api/**").authenticated()보다 뒤에 있는 경우에는 적용이 안 됨
-                it.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                    // (2) GET 메서드 요청 /api/** 패턴은 모두 허용
-                    .requestMatchers(
-                        HttpMethod.GET,
-                        "/api/**",
-                    ).permitAll()
-                    // (3) GET 메서드 요청 외의 /api/** 패턴은 모두 인증 필요
-                    .requestMatchers(
-                        "/api/**",
-                    ).authenticated()
-                    // (4) 요청 url 아래 패턴은 모두 허용(로그인, 인증 서버 콜백 리다이렉트 url 등)
-                    .requestMatchers(
-                        "/logout",
-                        "/oauth2/login/**",
-                        "/oauth2/callback/**",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/h2-console/**",
-                    ).permitAll()
-            }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling {
-                it.authenticationEntryPoint(authenticationEntrypoint)
-                it.accessDeniedHandler(accessDeniedHandler)
-            }
-            .build()
+                // (prod 환경이 아닌 경우) 요청 url 아래 패턴은 모두 허용(swagger 문서, H2 콘솔 등)
+                it.requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/h2-console/**",
+                ).permitAll()
+            }.build()
     }
 }
