@@ -19,8 +19,10 @@ export default function FollowingUser({userName, userLink, userProfileImageUrl, 
     <div className="flex justify-between items-center">
       <div className="flex gap-[1rem] items-center">
         <div>
-          <img className="w-[3.75rem] h-[3.75rem] border-[0.03125rem]" src={userProfileImageUrl || "/no-image-1.png"}
-               alt="팔로우 뒹글러 프로필 이미지"/>
+          <Link to={`/personal-dooingles/${userLink}`}>
+            <img className="w-[3.75rem] h-[3.75rem] border-[0.03125rem]" src={userProfileImageUrl || "/no-image-1.png"}
+                 alt="팔로우 뒹글러 프로필 이미지"/>
+          </Link>
         </div>
         <div className="flex items-center">
           <span className="font-bold text-[#8692ff]"></span>

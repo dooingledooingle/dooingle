@@ -186,17 +186,17 @@ export default function PersonalDooinglePage() {
             {/*</div>*/}
           </div>
 
-          {isCurrentUserEqualToPageOwner || <form
+          {isCurrentUserEqualToPageOwner ||
+            <form
             className="flex justify-center items-center mt-[2rem] mb-[1rem] gap-[3%]"
-            onSubmit={handleDooingleSubmit}
-          >
+            onSubmit={handleDooingleSubmit}>
             <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
                       className="w-[70%] p-[1rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
             <div className="flex group">
-              <img src="/post-button.svg" alt="캐치 버튼"
-                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000"/>
+              <img src="/post-button.svg" alt="캐치 버튼" onClick={handleDooingleSubmit}
+                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000 cursor-pointer"/>
               <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
             </div>
           </form>}

@@ -89,8 +89,8 @@ export default function DooingleAndCatch({
             {(!existsCatch && isCurrentUserEqualToPageOwner) && (!isCatchFormVisible &&
               <div className="flex group">
                 <SmallSubmitButton onClick={handleShowCatchFormButton}>받을래요</SmallSubmitButton>
-                <img src="/post-button.svg" alt="캐치 버튼"
-                     className="w-[2rem] h-[2rem] -scale-x-100 group-hover:rotate-[-360deg] hover:rotate-[-360deg] transition-transform duration-1000"/>
+                <img src="/post-button.svg" alt="캐치 버튼" onClick={handleShowCatchFormButton}
+                     className="w-[2rem] h-[2rem] -scale-x-100 group-hover:rotate-[-360deg] hover:rotate-[-360deg] transition-transform duration-1000 cursor-pointer"/>
               </div>)}
           </div>
 
