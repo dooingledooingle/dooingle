@@ -141,8 +141,9 @@ export default function PersonalDooinglePage() {
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
                 <div className="flex gap-[0.5rem] items-center">
                   {!isAuthenticated && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
-                  {isAuthenticated && (isCurrentUserEqualToPageOwner || isFollowingUser) && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                  {isAuthenticated && (!isCurrentUserEqualToPageOwner && !isFollowingUser) && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  {isAuthenticated && isCurrentUserEqualToPageOwner && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && !isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
                   <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
                 </div>
               </div>
@@ -160,11 +161,11 @@ export default function PersonalDooinglePage() {
         {/* Feed와 배치 다른 부분: nav의 py가 3.75rem -> 3rem, 본문 섹션 py가 2.75rem -> 0.75rem */}
 
         {/* nav */}
-        {isAuthenticated && <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
+        <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3rem] gap-[1.25rem]">
             <Navigation/>
           </div>
-        </nav>}
+        </nav>
 
         {/* 뒹글 & 캐치 */}
         <section className="col-start-4 col-span-6 flex flex-col py-[0.75rem] text-[#5f6368]">
@@ -186,17 +187,17 @@ export default function PersonalDooinglePage() {
             {/*</div>*/}
           </div>
 
-          {isCurrentUserEqualToPageOwner || <form
+          {isCurrentUserEqualToPageOwner ||
+            <form
             className="flex justify-center items-center mt-[2rem] mb-[1rem] gap-[3%]"
-            onSubmit={handleDooingleSubmit}
-          >
+            onSubmit={handleDooingleSubmit}>
             <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
                       className="w-[70%] p-[1rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
             <div className="flex group">
-              <img src="/post-button.svg" alt="캐치 버튼"
-                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000"/>
+              <img src="/post-button.svg" alt="캐치 버튼" onClick={handleDooingleSubmit}
+                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000 cursor-pointer"/>
               <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
             </div>
           </form>}

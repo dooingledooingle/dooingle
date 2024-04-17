@@ -14,6 +14,7 @@ import LogoutPage from "./pages/Logout.jsx";
 import NotificationProvider from "./contexts/NotificationContext.jsx";
 import ReportProvider from "./contexts/ReportContext.jsx";
 import LoginPage from "./pages/Login.jsx";
+import DooinglePagesExplorationPage from "./pages/DooinglPagesExploration.jsx";
 
 const router = createBrowserRouter([
   { path: '/', element: (
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: '/feeds', element: <FeedPage /> },
+          { path: '/exploration', element: <DooinglePagesExplorationPage /> },
           { path: '/follows', element: <FollowPage /> },
           { path: '/notices', element: <NoticePage /> },
           { path: '/notices/:noticeId', element: <NoticeDetailPage /> },

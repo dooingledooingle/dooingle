@@ -12,10 +12,8 @@ export default function MainLayout() {
     <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
       <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
         <div className="flex flex-col items-center py-[3.75rem] gap-[1.25rem]">
-          {isAuthenticated && <>
-            <ProfileImageFrame userLink={authenticatedUserLink}/>
-            <Navigation/>
-          </>}
+          {isAuthenticated && <ProfileImageFrame userLink={authenticatedUserLink}/>}
+          <Navigation/>
         </div>
       </nav>
 
