@@ -1,20 +1,24 @@
 import {createContext, useEffect, useState} from "react";
 import {EventSourcePolyfill} from "event-source-polyfill";
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
+import {useAuth} from "../hooks/useContext.js";
 
 export const NotificationContext = createContext()
 
 export default function NotificationProvider({children}) {
 
+  const {isAuthenticated} = useAuth();
   const [newFeedNotification, setNewFeedNotification] = useState(null);
   const [personalNotification, setPersonalNotification] = useState(null);
 
   useEffect(() => {
+    if (!isAuthenticated) return; // isAuthenticated가 false이면 SSE 요청을 하지 못하도록 함
+
     const eventSource = new EventSourcePolyfill(`${BACKEND_SERVER_ORIGIN}/api/notifications/connect`,
       {withCredentials: true}
     );
 
-    addSseConnectionEventListenerToEventSource(eventSource)
+    addSseConnectionEventListenerToEventSource(eventSource);
     addNewFeedNotificationEventListenerToEventSource(eventSource);
     addPersonalNotificationEventListenerToEventSource(eventSource);
 

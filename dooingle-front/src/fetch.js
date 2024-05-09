@@ -53,6 +53,19 @@ export async function fetchAddCatch(dooingleId, catchContent) {
   return response.data;
 }
 
+export async function fetchDeleteCatch(dooingleId, catchId) {
+  const response = await axios.delete(
+    `${BACKEND_SERVER_ORIGIN}/api/dooingles/${dooingleId}/catches/${catchId}`,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  return response.data;
+}
+
 export async function fetchIsFollowingUser(userLink) {
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
@@ -79,6 +92,13 @@ export async function fetchAddFollow(userLink) {
 export async function fetchCancelFollow(userLink) {
   const response = await axios.delete(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}`, {
     withCredentials: true,
+  });
+  return response.data;
+}
+
+export async function fetchFollowCount(userLink) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/follow/${userLink}/number`, {
+    withCredentials: true
   });
   return response.data;
 }
@@ -160,6 +180,20 @@ export async function fetchUserList(condition) {
   return response.data;
 }
 
+export async function fetchSearchDooinglers(nickname) {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/search?nickname=${nickname}`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
+export async function fetchRandomDooinglers() {
+  const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/users/random`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
 export async function fetchNotifications() {
   const response = await axios.get(`${BACKEND_SERVER_ORIGIN}/api/notifications`, {
     withCredentials: true, // ajax 요청에서 withCredentials config 추가
@@ -185,4 +219,17 @@ export async function fetchAddBadReport(reportedTargetType, reportedTargetId, re
     },
   );
   return response.data;
+}
+
+export async function fetchLogout() {
+  await axios.post(
+    `${BACKEND_SERVER_ORIGIN}/logout`,
+    null,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
 }

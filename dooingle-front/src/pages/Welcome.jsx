@@ -1,4 +1,5 @@
 import {BACKEND_SERVER_ORIGIN} from "../env.js";
+import {Link} from "react-router-dom";
 
 export default function WelcomePage() {
 
@@ -7,24 +8,18 @@ export default function WelcomePage() {
   }
 
   return (
-    <>
-      <div className="w-full h-[54rem] relative]">
-        <section
-          className="absolute h-full w-full flex flex-col items-center justify-start py-40 gap-[0.625rem] max-w-full text-[#8692ff]">
-          <div
-            className="w-[60rem] flex flex-col items-center justify-center py-[7.5rem] px-5 max-w-full">
-            <h1
-              className="relative lg:text-[8rem] md:text-[6rem] sm:text-[3rem] font-bold inline-block">
-              Dooingle
-            </h1>
-          </div>
-          <div className="flex flex-col items-center justify-center box-border gap-[0.625rem] h-[5.625rem]">
-            <button onClick={handleStartButton} className="lg:w-[80%] md:w-[60%] sm:w-[40%] w-[20%] flex justify-center">
-              <img src="/kakao_login_large_narrow.png" alt="카카오 소셜 로그인 버튼" className="max-w-[80%]" />
-            </button>
-          </div>
-        </section>
+    <section
+      className="w-full h-screen flex flex-col items-center justify-center gap-[6rem] lg:gap-[4rem] md:gap-[2rem] sm:gap-[1.5rem] max-w-full text-[#8692ff]">
+      <div
+        className="flex flex-col items-center justify-center w-full">
+        <img src="/dooingle-outline.svg" alt="뒹글 로고" className="w-[40%] lg:w-[30%] md:w-[20%] sm:w-[20%]"/>
       </div>
-    </>
+      <div className="flex flex-col items-center justify-center box-border">
+        <button onClick={handleStartButton} className="flex justify-center">
+          <img src="/kakao_login_large_narrow.png" alt="카카오 소셜 로그인 버튼" className="lg:w-[60%] md:w-[30%] sm:w-[30%] w-[20%] "/>
+        </button>
+      </div>
+      <Link to="/feeds">그냥 구경할래요</Link>
+    </section>
   )
 }

@@ -2,14 +2,15 @@ import Dooingle from "../components/Dooingle.jsx";
 import {useEffect, useRef, useState} from "react";
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import {fetchDooinglesFeedSlice, fetchDooinglesFeedSliceOfFollowing} from "../fetch.js"
-import {useNotification} from "../hooks/useContext.js";
+import {useAuth, useNotification} from "../hooks/useContext.js";
 
 export default function FeedPage() {
 
   const [dooingles, setDooingles] = useState([]);
   const [showingEntireFeed, setShowingEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const hasNextSlice = useRef(false);
-  const {newFeedNotification, setNewFeedNotification} = useNotification()
+  const {isAuthenticated} = useAuth();
+  const {newFeedNotification, setNewFeedNotification} = useNotification();
   const {personalNotification, setPersonalNotification} = useNotification();
 
   useEffect(() => {
@@ -18,6 +19,10 @@ export default function FeedPage() {
       hasNextSlice.current = !newDooinglesSlice.last
     });
   }, []);
+
+  useEffect(() => {
+    setNewFeedNotification(null)
+  }, [setNewFeedNotification]);
 
   function handleMoreFeedButton(isEntireFeed) {
     const lastDooingleId = dooingles.slice(-1)[0]?.["dooingleId"]
@@ -88,14 +93,14 @@ export default function FeedPage() {
             </div>
           </button>
         </div>
-        <div
+        {isAuthenticated && <div
           className={"px-[0.5rem] " + (showingEntireFeed ? "hover:shadow-[inset_0_-0.125rem_0_0_#fa61bd]" : "shadow-[inset_0_-0.125rem_0_0_#fa61bd]")}>
           <button onClick={handleFollowingFeedButton} className="py-[0.5rem]">
             <div className={"" + (showingEntireFeed ? "hover:text-[#fa61bd]" : "text-[#fa61bd]")}>
               팔로우
             </div>
           </button>
-        </div>
+        </div>}
       </div>
 
       {newFeedNotification && (
@@ -103,7 +108,7 @@ export default function FeedPage() {
                 className="fixed top-[3.8rem] self-center max-w-fit mt-[0.75rem] mr-[0.5rem] px-[0.5rem] py-[0.25rem]
                   rounded-[0.625rem] text-[0.75rem] text-white font-bold bg-[#fa61bd]
                   border-[0.0625rem] border-[#fa61bd] animate-pulse">
-          새 피드가 있어요!
+        새 피드가 있어요!
         </button>
       )}
       {personalNotification && (

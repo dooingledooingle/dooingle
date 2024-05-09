@@ -13,10 +13,32 @@ import AuthProvider from "./contexts/AuthContext.jsx";
 import LogoutPage from "./pages/Logout.jsx";
 import NotificationProvider from "./contexts/NotificationContext.jsx";
 import ReportProvider from "./contexts/ReportContext.jsx";
+import LoginPage from "./pages/Login.jsx";
+import DooinglePagesExplorationPage from "./pages/DooinglPagesExploration.jsx";
 
 const router = createBrowserRouter([
-  { path: '/', element: <WelcomePage /> },
-  { path: '/admin', element: <AdminHomePage /> },
+  { path: '/', element: (
+    <AuthProvider>
+      <WelcomePage />
+    </AuthProvider>
+    )
+  },
+  {
+    path: '/login',
+    element: (
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>
+    ),
+  },
+  {
+    path: '/logout',
+    element: (
+      <AuthProvider>
+        <LogoutPage />
+      </AuthProvider>
+    ),
+  },
   {
     element: (
       <AuthProvider>
@@ -34,6 +56,7 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: '/feeds', element: <FeedPage /> },
+          { path: '/exploration', element: <DooinglePagesExplorationPage /> },
           { path: '/follows', element: <FollowPage /> },
           { path: '/notices', element: <NoticePage /> },
           { path: '/notices/:noticeId', element: <NoticeDetailPage /> },
@@ -41,14 +64,7 @@ const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: '/logout',
-    element: (
-      <AuthProvider>
-        <LogoutPage />
-      </AuthProvider>
-    ),
-  },
+  { path: '/admin', element: <AdminHomePage /> },
 ])
 
 export default function App() {

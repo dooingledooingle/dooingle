@@ -5,27 +5,27 @@ import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.model.Dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.follow.model.Follow
 import com.dooingle.domain.follow.repository.FollowRepository
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.ModelNotFoundException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import com.dooingle.global.querydsl.QueryDslConfig
+import com.dooingle.global.redis.EmbeddedRedisClientConfig
+import com.dooingle.global.redis.EmbeddedRedisServerConfig
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.collections.haveLowerBound
 import io.kotest.matchers.collections.shouldBeIn
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -37,25 +37,25 @@ import org.springframework.test.context.TestConstructor
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(value = [QueryDslConfig::class])
+@Import(value = [QueryDslConfig::class, EmbeddedRedisClientConfig::class, EmbeddedRedisServerConfig::class, DistributedLock::class, TransactionForTrailingLambda::class])
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
 class DooingleServiceDBTest(
     private val dooingleRepository: DooingleRepository,
     private val socialUserRepository: SocialUserRepository,
     private val catchRepository: CatchRepository,
-    private val dooingleCountRepository: DooingleCountRepository,
-    private val followRepository: FollowRepository
+    private val followRepository: FollowRepository,
 ) {
 
+    private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>(relaxed = true)
 
     private val dooingleService = DooingleService(
         dooingleRepository,
         socialUserRepository,
         catchRepository,
-        dooingleCountRepository,
-        mockNotificationService
+        mockDooingleCountService,
+        mockNotificationService,
     )
 
     @AfterEach
@@ -157,6 +157,7 @@ class DooingleServiceDBTest(
         val guest = userB
         val addDooingleRequest = AddDooingleRequest("졸려요")
 
+        every { mockDooingleCountService.plusCount(any()) } just runs
         every { mockNotificationService.addDooingleNotification(any(), any()) } just runs
 
         // when
@@ -167,7 +168,6 @@ class DooingleServiceDBTest(
         result.ownerName shouldBe owner.nickname
         result.content shouldBe addDooingleRequest.content
     }
-
 
     private val userA = SocialUser(nickname = "A", provider = OAuth2Provider.KAKAO, providerId = "1", userLink = "1111111111")
     private val userB = SocialUser(nickname = "B", provider = OAuth2Provider.KAKAO, providerId = "2", userLink = "2222222222")
@@ -230,4 +230,5 @@ class DooingleServiceDBTest(
 
     private val DEFAULT_PAGE_REQUEST = PageRequest.ofSize(DooingleFeedController.PAGE_SIZE)
 
+    private val THREAD_COUNT = 10
 }

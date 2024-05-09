@@ -15,7 +15,7 @@ class Notification(
     val notificationType: NotificationType,
 
     @Column
-    val resourceId: Long
+    val resourceId: Long,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

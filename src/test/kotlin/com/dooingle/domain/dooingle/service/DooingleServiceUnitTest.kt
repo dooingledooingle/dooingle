@@ -5,20 +5,18 @@ import com.dooingle.domain.dooingle.controller.DooingleFeedController
 import com.dooingle.domain.dooingle.dto.AddDooingleRequest
 import com.dooingle.domain.dooingle.dto.DooingleAndCatchResponse
 import com.dooingle.domain.dooingle.dto.DooingleFeedResponse
-import com.dooingle.domain.dooingle.dto.DooingleResponse
-import com.dooingle.domain.dooingle.model.Dooingle
-import com.dooingle.domain.dooingle.model.QDooingle.dooingle
 import com.dooingle.domain.dooingle.repository.DooingleRepository
-import com.dooingle.domain.dooinglecount.repository.DooingleCountRepository
+import com.dooingle.domain.dooinglecount.service.DooingleCountService
 import com.dooingle.domain.notification.service.NotificationService
 import com.dooingle.domain.user.model.SocialUser
 import com.dooingle.domain.user.repository.SocialUserRepository
+import com.dooingle.global.aop.DistributedLock
+import com.dooingle.global.aop.TransactionForTrailingLambda
 import com.dooingle.global.exception.custom.InvalidParameterException
 import com.dooingle.global.oauth2.provider.OAuth2Provider
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.result.shouldNotBeSuccess
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -36,14 +34,15 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     private val mockDooingleRepository = mockk<DooingleRepository>()
     private val mockSocialUserRepository = mockk<SocialUserRepository>()
     private val mockCatchRepository = mockk<CatchRepository>()
-    private val mockDooingleCountRepository = mockk<DooingleCountRepository>()
+    private val mockDooingleCountService = mockk<DooingleCountService>()
     private val mockNotificationService = mockk<NotificationService>()
+    private val mockDistributedLock = mockk<DistributedLock>()
     private val dooingleService = DooingleService(
         dooingleRepository = mockDooingleRepository,
         socialUserRepository = mockSocialUserRepository,
         catchRepository = mockCatchRepository,
-        dooingleCountRepository = mockDooingleCountRepository,
-        notificationService = mockNotificationService
+        dooingleCountService = mockDooingleCountService,
+        notificationService = mockNotificationService,
     )
 
     lateinit var owner: SocialUser
@@ -83,6 +82,13 @@ class DooingleServiceUnitTest : AnnotationSpec() {
         every { mockSocialUserRepository.findByUserLink(ownerUserLink) } returns owner
         every { mockSocialUserRepository.findByIdOrNull(fromUserId) } returns owner
 
+        every {
+            mockDistributedLock.invoke<Any?>(any(), any(), any(), captureLambda())
+        } answers {
+            val lambda: () -> Any? = arg<(()-> Any?)>(3)
+            lambda()
+        }
+
         // expected
         shouldThrow<InvalidParameterException> { dooingleService.addDooingle(fromUserId, ownerUserLink, addDooingleRequest) }
     }
@@ -111,11 +117,11 @@ class DooingleServiceUnitTest : AnnotationSpec() {
     fun `커서값이 전달 되었을 경우 커서 이전 뒹글 부터 개인 페이지 조회`(){
         // given
         val ownerUserLink = "1111111111"
-        val cursor = 20L
+        val cursor = 22L
         val pageRequest = PageRequest.ofSize(10)
 
         every { mockSocialUserRepository.findByUserLink(ownerUserLink) } returns owner
-        every { mockDooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest) } returns SliceImpl(getFixtureOfDooingleAndCatchResponseList().subList(2, 12))
+        every { mockDooingleRepository.getPersonalPageBySlice(owner, cursor, pageRequest) } returns SliceImpl(getFixtureOfDooingleAndCatchResponseList().subList(22, 32))
 
         // when
         val slice = dooingleService.getPage(ownerUserLink, cursor)
@@ -270,66 +276,74 @@ class DooingleServiceUnitTest : AnnotationSpec() {
 
     private fun getFixtureOfDooingleAndCatchResponseList() = listOf<DooingleAndCatchResponse>(
         // TODO - DooingleAndCatchResponse에서 Catch 엔티티를 담지 않도록 하는 편이 좋을 것 같다고 생각함
-        DooingleAndCatchResponse(owner.nickname, "1111111111", 1, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(1)),
-        DooingleAndCatchResponse(owner.nickname, "2222222222", 2, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(2)),
-        DooingleAndCatchResponse(owner.nickname, "3333333333", 3, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(3)),
-        DooingleAndCatchResponse(owner.nickname, "4444444444", 4, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(4)),
-        DooingleAndCatchResponse(owner.nickname, "5555555555", 5, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(5)),
-        DooingleAndCatchResponse(owner.nickname, "6666666666", 6, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(6)),
-        DooingleAndCatchResponse(owner.nickname, "7777777777", 7, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(7)),
-        DooingleAndCatchResponse(owner.nickname, "8888888888", 8, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(8)),
-        DooingleAndCatchResponse(owner.nickname, "9999999999", 9, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(9)),
-        DooingleAndCatchResponse(owner.nickname, "0000000000", 10, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(10)),
-        DooingleAndCatchResponse(owner.nickname, "aaaaaaaaaa", 11, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(11)),
-        DooingleAndCatchResponse(owner.nickname, "bbbbbbbbbb", 12, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(12)),
-        DooingleAndCatchResponse(owner.nickname, "cccccccccc", 13, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(13)),
-        DooingleAndCatchResponse(owner.nickname, "dddddddddd", 14, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(14)),
-        DooingleAndCatchResponse(owner.nickname, "eeeeeeeeee", 15, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(15)),
-        DooingleAndCatchResponse(owner.nickname, "ffffffffff", 16, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(16)),
-        DooingleAndCatchResponse(owner.nickname, "gggggggggg", 17, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(17)),
-        DooingleAndCatchResponse(owner.nickname, "hhhhhhhhhh", 18, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(18)),
-        DooingleAndCatchResponse(owner.nickname, "iiiiiiiiii", 19, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(19)),
-        DooingleAndCatchResponse(owner.nickname, "jjjjjjjjjj", 20, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(20)),
-        DooingleAndCatchResponse(owner.nickname, "kkkkkkkkkk", 21, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(21)),
-        DooingleAndCatchResponse(owner.nickname, "llllllllll", 22, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(22)),
-//        DooingleAndCatchResponse(owner.nickname, 2, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 3, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 4, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 5, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 6, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 7, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 8, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 9, "뒹글 내용", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 10, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 11, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 12, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 13, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 14, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
-//        DooingleAndCatchResponse(owner.nickname, 15, "뒹글 내용 1", Catch("캐치 내용", Dooingle(guest, owner, null, "뒹글 내용"),null), ZonedDateTime.now()),
+        DooingleAndCatchResponse(owner.nickname, "1111111111", 1, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(1), null),
+        DooingleAndCatchResponse(owner.nickname, "2222222222", 2, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(2), null),
+        DooingleAndCatchResponse(owner.nickname, "3333333333", 3, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(3), null),
+        DooingleAndCatchResponse(owner.nickname, "4444444444", 4, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(4), null),
+        DooingleAndCatchResponse(owner.nickname, "5555555555", 5, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(5), null),
+        DooingleAndCatchResponse(owner.nickname, "6666666666", 6, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(6), null),
+        DooingleAndCatchResponse(owner.nickname, "7777777777", 7, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(7), null),
+        DooingleAndCatchResponse(owner.nickname, "8888888888", 8, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(8), null),
+        DooingleAndCatchResponse(owner.nickname, "9999999999", 9, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(9), null),
+        DooingleAndCatchResponse(owner.nickname, "0000000000", 10, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(10), null),
+        DooingleAndCatchResponse(owner.nickname, "aaaaaaaaaa", 11, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(11), null),
+        DooingleAndCatchResponse(owner.nickname, "bbbbbbbbbb", 12, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(12), null),
+        DooingleAndCatchResponse(owner.nickname, "cccccccccc", 13, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(13), null),
+        DooingleAndCatchResponse(owner.nickname, "dddddddddd", 14, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(14), null),
+        DooingleAndCatchResponse(owner.nickname, "eeeeeeeeee", 15, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(15), null),
+        DooingleAndCatchResponse(owner.nickname, "ffffffffff", 16, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(16), null),
+        DooingleAndCatchResponse(owner.nickname, "gggggggggg", 17, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(17), null),
+        DooingleAndCatchResponse(owner.nickname, "hhhhhhhhhh", 18, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(18), null),
+        DooingleAndCatchResponse(owner.nickname, "iiiiiiiiii", 19, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(19), null),
+        DooingleAndCatchResponse(owner.nickname, "jjjjjjjjjj", 20, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(20), null),
+        DooingleAndCatchResponse(owner.nickname, "kkkkkkkkkk", 21, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(21), null),
+        DooingleAndCatchResponse(owner.nickname, "llllllllll", 22, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(22), null),
+        DooingleAndCatchResponse(owner.nickname, "1111111111", 23, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(23), null),
+        DooingleAndCatchResponse(owner.nickname, "2222222222", 24, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(24), null),
+        DooingleAndCatchResponse(owner.nickname, "3333333333", 25, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(25), null),
+        DooingleAndCatchResponse(owner.nickname, "4444444444", 26, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(26), null),
+        DooingleAndCatchResponse(owner.nickname, "5555555555", 27, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(27), null),
+        DooingleAndCatchResponse(owner.nickname, "6666666666", 28, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(28), null),
+        DooingleAndCatchResponse(owner.nickname, "7777777777", 29, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(29), null),
+        DooingleAndCatchResponse(owner.nickname, "8888888888", 30, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(30), null),
+        DooingleAndCatchResponse(owner.nickname, "9999999999", 31, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(31), null),
+        DooingleAndCatchResponse(owner.nickname, "0000000000", 32, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(32), null),
+        DooingleAndCatchResponse(owner.nickname, "aaaaaaaaaa", 33, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(33), null),
+        DooingleAndCatchResponse(owner.nickname, "bbbbbbbbbb", 34, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(34), null),
+        DooingleAndCatchResponse(owner.nickname, "cccccccccc", 35, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(35), null),
+        DooingleAndCatchResponse(owner.nickname, "dddddddddd", 36, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(36), null),
+        DooingleAndCatchResponse(owner.nickname, "eeeeeeeeee", 37, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(37), null),
+        DooingleAndCatchResponse(owner.nickname, "ffffffffff", 38, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(38), null),
+        DooingleAndCatchResponse(owner.nickname, "gggggggggg", 39, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(39), null),
+        DooingleAndCatchResponse(owner.nickname, "hhhhhhhhhh", 40, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(40), null),
+        DooingleAndCatchResponse(owner.nickname, "iiiiiiiiii", 41, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(41), null),
+        DooingleAndCatchResponse(owner.nickname, "jjjjjjjjjj", 42, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(42), null),
+        DooingleAndCatchResponse(owner.nickname, "kkkkkkkkkk", 43, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(43), null),
+        DooingleAndCatchResponse(owner.nickname, "llllllllll", 44, "뒹글 내용", null, ZonedDateTime.now().plusSeconds(44), null),
     ).sortedByDescending { it.dooingleId }
 
     private fun getFixtureOfDooingleResponseList(): List<DooingleFeedResponse> = listOf<DooingleFeedResponse>(
-        DooingleFeedResponse(owner.nickname, "1111111111", 1, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 2, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 3, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 4, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 5, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 6, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 7, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 8, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 9, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 10, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 11, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 12, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 13, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 14, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 15, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 16, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 17, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 18, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 19, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 20, "뒹글 내용", false, ZonedDateTime.now()),
-        DooingleFeedResponse(owner.nickname, "1111111111", 21, "뒹글 내용", false, ZonedDateTime.now()),
+        DooingleFeedResponse(owner.nickname, "1111111111", 1, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 2, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 3, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 4, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 5, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 6, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 7, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 8, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 9, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 10, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 11, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 12, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 13, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 14, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 15, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 16, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 17, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 18, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 19, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 20, "뒹글 내용", false, ZonedDateTime.now(), null),
+        DooingleFeedResponse(owner.nickname, "1111111111", 21, "뒹글 내용", false, ZonedDateTime.now(), null),
     ).sortedBy { it.dooingleId }
 
     companion object {

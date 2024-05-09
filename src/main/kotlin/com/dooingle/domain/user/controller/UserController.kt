@@ -1,16 +1,13 @@
 package com.dooingle.domain.user.controller
 
-import com.dooingle.domain.user.dto.DooinglerResponse
-import com.dooingle.domain.user.dto.ProfileImageUrlResponse
-import com.dooingle.domain.user.dto.ProfileResponse
-import com.dooingle.domain.user.dto.UpdateProfileDto
+import com.dooingle.domain.user.dto.*
 import com.dooingle.domain.user.service.SocialUserService
-import com.dooingle.global.exception.custom.NotPermittedException
 import com.dooingle.global.security.UserPrincipal
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -25,6 +22,16 @@ class UserController(
         return ResponseEntity.ok().body(socialUserService.getDooinglerList(condition))
     }
 
+    @GetMapping("/search")
+    fun searchDooinglers(@RequestParam nickname: String): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.searchDooinglers(nickname))
+    }
+
+    @GetMapping("/random")
+    fun getRandomDooinglers(): ResponseEntity<List<DooinglerWithProfileResponse>> {
+        return ResponseEntity.ok().body(socialUserService.getRandomDooinglers())
+    }
+
     @PatchMapping(value = ["/profile"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal,
                       @RequestPart(value = "request") @Valid request: UpdateProfileDto,
@@ -37,6 +44,7 @@ class UserController(
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun getProfile(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<ProfileResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getProfile(userPrincipal.id))
     }
@@ -53,6 +61,7 @@ class UserController(
     }
 
     @GetMapping("/current-dooingler")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     fun getCurrentDooingler(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<DooinglerResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(socialUserService.getCurrentDooingler(userPrincipal.id))
     }

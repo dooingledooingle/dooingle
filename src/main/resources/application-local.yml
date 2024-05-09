@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none # 엔티티 변경사항 없을 때까지 none으로 둠
+    open-in-view: false
+
+logging:
+  level:
+    'org.hibernate.SQL': debug
+    'org.hibernate.orm.jdbc.bind': trace
+    'org.springframework.securitweb': debug

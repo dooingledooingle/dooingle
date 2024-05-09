@@ -7,22 +7,36 @@ import {useEffect, useRef, useState} from "react";
 import {FRONTEND_SERVER_ORIGIN} from "../env.js"
 import MorePostButton from "../components/button/MorePostButton.jsx";
 import SmallSubmitButton from "../components/button/SmallSubmitButton.jsx";
-import {fetchDooinglesAndCatchesSlice, fetchIsFollowingUser, fetchAddFollow, fetchCancelFollow, fetchAddDooingle, fetchPageOwnerUserProfile} from "../fetch.js";
+import {
+  fetchDooinglesAndCatchesSlice,
+  fetchIsFollowingUser,
+  fetchAddFollow,
+  fetchCancelFollow,
+  fetchAddDooingle,
+  fetchPageOwnerUserProfile,
+  fetchFollowCount
+} from "../fetch.js";
 import {useAuth} from "../hooks/useContext.js";
+import DeleteModal from "../components/modal/DeleteModal.jsx";
 
 export default function PersonalDooinglePage() {
 
-  const {authenticatedUserLink} = useAuth()
+  const {isAuthenticated, authenticatedUserLink} = useAuth()
   const [dooinglesAndCatches, setDooinglesAndCatches] = useState([]);
   const [pageOwnerUserProfile, setPageOwnerUserProfile] = useState({});
   const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [followerCount, setFollowerCount] = useState(false)
   // const [isEntireFeed, setIsEntireFeed] = useState(true) // TODO isEntireFeed state가 정말 필요한지는 더 고민해볼 것
   const params = useParams();
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
   const pageOwnerUserLink = params?.userLink;
   const dooingleRef = useRef();
   const hasNextSlice = useRef(false);
-  const isCurrentUserEqualToPageOwner = (authenticatedUserLink === pageOwnerUserLink)
+  const deleteTargetRelatedDooingleIdRef = useRef();
+  const deleteTargetContentRef = useRef();
+  const deleteTargetIdRef = useRef();
+  const isCurrentUserEqualToPageOwner = (authenticatedUserLink === pageOwnerUserLink);
 
   useEffect(() => {
     if (searchParams) {
@@ -39,21 +53,29 @@ export default function PersonalDooinglePage() {
   }, [pageOwnerUserLink, searchParams]);
   
   useEffect(() => {
-    fetchIsFollowingUser(pageOwnerUserLink).then(result => {
+    isAuthenticated && fetchIsFollowingUser(pageOwnerUserLink).then(result => {
       setIsFollowingUser(result)
     })
 
     fetchPageOwnerUserProfile(pageOwnerUserLink).then(result => {
       setPageOwnerUserProfile(result)
     })
+
+    fetchFollowCount(pageOwnerUserLink).then(result => {
+      setFollowerCount(result)
+    })
   }, [pageOwnerUserLink]);
 
   function handleAddFollowButton() {
     fetchAddFollow(pageOwnerUserLink).then(() => setIsFollowingUser(true))
+
+    setFollowerCount(prevCount => prevCount + 1)
   }
 
   function handleCancelFollowButton() {
     fetchCancelFollow(pageOwnerUserLink).then(() => setIsFollowingUser(false))
+
+    setFollowerCount(prevCount => prevCount - 1)
   }
 
   function handleDooingleSubmit(event) {
@@ -103,16 +125,27 @@ export default function PersonalDooinglePage() {
 
   return (
     <>
+      {showDeleteModal && <DeleteModal setShowDeleteModal= {setShowDeleteModal}
+                                       setDooinglesAndCatches = {setDooinglesAndCatches}
+                                       deleteTargetRelatedDooingleIdRef = {deleteTargetRelatedDooingleIdRef}
+                                       deleteTargetIdRef = {deleteTargetIdRef}
+                                       deleteContentRef = {deleteTargetContentRef}/>}
+
       {/* 소개 섹션 반투명 */}
       <section className="h-[10rem] bg-[#AAAAAA] shadow-[0_0.25rem__0.25rem_#888888]">
         <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] min-h-full opacity-100">
           <div className="col-start-4 col-span-6 flex justify-start items-center gap-[5%]">
             <ProfileImageFrame userLink={pageOwnerUserLink} />
             <div className="flex flex-col gap-[0.375rem]">
-              <div className="flex items-center gap-[1rem]">
+              <div className="flex items-center gap-[0.75rem]">
                 <span className="text-[1.5rem] font-bold text-white">{pageOwnerUserProfile.nickname}</span>
-                {isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
-                {!isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition">☆</button>}
+                <div className="flex gap-[0.5rem] items-center">
+                  {!isAuthenticated && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
+                  {isAuthenticated && isCurrentUserEqualToPageOwner && <div className="text-[1.5rem] font-extrabold text-[#8692ff]">★</div>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && isFollowingUser && <button onClick={handleCancelFollowButton} className="text-[1.5rem] font-extrabold text-[#8692ff]">★</button>}
+                  {isAuthenticated && !isCurrentUserEqualToPageOwner && !isFollowingUser && <button onClick={handleAddFollowButton} className="text-[1.5rem] font-extrabold text-[#FFFFFF] hover:text-[#8692ff] transition-colors">☆</button>}
+                  <span className="mt-[0.125rem] text-[1.125rem] text-white">{followerCount}</span>
+                </div>
               </div>
               <div><span className="text-[1rem] ">{pageOwnerUserProfile.description}</span></div>
               <button onClick={handleCopyUserLinkButton} className="flex items-center">
@@ -124,13 +157,13 @@ export default function PersonalDooinglePage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem] ml-40px">
+      <div className="grid grid-cols-12 gap-x-[2.5rem] mx-[8.75rem] h-[4.5rem]">
         {/* Feed와 배치 다른 부분: nav의 py가 3.75rem -> 3rem, 본문 섹션 py가 2.75rem -> 0.75rem */}
 
         {/* nav */}
         <nav className="col-start-1 col-span-3 flex justify-center text-[#5f6368]">
           <div className="flex flex-col items-center py-[3rem] gap-[1.25rem]">
-            <Navigation />
+            <Navigation/>
           </div>
         </nav>
 
@@ -154,17 +187,21 @@ export default function PersonalDooinglePage() {
             {/*</div>*/}
           </div>
 
-          {isCurrentUserEqualToPageOwner || <form
-            className="flex justify-center items-center my-[2rem] gap-[4%]"
-            onSubmit={handleDooingleSubmit}
-          >
+          {isCurrentUserEqualToPageOwner ||
+            <form
+            className="flex justify-center items-center mt-[2rem] mb-[1rem] gap-[3%]"
+            onSubmit={handleDooingleSubmit}>
             <textarea ref={dooingleRef} placeholder="뒹글은 당신의 얼굴입니다."
                       className="w-[70%] p-[1rem] overflow-y-hidden resize-none
                     border-[0.03125rem] border-[#fa61bd] rounded-[0.625rem]
                     focus:outline-none focus:outline-[#fa61bd] focus:outline-[0.0625rem] focus:outline-rounded-[0.5rem]"/>
-            <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
+            <div className="flex group">
+              <img src="/post-button.svg" alt="캐치 버튼" onClick={handleDooingleSubmit}
+                   className="w-[2rem] h-[2rem] group-hover:rotate-[360deg] hover:rotate-[360deg] transition-transform duration-1000 cursor-pointer"/>
+              <SmallSubmitButton type="submit">굴릴래요</SmallSubmitButton>
+            </div>
           </form>}
-          <div className="py-[1rem]">
+          <div className="pb-[1rem]">
             {dooinglesAndCatches?.map(dooingleAndCatch => (
               <DooingleAndCatch
                 key={dooingleAndCatch.dooingleId}
@@ -172,9 +209,12 @@ export default function PersonalDooinglePage() {
                 ownerName={dooingleAndCatch.ownerName}
                 setDooinglesAndCatches={setDooinglesAndCatches}
                 dooingleContent={dooingleAndCatch.content}
-                catchId={dooingleAndCatch.catch.catchId}
-                catchContent={dooingleAndCatch.catch.content}
+                catchResponse={dooingleAndCatch.catch}
                 isCurrentUserEqualToPageOwner={isCurrentUserEqualToPageOwner}
+                setShowDeleteModal = {setShowDeleteModal}
+                deleteTargetRelatedDooingleIdRef = {deleteTargetRelatedDooingleIdRef}
+                deleteTargetIdRef = {deleteTargetIdRef}
+                deleteTargetContentRef= {deleteTargetContentRef}
               />
             ))}
           </div>
