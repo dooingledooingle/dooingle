@@ -72,6 +72,7 @@ class SecurityConfig(
                         "/oauth2/login/**",
                         "/oauth2/callback/**",
                         "/logout",
+                        "/unlink-all-user"
                     ).permitAll()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
